@@ -1,5 +1,53 @@
+{% from "govuk/components/header/macro.njk" import govukHeader %}
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
 {% extends "template.njk" %}
 
-{% block content %}
-  <h1 class="govuk-heading-xl">Default page template</h1>
+{% block header %}
+  {{ govukHeader({
+    classes: "govuk-header--full-width-border"
+  }) }}
+
+  {{ govukServiceNavigation({
+    serviceName: "HMCTS chatbot admin"
+  }) }}
 {% endblock %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl">Sign in</h1>
+
+  <p class="govuk-body">
+    If you do not have an account, you can <a href="/register" class="govuk-link">create one now</a>.
+  </p>
+
+  {{ govukInput({
+    label: {
+      text: "Username"
+    },
+    classes: "govuk-!-width-one-half",
+    id: "username",
+    name: "username"
+  }) }}
+
+  {{ govukInput({
+    label: {
+      text: "Password"
+    },
+    classes: "govuk-!-width-one-half",
+    id: "password",
+    name: "password",
+    type: "password"
+  }) }}
+
+  {{ govukButton({
+    text: "Continue",
+    href: "/admin"
+  }) }}
+
+  <p class="govuk-body">
+    <a href="/forgot-password" class="govuk-link">Forgotten your password?</a>
+  </p>
+{% endblock %}
+

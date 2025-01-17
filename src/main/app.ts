@@ -40,6 +40,17 @@ app.use((req, res, next) => {
   next();
 });
 
+// Add a route for /forgot-password
+app.get('/forgot-password', (req, res) => {
+  res.render('forgot-password'); // Render the Nunjucks template for forgot password
+});
+
+// Add a route for /enter-code
+app.get('/enter-code', (req, res) => {
+  res.render('enter-code'); // Render the Nunjucks template for enter code
+});
+
+
 glob
   .sync(__dirname + '/routes/**/*.+(ts|js)')
   .map(filename => require(filename))

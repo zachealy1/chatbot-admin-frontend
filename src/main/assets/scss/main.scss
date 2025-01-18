@@ -1,5 +1,26 @@
 @import 'govuk-frontend';
 
+.hidden-content {
+  display: none;
+}
+
+.visible-content {
+  display: block;
+}
+
+.govuk-show-button {
+  margin-bottom: 0;
+}
+
+.govuk-heading-l {
+  margin-top: 30px;
+}
+
+.chart-container {
+  border: 1px solid #ccc;
+  padding: 15px;
+}
+
 .chart-keys {
   display: flex;
   align-items: center;

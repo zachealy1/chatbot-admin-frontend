@@ -50,6 +50,11 @@ app.get('/enter-code', (req, res) => {
   res.render('enter-code'); // Render the Nunjucks template for enter code
 });
 
+// Add a route for /reset-password
+app.get('/reset-password', (req, res) => {
+  res.render('reset-password'); // Render the Nunjucks template for reset password
+});
+
 // Add a route for /register
 app.get('/register', (req, res) => {
   res.render('register'); // Render the Nunjucks template for register

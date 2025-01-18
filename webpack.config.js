@@ -28,8 +28,12 @@ module.exports = {
       ],
     }),
   ],
-  entry: path.resolve(sourcePath, 'index.ts'),
+  entry: {
+    main: path.resolve(sourcePath, 'index.ts'),
+    password: path.resolve(sourcePath, 'password.ts'),
+  },
   mode: devMode ? 'development' : 'production',
+  devtool: devMode ? 'inline-source-map' : false,
   module: {
     rules: [
       ...scss.rules,

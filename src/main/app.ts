@@ -55,6 +55,10 @@ app.get('/register', (req, res) => {
   res.render('register'); // Render the Nunjucks template for register
 });
 
+// Add a route for /admin
+app.get('/admin', (req, res) => {
+  res.render('admin'); // Render the Nunjucks template for admin
+});
 
 glob
   .sync(__dirname + '/routes/**/*.+(ts|js)')

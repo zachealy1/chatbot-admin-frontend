@@ -1,1 +1,159 @@
 @import 'govuk-frontend';
+
+.chart-keys {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  font-family: "GDS Transport", Arial, sans-serif;
+  font-size: 16px;
+}
+
+.chart-key {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.key-box {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.key-box-1 {
+  background-color: #12436d;
+}
+
+.key-box-2 {
+  background-color: #28a197;
+}
+
+.key-box-3 {
+  background-color: #801650;
+}
+
+.key-box-4 {
+  background-color: #f46a25;
+}
+
+.key-label {
+  color: #0b0c0c;
+  font-weight: bold;
+}
+
+.chart-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 1px solid #fff;
+  border-spacing: 0 5px;
+  position: relative;
+  font-size: 16px;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.chart-label {
+  min-width: 5rem;
+  font-weight: bold;
+  font-family: "GDS Transport", arial, sans-serif;
+}
+
+.chart-bar {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+}
+
+.bar-segment {
+  display: block;
+  margin-bottom: 1px;
+  text-align: center;
+  line-height: 1.5;
+  color: #fff;
+  font-size: 16px;
+  box-sizing: border-box;
+  margin-left: 2px;
+  padding: 15px;
+
+}
+
+.bar-segment-1 {
+  background-color: #12436d;
+}
+
+.bar-segment-2 {
+  background-color: #28a197;
+}
+
+.bar-segment-3 {
+  background-color: #801650;
+}
+
+.bar-segment-4 {
+  background-color: #f46a25;
+  color: #0b0c0c;
+}
+
+.bar-segment-5 {
+  background-color: #3d3d3d;
+}
+
+.bar-segment-6 {
+  background-color: #a285d1;
+  color: #0b0c0c;
+}
+
+.chart-total {
+  min-width: 3rem;
+  text-align: left;
+  font-weight: bold;
+  margin-left: 1rem;
+}
+
+.width-5 {
+  width: 5%;
+}
+
+.width-10 {
+  width: 10%;
+}
+
+.width-15 {
+  width: 15%;
+}
+
+.width-20 {
+  width: 20%;
+}
+
+.width-25 {
+  width: 25%;
+}
+
+.width-30 {
+  width: 30%;
+}
+
+.width-35 {
+  width: 35%;
+}
+
+.width-40 {
+  width: 40%;
+}
+
+.width-45 {
+  width: 45%;
+}
+
+.width-50 {
+  width: 50%;
+}
+
+.width-55 {
+  width: 55%;
+}
+
+.width-60 {
+  width: 60%;
+}

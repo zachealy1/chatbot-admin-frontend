@@ -1,0 +1,108 @@
+{% from "govuk/components/header/macro.njk" import govukHeader %}
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "template.njk" %}
+
+{% block pageTitle %}
+  HMCTS chatbot admin
+{% endblock %}
+
+{% block header %}
+  {{ govukHeader({
+    classes: "govuk-header--full-width-border",
+    homepageUrl: "/admin",
+    pageTitle: "HMCTS chatbot admin"
+  }) }}
+
+  {{ govukServiceNavigation({
+    serviceName: "HMCTS chatbot admin",
+    navigation: [
+      {
+        href: "/admin",
+        text: "Home",
+        active: true
+      },
+      {
+        href: "/account-requests",
+        text: "Account Requests"
+      },
+      {
+        href: "/update-banner",
+        text: "Update Banner"
+      },
+      {
+        href: "/account",
+        text: "Account"
+      },
+      {
+        href: "/",
+        text: "Logout"
+      }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl">Admin dashboard</h1>
+
+  <h2 class="govuk-heading-l">Bar graph</h2>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="chart-keys">
+        <div class="chart-key">
+          <div class="key-box key-box-1"></div>
+          <div class="key-label">20 to 30</div>
+        </div>
+        <div class="chart-key">
+          <div class="key-box key-box-2"></div>
+          <div class="key-label">31 to 40</div>
+        </div>
+        <div class="chart-key">
+          <div class="key-box key-box-3"></div>
+          <div class="key-label">41 to 50</div>
+        </div>
+        <div class="chart-key">
+          <div class="key-box key-box-4"></div>
+          <div class="key-label">51 and over</div>
+        </div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-label">Shop 1</div>
+        <div class="chart-bar">
+          <div class="bar-segment bar-segment-1 width-20">20</div>
+          <div class="bar-segment bar-segment-2 width-40">40</div>
+          <div class="bar-segment bar-segment-3 width-30">30</div>
+          <div class="bar-segment bar-segment-4 width-10">10</div>
+        </div>
+        <div class="chart-total">100</div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-label">Shop 2</div>
+        <div class="chart-bar">
+          <div class="bar-segment bar-segment-1 width-10">10</div>
+          <div class="bar-segment bar-segment-2 width-40">40</div>
+          <div class="bar-segment bar-segment-3 width-20">20</div>
+          <div class="bar-segment bar-segment-4 width-30">30</div>
+        </div>
+        <div class="chart-total">100</div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-label">Shop 3</div>
+        <div class="chart-bar">
+          <div class="bar-segment bar-segment-1 width-60">60</div>
+          <div class="bar-segment bar-segment-2 width-20">20</div>
+          <div class="bar-segment bar-segment-3 width-10">10</div>
+          <div class="bar-segment bar-segment-4 width-10">10</div>
+        </div>
+        <div class="chart-total">100</div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

@@ -31,6 +31,7 @@ module.exports = {
   entry: {
     main: path.resolve(sourcePath, 'index.ts'),
     password: path.resolve(sourcePath, 'password.ts'),
+    expand: path.resolve(sourcePath, 'expand.ts'),
   },
   mode: devMode ? 'development' : 'production',
   devtool: devMode ? 'inline-source-map' : false,

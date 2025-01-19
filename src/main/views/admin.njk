@@ -52,25 +52,33 @@
   <div class="chart-container">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <div class="chart-keys">
-          <div class="chart-key">
-            <div class="key-box key-box-1"></div>
-            <div class="key-label">20 to 30</div>
+
+        <!-- Chart keys -->
+        <div class="chart-keys-header">
+          <div class="chart-keys">
+            <div class="chart-key">
+              <div class="key-box key-box-1"></div>
+              <div class="key-label">20 to 30</div>
+            </div>
+            <div class="chart-key">
+              <div class="key-box key-box-2"></div>
+              <div class="key-label">31 to 40</div>
+            </div>
+            <div class="chart-key">
+              <div class="key-box key-box-3"></div>
+              <div class="key-label">41 to 50</div>
+            </div>
+            <div class="chart-key">
+              <div class="key-box key-box-4"></div>
+              <div class="key-label">51 and over</div>
+            </div>
           </div>
-          <div class="chart-key">
-            <div class="key-box key-box-2"></div>
-            <div class="key-label">31 to 40</div>
-          </div>
-          <div class="chart-key">
-            <div class="key-box key-box-3"></div>
-            <div class="key-label">41 to 50</div>
-          </div>
-          <div class="chart-key">
-            <div class="key-box key-box-4"></div>
-            <div class="key-label">51 and over</div>
-          </div>
+          <button class="govuk-button govuk-button--secondary expand-button" type="button" aria-label="Expand the graph">
+            Expand
+          </button>
         </div>
 
+        <!-- Chart rows -->
         <div class="chart-row">
           <div class="chart-label">Shop 1</div>
           <div class="chart-bar">
@@ -104,7 +112,6 @@
           <div class="chart-total">100</div>
         </div>
 
-        <!-- Additional Rows -->
         <div class="chart-row">
           <div class="chart-label">Shop 4</div>
           <div class="chart-bar">
@@ -142,5 +149,86 @@
   </div>
 
   <h2 class="govuk-heading-l">Line graph</h2>
+
+  <div class="chart-container">
+    <div class="line-graph">
+      <!-- Graph area -->
+      <svg viewBox="0 0 1000 600" class="line-graph-svg">
+        <!-- Y-axis -->
+        <line x1="50" y1="0" x2="50" y2="550" stroke="#ccc" stroke-width="1" />
+        <!-- X-axis -->
+        <line x1="50" y1="550" x2="1000" y2="550" stroke="#ccc" stroke-width="1" />
+
+        <!-- Grid lines -->
+        <line x1="50" y1="100" x2="1000" y2="100" stroke="#e6e6e6" stroke-width="1" />
+        <line x1="50" y1="250" x2="1000" y2="250" stroke="#e6e6e6" stroke-width="1" />
+        <line x1="50" y1="400" x2="1000" y2="400" stroke="#e6e6e6" stroke-width="1" />
+
+        <!-- Y-axis labels -->
+        <text class="line-graph-y-axis" x="10" y="550" font-size="14" text-anchor="end" alignment-baseline="middle">0</text>
+        <text class="line-graph-y-axis" x="10" y="400" font-size="14" text-anchor="end" alignment-baseline="middle">400</text>
+        <text class="line-graph-y-axis" x="10" y="250" font-size="14" text-anchor="end" alignment-baseline="middle">800</text>
+        <text class="line-graph-y-axis" x="10" y="100" font-size="14" text-anchor="end" alignment-baseline="middle">1200</text>
+
+        <!-- Nominal GDP line -->
+        <polyline
+          points="100,550 200,450 300,350 400,250 500,150 600,120 700,90 800,60"
+          fill="none"
+          stroke="#12436d"
+          stroke-width="2"
+        />
+        <!-- Total Managed Expenditure line -->
+        <polyline
+          points="100,500 200,470 300,430 400,390 500,350 600,340 700,330 800,320"
+          fill="none"
+          stroke="#f46a25"
+          stroke-width="2"
+        />
+
+        <!-- Points for Nominal GDP -->
+        <circle cx="100" cy="550" r="4" fill="#12436d" />
+        <circle cx="200" cy="450" r="4" fill="#12436d" />
+        <circle cx="300" cy="350" r="4" fill="#12436d" />
+        <circle cx="400" cy="250" r="4" fill="#12436d" />
+        <circle cx="500" cy="150" r="4" fill="#12436d" />
+        <circle cx="600" cy="120" r="4" fill="#12436d" />
+        <circle cx="700" cy="90" r="4" fill="#12436d" />
+        <circle cx="800" cy="60" r="4" fill="#12436d" />
+
+        <!-- Points for Total Managed Expenditure -->
+        <circle cx="100" cy="500" r="4" fill="#f46a25" />
+        <circle cx="200" cy="470" r="4" fill="#f46a25" />
+        <circle cx="300" cy="430" r="4" fill="#f46a25" />
+        <circle cx="400" cy="390" r="4" fill="#f46a25" />
+        <circle cx="500" cy="350" r="4" fill="#f46a25" />
+        <circle cx="600" cy="340" r="4" fill="#f46a25" />
+        <circle cx="700" cy="330" r="4" fill="#f46a25" />
+        <circle cx="800" cy="320" r="4" fill="#f46a25" />
+      </svg>
+
+      <!-- X-axis labels at the bottom -->
+      <div class="line-graph-x-axis">
+        <span>1998-99</span>
+        <span>2003-04</span>
+        <span>2008-09</span>
+        <span>2013-14</span>
+        <span>2021-22</span>
+      </div>
+
+      <!-- Legend -->
+      <div class="chart-keys">
+        <div class="chart-key">
+          <div class="key-box key-box-1"></div>
+          <div class="key-label">Nominal GDP</div>
+        </div>
+        <div class="chart-key">
+          <div class="key-box key-box-4"></div>
+          <div class="key-label">Total Managed Expenditure</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="expand-dev.js"></script>
 
 {% endblock %}

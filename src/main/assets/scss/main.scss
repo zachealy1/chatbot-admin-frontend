@@ -21,6 +21,13 @@
   padding: 15px;
 }
 
+.chart-keys-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .chart-keys {
   display: flex;
   align-items: center;
@@ -62,6 +69,18 @@
   font-weight: bold;
 }
 
+.expand-button {
+  margin-left: auto;
+  padding: 8px 16px;
+  margin-bottom: 0;
+}
+
+.chart-container.expanded {
+  width: 100%;
+  height: auto;
+  transition: all 0.3s ease;
+}
+
 .chart-row {
   display: flex;
   align-items: center;
@@ -93,9 +112,7 @@
   color: #fff;
   font-size: 16px;
   box-sizing: border-box;
-  margin-left: 2px;
   padding: 15px;
-
 }
 
 .bar-segment-1 {
@@ -177,4 +194,67 @@
 
 .width-60 {
   width: 60%;
+}
+
+.line-graph {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.line-graph-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.line-graph-x-axis {
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+  font-family: "GDS Transport", Arial, sans-serif;
+  font-size: 14px;
+}
+
+.line-graph-y-axis {
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+  font-family: "GDS Transport", Arial, sans-serif;
+  font-size: 14px;
+}
+
+.chart-keys {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.chart-key {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.key-box-1 {
+  background-color: #12436d;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.key-box-4 {
+  background-color: #f46a25;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.key-label {
+  font-weight: bold;
+  color: #0b0c0c;
 }

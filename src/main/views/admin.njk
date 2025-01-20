@@ -73,7 +73,8 @@
               <div class="key-label">51 and over</div>
             </div>
           </div>
-          <button class="govuk-button govuk-button--secondary expand-button" type="button" aria-label="Expand the graph">
+          <button class="govuk-button govuk-button--secondary expand-button" type="button"
+                  aria-label="Expand the graph">
             Expand
           </button>
         </div>
@@ -202,12 +203,18 @@
         <line x1="950" y1="0" x2="950" y2="550" stroke="#e6e6e6" stroke-width="1" />
 
         <!-- Y-axis labels -->
-        <text class="line-graph-axis" x="35" y="550" font-size="14" text-anchor="end" alignment-baseline="middle">0</text>
-        <text class="line-graph-axis" x="35" y="450" font-size="14" text-anchor="end" alignment-baseline="middle">200</text>
-        <text class="line-graph-axis" x="35" y="350" font-size="14" text-anchor="end" alignment-baseline="middle">400</text>
-        <text class="line-graph-axis" x="35" y="250" font-size="14" text-anchor="end" alignment-baseline="middle">600</text>
-        <text class="line-graph-axis" x="35" y="150" font-size="14" text-anchor="end" alignment-baseline="middle">800</text>
-        <text class="line-graph-axis" x="35" y="50" font-size="14" text-anchor="end" alignment-baseline="middle">1000</text>
+        <text class="line-graph-axis" x="35" y="550" font-size="14" text-anchor="end" alignment-baseline="middle">0
+        </text>
+        <text class="line-graph-axis" x="35" y="450" font-size="14" text-anchor="end" alignment-baseline="middle">200
+        </text>
+        <text class="line-graph-axis" x="35" y="350" font-size="14" text-anchor="end" alignment-baseline="middle">400
+        </text>
+        <text class="line-graph-axis" x="35" y="250" font-size="14" text-anchor="end" alignment-baseline="middle">600
+        </text>
+        <text class="line-graph-axis" x="35" y="150" font-size="14" text-anchor="end" alignment-baseline="middle">800
+        </text>
+        <text class="line-graph-axis" x="35" y="50" font-size="14" text-anchor="end" alignment-baseline="middle">1000
+        </text>
 
         <!-- X-axis labels -->
         <text class="line-graph-axis" x="50" y="570" text-anchor="middle" font-size="14">Jan</text>
@@ -222,7 +229,8 @@
         <text class="line-graph-axis" x="950" y="570" text-anchor="middle" font-size="14">Oct</text>
 
         <!-- Line and points for 20 to 30 -->
-        <polyline points="50,500 150,450 250,400 350,300 450,200 550,150 650,120 750,100 850,80 950,80" fill="none" stroke="#12436d" stroke-width="2" />
+        <polyline points="50,500 150,450 250,400 350,300 450,200 550,150 650,120 750,100 850,80 950,80" fill="none"
+                  stroke="#12436d" stroke-width="2" />
         <circle cx="50" cy="500" r="4" fill="#12436d" />
         <circle cx="150" cy="450" r="4" fill="#12436d" />
         <circle cx="250" cy="400" r="4" fill="#12436d" />
@@ -235,7 +243,8 @@
         <circle cx="950" cy="80" r="4" fill="#12436d" />
 
         <!-- Line and points for 31 to 40 -->
-        <polyline points="50,450 150,400 250,350 350,250 450,150 550,120 650,100 750,80 850,60 950,60" fill="none" stroke="#28a197" stroke-width="2" />
+        <polyline points="50,450 150,400 250,350 350,250 450,150 550,120 650,100 750,80 850,60 950,60" fill="none"
+                  stroke="#28a197" stroke-width="2" />
         <circle cx="50" cy="450" r="4" fill="#28a197" />
         <circle cx="150" cy="400" r="4" fill="#28a197" />
         <circle cx="250" cy="350" r="4" fill="#28a197" />
@@ -248,7 +257,8 @@
         <circle cx="950" cy="60" r="4" fill="#28a197" />
 
         <!-- Line and points for 41 to 50 -->
-        <polyline points="50,400 150,350 250,300 350,200 450,150 550,100 650,80 750,60 850,50 950,50" fill="none" stroke="#801650" stroke-width="2" />
+        <polyline points="50,400 150,350 250,300 350,200 450,150 550,100 650,80 750,60 850,50 950,50" fill="none"
+                  stroke="#801650" stroke-width="2" />
         <circle cx="50" cy="400" r="4" fill="#801650" />
         <circle cx="150" cy="350" r="4" fill="#801650" />
         <circle cx="250" cy="300" r="4" fill="#801650" />
@@ -261,7 +271,8 @@
         <circle cx="950" cy="50" r="4" fill="#801650" />
 
         <!-- Line and points for 51 and over -->
-        <polyline points="50,350 150,300 250,250 350,150 450,100 550,80 650,60 750,50 850,40 950,40" fill="none" stroke="#f46a25" stroke-width="2" />
+        <polyline points="50,350 150,300 250,250 350,150 450,100 550,80 650,60 750,50 850,40 950,40" fill="none"
+                  stroke="#f46a25" stroke-width="2" />
         <circle cx="50" cy="350" r="4" fill="#f46a25" />
         <circle cx="150" cy="300" r="4" fill="#f46a25" />
         <circle cx="250" cy="250" r="4" fill="#f46a25" />
@@ -277,7 +288,63 @@
   </div>
 
   <h2 class="govuk-heading-l">List</h2>
+  <div class="chart-container">
+    <table class="govuk-table govuk-table--small-text-until-tablet">
+      <caption class="govuk-table__caption govuk-table__caption--m">Query Data</caption>
+      <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Order</th>
+        <th scope="col" class="govuk-table__header">Name</th>
+        <th scope="col" class="govuk-table__header">Number of Queries</th>
+        <th scope="col" class="govuk-table__header">First Query</th>
+        <th scope="col" class="govuk-table__header">Last Query</th>
+      </tr>
+      </thead>
+      <tbody class="govuk-table__body"></tbody>
+    </table>
+
+    <nav class="govuk-pagination" aria-label="Pagination">
+      <div class="govuk-pagination__prev">
+        <a class="govuk-link govuk-pagination__link" href="#" rel="prev">
+          <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+            <path d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
+          </svg>
+          <span class="govuk-pagination__link-title">
+        Previous<span class="govuk-visually-hidden"> page</span>
+      </span>
+        </a>
+      </div>
+      <ul class="govuk-pagination__list">
+        <li class="govuk-pagination__item govuk-pagination__item--current">
+          <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 1" aria-current="page">
+            1
+          </a>
+        </li>
+        <li class="govuk-pagination__item">
+          <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 2">
+            2
+          </a>
+        </li>
+        <li class="govuk-pagination__item">
+          <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page 3">
+            3
+          </a>
+        </li>
+      </ul>
+      <div class="govuk-pagination__next">
+        <a class="govuk-link govuk-pagination__link" href="#" rel="next">
+      <span class="govuk-pagination__link-title">
+        Next<span class="govuk-visually-hidden"> page</span>
+      </span>
+          <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
+            <path d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
+          </svg>
+        </a>
+      </div>
+    </nav>
+  </div>
 
   <script src="expand-dev.js"></script>
+  <script src="page-dev.js"></script>
 
 {% endblock %}

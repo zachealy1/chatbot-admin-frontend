@@ -31,7 +31,8 @@ module.exports = {
   entry: {
     main: path.resolve(sourcePath, 'index.ts'),
     password: path.resolve(sourcePath, 'password.ts'),
-    page: path.resolve(sourcePath, 'page.ts'),
+    listPage: path.resolve(sourcePath, 'list-page.ts'),
+    requestPage: path.resolve(sourcePath, 'requests-page.ts'),
   },
   mode: devMode ? 'development' : 'production',
   devtool: devMode ? 'inline-source-map' : false,

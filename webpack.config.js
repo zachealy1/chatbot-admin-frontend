@@ -33,6 +33,7 @@ module.exports = {
     password: path.resolve(sourcePath, 'password.ts'),
     listPage: path.resolve(sourcePath, 'list-page.ts'),
     requestPage: path.resolve(sourcePath, 'requests-page.ts'),
+    managePage: path.resolve(sourcePath, 'manage-page.ts'),
   },
   mode: devMode ? 'development' : 'production',
   devtool: devMode ? 'inline-source-map' : false,

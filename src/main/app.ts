@@ -80,6 +80,11 @@ app.get('/account/update', (req, res) => {
   res.render('update'); // Render the Nunjucks template for update
 });
 
+// Add a route for /manage-accounts
+app.get('/manage-accounts', (req, res) => {
+  res.render('manage-accounts'); // Render the Nunjucks template for manage-accounts
+});
+
 glob
   .sync(__dirname + '/routes/**/*.+(ts|js)')
   .map(filename => require(filename))

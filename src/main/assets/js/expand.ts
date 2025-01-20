@@ -1,8 +1,18 @@
-const expandButton = document.querySelector<HTMLButtonElement>('.expand-button');
+// Select all expand buttons
+const expandButtons = document.querySelectorAll<HTMLButtonElement>('.expand-button');
 
-if (expandButton) {
-  expandButton.addEventListener('click', () => {
-    // Open a temporary window
+// Loop through all buttons and attach the event listener
+expandButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    // Find the corresponding chart-container
+    const chartContainer = button.closest('.chart-container');
+
+    if (!chartContainer) {
+      console.error('No chart container found for expansion.');
+      return;
+    }
+
+    // Open a new window for the expanded graph
     const newWindow = window.open(
       '', // No URL, open an empty window
       'expandedGraph', // Window name
@@ -10,7 +20,7 @@ if (expandButton) {
     );
 
     if (newWindow) {
-      // Set content for the new window
+      // Inject the HTML structure of the chart-container into the new window
       newWindow.document.write(`
         <!DOCTYPE html>
         <html lang="en">
@@ -23,8 +33,7 @@ if (expandButton) {
         <body>
           <h1>Expanded Graph</h1>
           <div class="chart-container">
-            <!-- Insert the HTML structure for your graph -->
-            ${document.querySelector('.chart-container')?.outerHTML || ''}
+            ${chartContainer.outerHTML || ''}
           </div>
         </body>
         </html>
@@ -35,4 +44,4 @@ if (expandButton) {
       console.error('Unable to open a new window. Please check your browser settings.');
     }
   });
-}
+});

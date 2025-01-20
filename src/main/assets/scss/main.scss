@@ -201,7 +201,6 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .line-graph-svg {
@@ -219,7 +218,7 @@
   font-size: 14px;
 }
 
-.line-graph-y-axis {
+.line-graph-axis {
   display: flex;
   justify-content: space-between;
   width: 95%;

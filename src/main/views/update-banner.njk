@@ -1,0 +1,100 @@
+{% from "govuk/components/header/macro.njk" import govukHeader %}
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "template.njk" %}
+
+{% block pageTitle %}
+  HMCTS chatbot admin
+{% endblock %}
+
+{% block header %}
+  {{ govukHeader({
+    classes: "govuk-header--full-width-border"
+  }) }}
+
+  {{ govukServiceNavigation({
+    serviceName: "HMCTS chatbot admin",
+    navigation: [
+      {
+        href: "/admin",
+        text: "Home"
+      },
+      {
+        href: "/account-requests",
+        text: "Requests"
+      },
+      {
+        href: "/manage-accounts",
+        text: "Manage Accounts"
+      },
+      {
+        href: "/update-banner",
+        text: "Update Banner",
+        active: true
+      },
+      {
+        href: "/account",
+        text: "Account"
+      },
+      {
+        href: "/",
+        text: "Logout"
+      }
+    ]
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <h1 class="govuk-heading-xl">Update banner</h1>
+
+  <!-- Banner Preview -->
+  <div id="banner-preview">
+    {{ govukPanel({
+      titleText: bannerTitle or "Contact Support Team",
+      html: bannerBody or "If you need assistance, please call us at <strong>0800 123 456</strong> or email <a href='mailto:support@example.com'>support@example.com</a>."
+    }) }}
+  </div>
+
+  <!-- Banner Update Form -->
+  <form id="bannerUpdateForm" action="/update-banner" method="post" class="govuk-!-margin-top-5" novalidate>
+
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="bannerTitle">Banner Title</label>
+      <input
+        class="govuk-input govuk-!-width-two-thirds"
+        id="bannerTitle"
+        name="bannerTitle"
+        type="text"
+        value="{{ bannerTitle or "Contact Support Team" }}"
+        autocomplete="off"
+      >
+    </div>
+
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="bannerBody">Banner Content</label>
+      <textarea
+        class="govuk-textarea govuk-!-width-two-thirds"
+        id="bannerBody"
+        name="bannerBody"
+        rows="5"
+      >{{ bannerBody or "If you need assistance, please call us at <strong>0800 123 456</strong> or email <a href='mailto:support@example.com'>support@example.com</a>." }}</textarea>
+    </div>
+
+    {{ govukButton({
+      text: "Save Changes",
+      type: "submit"
+    }) }}
+    {{ govukButton({
+      text: "Preview",
+      classes: "govuk-button--secondary"
+    }) }}
+  </form>
+
+  <!-- Include your script -->
+  <script src="updateBanner-dev.js"></script>
+
+{% endblock %}

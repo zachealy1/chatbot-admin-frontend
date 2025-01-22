@@ -11,10 +11,8 @@ const logger = Logger.getLogger('server');
 
 let httpsServer: https.Server | null = null;
 
-// used by shutdownCheck in readinessChecks
 app.locals.shutdown = false;
 
-// TODO: set the right port for your application
 const port: number = parseInt(process.env.PORT || '3100', 10);
 
 if (app.locals.ENV === 'development') {

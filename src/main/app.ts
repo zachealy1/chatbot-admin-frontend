@@ -9,8 +9,12 @@ import { PropertiesVolume } from './modules/properties-volume';
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
+import session from 'express-session';
 import { glob } from 'glob';
+import passport from 'passport';
 import favicon from 'serve-favicon';
+
+require('../../config/passport');
 
 const { setupDev } = require('./development');
 
@@ -39,6 +43,30 @@ app.use((req, res, next) => {
   res.setHeader('Cache-Control', 'no-cache, max-age=0, must-revalidate, no-store');
   next();
 });
+
+app.use(
+  session({
+    secret: 'yourSecretKeyHere',
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('/', (req, res) => {
+  res.redirect('/login');
+});
+
+app.get('/login', function(req, res) {
+  res.render('login');
+});
+
+app.post('/login/password', passport.authenticate('local', {
+  successRedirect: '/chat',
+  failureRedirect: '/login'
+}));
 
 // Add a route for /forgot-password
 app.get('/forgot-password', (req, res) => {
@@ -85,10 +113,15 @@ app.get('/manage-accounts', (req, res) => {
   res.render('manage-accounts'); // Render the Nunjucks template for manage-accounts
 });
 
+// Add a route for /update-banner
+app.get('/update-banner', (req, res) => {
+  res.render('update-banner'); // Render the Nunjucks template for update-banner
+});
+
 glob
   .sync(__dirname + '/routes/**/*.+(ts|js)')
   .map(filename => require(filename))
-  .forEach(route => route.default(app));
+  .forEach(routeModule => routeModule.default(app));
 
 setupDev(app, developmentMode);
 // returning "not found" page for requests with paths not resolved by the router
@@ -103,7 +136,7 @@ app.use((err: HTTPError, req: express.Request, res: express.Response) => {
 
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = env === 'development' ? err : {};
+  res.locals.error = developmentMode ? err : {};
   res.status(err.status || 500);
   res.render('error');
 });

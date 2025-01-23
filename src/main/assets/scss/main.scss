@@ -8,8 +8,15 @@
   display: block;
 }
 
-.govuk-show-button {
+.govuk-button--secondary {
   margin-bottom: 0;
+}
+
+@media (max-width: 640px) {
+
+  .govuk-button--secondary {
+    margin-top: 20px;
+  }
 }
 
 .govuk-heading-l {

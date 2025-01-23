@@ -30,7 +30,11 @@ module.exports = {
   ],
   entry: {
     main: path.resolve(sourcePath, 'index.ts'),
-    password: path.resolve(sourcePath, 'password.ts'),
+    showPassword: path.resolve(sourcePath, 'show-password.ts'),
+    passwordValidationRegister: path.resolve(sourcePath, 'password-validation-register.ts'),
+    passwordValidationAccount: path.resolve(sourcePath, 'password-validation-account.ts'),
+    dateOfBirthValidation: path.resolve(sourcePath, 'date-of-birth-validation.ts'),
+    emailValidation: path.resolve(sourcePath, 'email-validation.ts'),
     listPage: path.resolve(sourcePath, 'list-page.ts'),
     requestPage: path.resolve(sourcePath, 'requests-page.ts'),
     managePage: path.resolve(sourcePath, 'manage-page.ts'),

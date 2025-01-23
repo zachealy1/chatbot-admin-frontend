@@ -12,10 +12,22 @@
   margin-bottom: 0;
 }
 
+.govuk-input-password {
+  margin-bottom: 30px;
+}
+
 @media (max-width: 640px) {
 
   .govuk-button--secondary {
     margin-top: 20px;
+  }
+
+  .govuk-button-password--secondary {
+    margin-bottom: 20px;
+  }
+
+  .govuk-input-password {
+    margin-bottom: 0;
   }
 }
 
@@ -267,8 +279,4 @@
 
 .govuk-pagination {
   margin-bottom: 10px;
-}
-
-.govuk-input-password {
-  margin-bottom: 30px;
 }

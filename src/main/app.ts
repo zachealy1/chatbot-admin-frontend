@@ -55,6 +55,13 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+function ensureAuthenticated(req: express.Request, res: express.Response, next: express.NextFunction): void {
+  if (req.isAuthenticated()) {
+    return next(); // Proceed to the route
+  }
+  res.redirect('/login'); // Redirect to login if not authenticated
+}
+
 app.get('/', (req, res) => {
   res.redirect('/login');
 });
@@ -78,7 +85,7 @@ app.post('/login/password', (req, res, next) => {
       if (loginErr) {
         return next(loginErr);
       }
-      return res.redirect('/chat');
+      return res.redirect('/admin');
     });
   })(req, res, next);
 });
@@ -104,32 +111,32 @@ app.get('/register', (req, res) => {
 });
 
 // Add a route for /admin
-app.get('/admin', (req, res) => {
+app.get('/admin', ensureAuthenticated, (req, res) => {
   res.render('admin'); // Render the Nunjucks template for admin
 });
 
 // Add a route for /account-requests
-app.get('/account-requests', (req, res) => {
+app.get('/account-requests', ensureAuthenticated, (req, res) => {
   res.render('account-requests'); // Render the Nunjucks template for account-requests
 });
 
 // Add a route for /account
-app.get('/account', (req, res) => {
+app.get('/account', ensureAuthenticated, (req, res) => {
   res.render('account'); // Render the Nunjucks template for account
 });
 
 // Add a route for /account/update
-app.get('/account/update', (req, res) => {
+app.get('/account/update', ensureAuthenticated, (req, res) => {
   res.render('update'); // Render the Nunjucks template for update
 });
 
 // Add a route for /manage-accounts
-app.get('/manage-accounts', (req, res) => {
+app.get('/manage-accounts', ensureAuthenticated, (req, res) => {
   res.render('manage-accounts'); // Render the Nunjucks template for manage-accounts
 });
 
 // Add a route for /update-banner
-app.get('/update-banner', (req, res) => {
+app.get('/update-banner', ensureAuthenticated, (req, res) => {
   res.render('update-banner'); // Render the Nunjucks template for update-banner
 });
 

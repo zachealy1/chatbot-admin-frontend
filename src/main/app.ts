@@ -299,6 +299,11 @@ app.post('/accounts/:accountId/delete', (req, res) => {
   res.redirect('/manage-accounts?deleted=true');
 });
 
+app.post('/update-banner', (req, res) => {
+  console.log('Banner updated successfully');
+  res.redirect('/update-banner?updated=true');
+});
+
 app.get('/logout', (req, res) => {
   req.logout(err => {
     if (err) {

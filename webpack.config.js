@@ -39,6 +39,7 @@ module.exports = {
     requestPage: path.resolve(sourcePath, 'requests-page.ts'),
     managePage: path.resolve(sourcePath, 'manage-page.ts'),
     otpValidation: path.resolve(sourcePath, 'otp-validation.ts'),
+    updateBanner: path.resolve(sourcePath, 'update-banner.ts'),
   },
   mode: devMode ? 'development' : 'production',
   devtool: devMode ? 'inline-source-map' : false,

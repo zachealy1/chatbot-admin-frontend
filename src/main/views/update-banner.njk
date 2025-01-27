@@ -51,6 +51,23 @@
 {% block content %}
   <h1 class="govuk-heading-xl">Update banner</h1>
 
+  <!-- Success Alert -->
+  {% if updated %}
+    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+      <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+          Success
+        </h2>
+      </div>
+      <div class="govuk-notification-banner__content">
+        <h3 class="govuk-notification-banner__heading">
+          The banner was updated successfully
+        </h3>
+        <p class="govuk-body">Contact <a class="govuk-notification-banner__link" href="#">example@department.gov.uk</a> if you think there’s a problem.</p>
+      </div>
+    </div>
+  {% endif %}
+
   <!-- Banner Preview -->
   <div id="banner-preview">
     {{ govukPanel({
@@ -90,11 +107,22 @@
     }) }}
     {{ govukButton({
       text: "Preview",
-      classes: "govuk-button--secondary"
+      classes: "govuk-button--secondary",
+      attributes: {
+        id: "previewButton",
+        type: "button"
+      }
+    }) }}
+    {{ govukButton({
+      text: "Discard",
+      classes: "govuk-button--warning",
+      attributes: {
+        id: "discardButton",
+        type: "button"
+      }
     }) }}
   </form>
 
-  <!-- Include your script -->
-  <script src="updateBanner-dev.js"></script>
+  <script src="updateBanner-dev.js" defer></script>
 
 {% endblock %}

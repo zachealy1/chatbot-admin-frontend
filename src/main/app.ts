@@ -291,6 +291,14 @@ app.post('/requests/:requestId/reject', (req, res) => {
   res.redirect('/account-requests?rejected=true');
 });
 
+app.post('/accounts/:accountId/delete', (req, res) => {
+  const { accountId } = req.params;
+
+  console.log(`Account deleted: ${accountId}`);
+
+  res.redirect('/manage-accounts?deleted=true');
+});
+
 app.get('/logout', (req, res) => {
   req.logout(err => {
     if (err) {
@@ -356,7 +364,11 @@ app.get('/account/update', ensureAuthenticated, (req, res) => {
 
 // Add a route for /manage-accounts
 app.get('/manage-accounts', ensureAuthenticated, (req, res) => {
-  res.render('manage-accounts'); // Render the Nunjucks template for manage-accounts
+  const { deleted } = req.query;
+
+  res.render('manage-accounts', {
+    deleted: deleted === 'true',
+  });
 });
 
 // Add a route for /update-banner

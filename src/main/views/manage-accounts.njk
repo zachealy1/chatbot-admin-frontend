@@ -51,6 +51,23 @@
 {% block content %}
   <h1 class="govuk-heading-xl">Account requests</h1>
 
+  <!-- Deletion Summary -->
+  {% if deleted %}
+    <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+      <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+          Success
+        </h2>
+      </div>
+      <div class="govuk-notification-banner__content">
+        <h3 class="govuk-notification-banner__heading">
+          The account has been deleted successfully
+        </h3>
+        <p class="govuk-body">Contact <a class="govuk-notification-banner__link" href="#">example@department.gov.uk</a> if you think there’s a problem.</p>
+      </div>
+    </div>
+  {% endif %}
+
   <table class="govuk-table">
     <thead class="govuk-table__head">
     <tr class="govuk-table__row">

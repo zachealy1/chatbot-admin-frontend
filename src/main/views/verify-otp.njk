@@ -22,26 +22,54 @@
 {% block content %}
   <h1 class="govuk-heading-xl">Enter one time password</h1>
 
-  <p class="govuk-body">
-    Enter the one time password we emailed to you below.
-  </p>
+  <!-- Success Alert -->
+  {% if sent %}
+    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+      <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+          Success
+        </h2>
+      </div>
+      <div class="govuk-notification-banner__content">
+        <h3 class="govuk-notification-banner__heading">
+          A new email has been sent successfully
+        </h3>
+        <p class="govuk-body">Contact <a class="govuk-notification-banner__link" href="#">example@department.gov.uk</a> if you think there’s a problem.</p>
+      </div>
+    </div>
+  {% endif %}
 
-  {{ govukInput({
-    label: {
-      text: "One time password"
-    },
-    classes: "govuk-!-width-one-half",
-    id: "one-time-password",
-    name: "oneTimePassword"
-  }) }}
+  <!-- Start of Form -->
+  <form action="/forgot-password/verify-otp" method="post" novalidate>
+    <div class="govuk-form-group {% if error %}govuk-form-group--error{% endif %}" id="otp-group">
+      <label class="govuk-label" for="one-time-password">One time password</label>
+      <div id="one-time-password-hint" class="govuk-hint">
+        Enter the one-time password we emailed to you.
+      </div>
+      {% if error %}
+        <p id="one-time-password-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ error }}
+        </p>
+      {% endif %}
+      <input
+        class="govuk-input govuk-!-width-one-half {% if error %}govuk-input--error{% endif %}"
+        id="one-time-password"
+        name="oneTimePassword"
+        type="text"
+        aria-describedby="one-time-password-hint {% if error %}one-time-password-error{% endif %}"
+      >
+    </div>
+    <button type="submit" class="govuk-button" id="continue-button">Continue</button>
+    <button
+      type="submit"
+      class="govuk-button govuk-button--secondary"
+      formaction="/forgot-password/resend-otp"
+      id="resend-button"
+    >
+      Resend Email
+    </button>
+  </form>
 
-  {{ govukButton({
-    text: "Continue",
-    href: "/reset-password"
-  }) }}
-  {{ govukButton({
-    text: "Resend Email",
-    classes: "govuk-button--secondary"
-  }) }}
+  <script src="/otpValidation-dev.js" defer></script>
 {% endblock %}
 

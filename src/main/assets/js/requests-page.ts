@@ -59,9 +59,9 @@ function renderTableRows(page: number): void {
             Accept
           </button>
         </form>
-        <form method="post" action="/requests/${request.requestId}/deny" class="govuk-!-display-inline-block">
+        <form method="post" action="/requests/${request.requestId}/reject" class="govuk-!-display-inline-block">
           <button type="submit" class="govuk-button govuk-button--warning">
-            Deny
+            Reject
           </button>
         </form>
       </td>

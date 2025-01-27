@@ -275,6 +275,22 @@ app.post('/forgot-password/resend-otp', (req, res) => {
   res.redirect('/forgot-password/verify-otp?sent=true');
 });
 
+app.post('/requests/:requestId/accept', (req, res) => {
+  const { requestId } = req.params;
+
+  console.log(`Request accepted: ${requestId}`);
+
+  res.redirect('/account-requests?accepted=true');
+});
+
+app.post('/requests/:requestId/reject', (req, res) => {
+  const { requestId } = req.params;
+
+  console.log(`Request rejected: ${requestId}`);
+
+  res.redirect('/account-requests?rejected=true');
+});
+
 app.get('/logout', (req, res) => {
   req.logout(err => {
     if (err) {
@@ -315,7 +331,12 @@ app.get('/admin', ensureAuthenticated, (req, res) => {
 
 // Add a route for /account-requests
 app.get('/account-requests', ensureAuthenticated, (req, res) => {
-  res.render('account-requests'); // Render the Nunjucks template for account-requests
+  const { accepted, rejected } = req.query;
+
+  res.render('account-requests', {
+    accepted: accepted === 'true',
+    rejected: rejected === 'true',
+  });
 });
 
 app.get('/account', (req, res) => {

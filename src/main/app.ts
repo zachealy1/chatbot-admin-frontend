@@ -212,7 +212,7 @@ app.get('/login', function(req, res) {
   });
 });
 
-app.post('/login/password', (req, res, next) => {
+app.post('/login', (req, res, next) => {
   passport.authenticate('local', (err: never, user: Express.User) => {
     if (err) {
       return next(err);

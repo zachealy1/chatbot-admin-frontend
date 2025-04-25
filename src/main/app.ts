@@ -655,14 +655,57 @@ app.get('/account-requests', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.get('/account', ensureAuthenticated, (req, res) => {
-  const { updated } = req.query;
+app.get('/account',  ensureAuthenticated, async (req, res) => {
+  try {
+    const storedCookie =
+      (req.user as any)?.springSessionCookie ||
+      (req.session as any)?.springSessionCookie ||
+      '';
+    if (!storedCookie) {
+      throw new Error('No Spring Boot session cookie found.');
+    }
 
-  // Render the 'account' template and pass the 'updated' flag
-  res.render('account', {
-    updated: updated === 'true',
-    // Include other necessary data here
-  });
+    // Create a cookie jar and set the stored Spring Boot cookie.
+    const jar = new CookieJar();
+    jar.setCookieSync(storedCookie, 'http://localhost:4550');
+
+    // Create an axios instance with cookie jar support.
+    const client = wrapper(axios.create({
+      jar,
+      withCredentials: true,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+    }));
+
+    // Make parallel requests to your Spring Boot backend endpoints.
+    const [usernameRes, emailRes, dayRes, monthRes, yearRes] = await Promise.all([
+      client.get('http://localhost:4550/account/username'),
+      client.get('http://localhost:4550/account/email'),
+      client.get('http://localhost:4550/account/date-of-birth/day'),
+      client.get('http://localhost:4550/account/date-of-birth/month'),
+      client.get('http://localhost:4550/account/date-of-birth/year')
+    ]);
+
+    const context = {
+      username: usernameRes.data,
+      email: emailRes.data,
+      day: dayRes.data,
+      month: monthRes.data,
+      year: yearRes.data,
+      updated: req.query.updated === 'true',
+      errors: null
+    };
+
+    // Disable caching so that the page reloads fresh each time.
+    res.set('Cache-Control', 'no-store');
+    res.render('account', context);
+  } catch (error) {
+    console.error('Error retrieving account details:', error);
+    res.render('account', {
+      errors: ['Error retrieving account details.'],
+      updated: req.query.updated === 'true'
+    });
+  }
 });
 
 // Add a route for /account/update

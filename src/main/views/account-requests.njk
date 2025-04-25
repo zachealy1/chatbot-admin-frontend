@@ -88,6 +88,21 @@
     </div>
   {% endif %}
 
+  {% if not hasRequests %}
+    <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+      <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+          Warning
+        </h2>
+      </div>
+      <div class="govuk-notification-banner__content">
+        <h3 class="govuk-notification-banner__heading">
+          There are no pending account requests at this time
+        </h3>
+        <p class="govuk-body">Contact <a class="govuk-notification-banner__link" href="#">example@department.gov.uk</a> if you think there’s a problem.</p>
+      </div>
+    </div>
+  {% else %}
   <table class="govuk-table govuk-table--small-text-until-tablet">
     <caption class="govuk-table__caption govuk-table__caption--m">Account Requests</caption>
     <thead class="govuk-table__head">
@@ -145,6 +160,7 @@
       </a>
     </div>
   </nav>
+  {% endif %}
 
   <script src="requestPage-dev.js"></script>
   <script src="logout-dev.js"></script>

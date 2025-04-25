@@ -626,20 +626,103 @@ app.get('/requests/pending', ensureAuthenticated, async (req, res) => {
   }
 });
 
-app.post('/requests/:requestId/accept', (req, res) => {
+// Accept account request
+app.post('/requests/:requestId/accept', ensureAuthenticated, async (req, res) => {
   const { requestId } = req.params;
 
-  console.log(`Request accepted: ${requestId}`);
+  // 1) pull your Spring session cookie
+  const storedSessionCookie =
+    (req.user as any)?.springSessionCookie ||
+    (req.session as any)?.springSessionCookie ||
+    '';
 
-  res.redirect('/account-requests?accepted=true');
+  if (!storedSessionCookie) {
+    console.error('No Spring session cookie found');
+    return res.status(401).send('Not authenticated');
+  }
+
+  try {
+    // 2) seed a CookieJar with that cookie
+    const jar = new CookieJar();
+    jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
+
+    // 3) wrap axios so it sends cookies and supports XSRF
+    const client = wrapper(axios.create({
+      jar,
+      withCredentials: true,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+    }));
+
+    // 4) fetch CSRF token
+    const csrfRes = await client.get('http://localhost:4550/csrf');
+    const csrfToken = csrfRes.data.csrfToken;
+
+    // 5) call backend approve endpoint
+    await client.post(
+      `http://localhost:4550/account/approve/${requestId}`,
+      {}, // no body
+      { headers: { 'X-XSRF-TOKEN': csrfToken } }
+    );
+
+    console.log(`Request accepted: ${requestId}`);
+    return res.redirect('/account-requests?accepted=true');
+
+  } catch (err: any) {
+    console.error('Error approving request:', err);
+    return res.status(500).render('account-requests', {
+      accepted: false,
+      rejected: false,
+      error: 'Failed to accept request'
+    });
+  }
 });
 
-app.post('/requests/:requestId/reject', (req, res) => {
+// Reject account request
+app.post('/requests/:requestId/reject', ensureAuthenticated, async (req, res) => {
   const { requestId } = req.params;
 
-  console.log(`Request rejected: ${requestId}`);
+  const storedSessionCookie =
+    (req.user as any)?.springSessionCookie ||
+    (req.session as any)?.springSessionCookie ||
+    '';
 
-  res.redirect('/account-requests?rejected=true');
+  if (!storedSessionCookie) {
+    console.error('No Spring session cookie found');
+    return res.status(401).send('Not authenticated');
+  }
+
+  try {
+    const jar = new CookieJar();
+    jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
+
+    const client = wrapper(axios.create({
+      jar,
+      withCredentials: true,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+    }));
+
+    const csrfRes = await client.get('http://localhost:4550/csrf');
+    const csrfToken = csrfRes.data.csrfToken;
+
+    await client.post(
+      `http://localhost:4550/account/reject/${requestId}`,
+      {},
+      { headers: { 'X-XSRF-TOKEN': csrfToken } }
+    );
+
+    console.log(`Request rejected: ${requestId}`);
+    return res.redirect('/account-requests?rejected=true');
+
+  } catch (err: any) {
+    console.error('Error rejecting request:', err);
+    return res.status(500).render('account-requests', {
+      accepted: false,
+      rejected: false,
+      error: 'Failed to reject request'
+    });
+  }
 });
 
 app.post('/accounts/:accountId/delete', ensureAuthenticated, async (req, res) => {
@@ -805,12 +888,15 @@ app.get('/account-requests', ensureAuthenticated, async (req, res) => {
     const pages       = Array.from({ length: totalPages }, (_, i) => i + 1);
     const currentPage = Math.min(Math.max(1, parseInt(req.query.page as string, 10) || 1), totalPages);
 
+    const hasRequests = allRequests.length > 0;
+
     // render template
     res.render('account-requests', {
       accepted:    req.query.accepted === 'true',
       rejected:    req.query.rejected === 'true',
       pages,
-      currentPage
+      currentPage,
+      hasRequests
     });
 
   } catch (err) {

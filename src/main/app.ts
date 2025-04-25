@@ -592,6 +592,40 @@ app.post('/forgot-password/resend-otp', async (req, res) => {
   }
 });
 
+app.get('/requests/pending', ensureAuthenticated, async (req, res) => {
+  // 1) pull your stored Spring session cookie
+  const storedSessionCookie =
+    (req.user as any)?.springSessionCookie ||
+    (req.session as any)?.springSessionCookie ||
+    '';
+
+  if (!storedSessionCookie) {
+    console.error('No Spring session cookie found on request');
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  try {
+    // 2) seed a CookieJar with that cookie
+    const jar = new CookieJar();
+    jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
+
+    // 3) wrap axios so it uses the jar & sends cookies
+    const client = wrapper(axios.create({
+      jar,
+      withCredentials: true,
+    }));
+
+    // 4) fetch pending requests from the backend
+    const backendRes = await client.get('http://localhost:4550/account/pending');
+    // 5) forward the JSON arrays
+    return res.json(backendRes.data);
+
+  } catch (err: any) {
+    console.error('Error fetching pending requests:', err);
+    return res.status(500).json({ error: 'Failed to load pending requests' });
+  }
+});
+
 app.post('/requests/:requestId/accept', (req, res) => {
   const { requestId } = req.params;
 
@@ -746,13 +780,49 @@ app.get('/admin', ensureAuthenticated, (req, res) => {
 });
 
 // Add a route for /account-requests
-app.get('/account-requests', ensureAuthenticated, (req, res) => {
-  const { accepted, rejected } = req.query;
+app.get('/account-requests', ensureAuthenticated, async (req, res) => {
+  // grab your login cookie
+  const storedSessionCookie =
+    (req.user as any)?.springSessionCookie ||
+    (req.session as any)?.springSessionCookie ||
+    '';
 
-  res.render('account-requests', {
-    accepted: accepted === 'true',
-    rejected: rejected === 'true',
-  });
+  if (!storedSessionCookie) {
+    return res.redirect('/login');
+  }
+
+  try {
+    // fetch all pending requests
+    const jar = new CookieJar();
+    jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
+    const client = wrapper(axios.create({ jar, withCredentials: true }));
+    const backendRes = await client.get('http://localhost:4550/account/pending');
+    const allRequests: any[] = backendRes.data;
+
+    // pagination params
+    const PAGE_SIZE   = 6;
+    const totalPages  = Math.ceil(allRequests.length / PAGE_SIZE) || 1;
+    const pages       = Array.from({ length: totalPages }, (_, i) => i + 1);
+    const currentPage = Math.min(Math.max(1, parseInt(req.query.page as string, 10) || 1), totalPages);
+
+    // render template
+    res.render('account-requests', {
+      accepted:    req.query.accepted === 'true',
+      rejected:    req.query.rejected === 'true',
+      pages,
+      currentPage
+    });
+
+  } catch (err) {
+    console.error('Error loading account requests:', err);
+    res.render('account-requests', {
+      accepted:    req.query.accepted === 'true',
+      rejected:    req.query.rejected === 'true',
+      pages:       [1],
+      currentPage: 1,
+      error:       'Could not load requests'
+    });
+  }
 });
 
 app.get('/account',  ensureAuthenticated, async (req, res) => {

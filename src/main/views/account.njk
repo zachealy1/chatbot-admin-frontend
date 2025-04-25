@@ -85,23 +85,21 @@
 
   <form action="/account/update" method="POST" novalidate>
     <!-- Username Section -->
-    <div class="govuk-form-group">
+    <div class="govuk-form-group {% if error %}govuk-form-group--error{% endif %}">
       <h1 class="govuk-label-wrapper">
         <label class="govuk-label--l govuk-label" for="username">Username</label>
       </h1>
       <input
-        class="govuk-input govuk-!-width-one-half {% if errors.username %}govuk-input--error{% endif %}"
+        class="govuk-input govuk-!-width-one-half {% if error %}govuk-input--error{% endif %}"
         id="username"
         name="username"
         type="text"
         placeholder="Enter your username"
         value="{{ username | default('example_user') }}"
-        required
-        aria-describedby="{% if errors.username %}username-error{% endif %}"
       >
-      {% if errors.username %}
+      {% if error %}
         <span id="username-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span> {{ errors.username }}
+          <span class="govuk-visually-hidden">Error:</span> {{ error }}
         </span>
       {% endif %}
     </div>
@@ -238,5 +236,6 @@
   <script src="passwordValidationAccount-dev.js"></script>
   <script src="dateOfBirthValidation-dev.js"></script>
   <script src="emailValidation-dev.js"></script>
+  <script src="usernameValidationAccount-dev.js"></script>
   <script src="logout-dev.js"></script>
 {% endblock %}

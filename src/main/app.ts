@@ -971,7 +971,6 @@ app.get('/account/update', ensureAuthenticated, (req, res) => {
 
 // Add a route for /manage-accounts
 app.get('/manage-accounts', ensureAuthenticated, async (req, res) => {
-  // 1) pull your Spring session cookie
   const storedSessionCookie =
     (req.user as any)?.springSessionCookie ||
     (req.session as any)?.springSessionCookie ||
@@ -982,36 +981,42 @@ app.get('/manage-accounts', ensureAuthenticated, async (req, res) => {
   }
 
   try {
-    // 2) fetch all accounts from Spring Boot
     const jar = new CookieJar();
     jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
     const client = wrapper(axios.create({ jar, withCredentials: true }));
     const backendRes = await client.get('http://localhost:4550/account/all');
     const accounts: any[] = backendRes.data;
 
-    // 3) compute pagination
-    const pageSize = 6;
-    const totalPages = Math.ceil(accounts.length / pageSize);
-    const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-    const currentPage = parseInt(req.query.page as string, 10) || 1;
+    const pageSize    = 6;
+    const totalPages  = Math.max(1, Math.ceil(accounts.length / pageSize));
+    const pages       = Array.from({ length: totalPages }, (_, i) => i + 1);
+    const currentPage = Math.min(
+      Math.max(1, parseInt(req.query.page as string, 10) || 1),
+      totalPages
+    );
 
-    // 4) render, passing pages & currentPage
+    // New flag:
+    const hasAccounts = accounts.length > 0;
+
     res.render('manage-accounts', {
-      deleted:         req.query.deleted === 'true',
+      deleted:      req.query.deleted === 'true',
       pages,
       currentPage,
+      hasAccounts,   // ← pass it in
     });
 
   } catch (err) {
     console.error('Error fetching managed accounts:', err);
     res.render('manage-accounts', {
-      deleted:     req.query.deleted === 'true',
-      pages:       [1],
-      currentPage: 1,
-      error:       'Could not load accounts'
+      deleted:      req.query.deleted === 'true',
+      pages:        [1],
+      currentPage:  1,
+      hasAccounts:  false,            // ← fallback
+      error:        'Could not load accounts'
     });
   }
 });
+
 
 app.get('/account/all', ensureAuthenticated, async (req, res) => {
   // pull the session cookie you saved at login

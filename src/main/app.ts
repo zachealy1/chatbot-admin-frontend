@@ -173,50 +173,29 @@ app.post('/register', async (req, res) => {
   }
 });
 
-app.post('/account/update', (req, res) => {
-  const { username, email, password, confirmPassword, 'date-of-birth-day': day, 'date-of-birth-month': month, 'date-of-birth-year': year } = req.body;
+app.post('/account/update', async (req, res) => {
+  const {
+    username,
+    email,
+    password,
+    confirmPassword,
+    'date-of-birth-day': day,
+    'date-of-birth-month': month,
+    'date-of-birth-year': year,
+  } = req.body;
 
-  // Validation Errors
-  const errors: string[] = [];
-  const passwordCriteriaRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const dateOfBirth = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  const payload = { email, username, dateOfBirth, password, confirmPassword };
 
-  // Validate Username
-  if (!username || username.trim() === '') {
-    errors.push('Username is required.');
-  }
+  // Retrieve the stored Spring Boot session cookie from req.user or req.session.
+  const storedCookie =
+    (req.user as any)?.springSessionCookie ||
+    (req.session as any)?.springSessionCookie ||
+    '';
 
-  // Validate Email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email || !emailRegex.test(email)) {
-    errors.push('Enter a valid email address.');
-  }
-
-  // Validate Date of Birth
-  const isValidDate = (dateOfBirthDay: string, dateOfBirthMonth: string, dateOfBirthYear: string): boolean => {
-    const date = new Date(`${dateOfBirthYear}-${dateOfBirthMonth}-${dateOfBirthDay}`);
-    return !isNaN(date.getTime()) && date < new Date();
-  };
-
-  if (!day || !month || !year || !isValidDate(day, month, year)) {
-    errors.push('Enter a valid date of birth.');
-  }
-
-  // Validate Password if provided
-  if (password) {
-    if (!passwordCriteriaRegex.test(password)) {
-      errors.push('Password must meet the criteria.');
-    }
-
-    // Confirm Password Match
-    if (password !== confirmPassword) {
-      errors.push('Passwords do not match.');
-    }
-  }
-
-  // If there are validation errors, re-render the form with error messages
-  if (errors.length > 0) {
-    return res.render('account', {
-      errors,
+  if (!storedCookie) {
+    return res.status(401).render('account', {
+      errors: ['Session expired or invalid. Please log in again.'],
       username,
       email,
       day,
@@ -225,9 +204,43 @@ app.post('/account/update', (req, res) => {
     });
   }
 
-  // Simulate account update success
-  console.log('Account updated successfully:', { username, email, day, month, year });
-  res.redirect('/account?updated=true');
+  try {
+    // Create a cookie jar and add the stored session cookie.
+    const jar = new CookieJar();
+    jar.setCookieSync(storedCookie, 'http://localhost:4550');
+
+    // Create an axios client with cookie jar support.
+    const client = wrapper(axios.create({
+      jar,
+      withCredentials: true,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+    }));
+
+    // Request the CSRF token from the backend.
+    const csrfResponse = await client.get('http://localhost:4550/csrf');
+    const csrfToken = csrfResponse.data.csrfToken;
+    console.log('Retrieved CSRF token for update:', csrfToken);
+
+    // Send the account update POST request with the CSRF token.
+    await client.post('http://localhost:4550/account/update', payload, {
+      headers: {
+        'X-XSRF-TOKEN': csrfToken,
+      },
+    });
+
+    return res.redirect('/account?updated=true');
+  } catch (error) {
+    console.error('Error updating account in backend:', error);
+    return res.render('account', {
+      errors: ['An error occurred during account update. Please try again later.'],
+      username,
+      email,
+      day,
+      month,
+      year,
+    });
+  }
 });
 
 app.get('/', (req, res) => {

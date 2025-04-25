@@ -608,12 +608,55 @@ app.post('/requests/:requestId/reject', (req, res) => {
   res.redirect('/account-requests?rejected=true');
 });
 
-app.post('/accounts/:accountId/delete', (req, res) => {
+app.post('/accounts/:accountId/delete', ensureAuthenticated, async (req, res) => {
   const { accountId } = req.params;
 
-  console.log(`Account deleted: ${accountId}`);
+  // 1) pull your Spring session cookie
+  const storedSessionCookie =
+    (req.user as any)?.springSessionCookie ||
+    (req.session as any)?.springSessionCookie ||
+    '';
 
-  res.redirect('/manage-accounts?deleted=true');
+  if (!storedSessionCookie) {
+    console.error('No Spring session cookie found');
+    return res.status(401).send('Not authenticated');
+  }
+
+  try {
+    // 2) seed a new CookieJar with that cookie
+    const jar = new CookieJar();
+    jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
+
+    // 3) wrap axios so it uses the jar & sends cookies
+    const client = wrapper(axios.create({
+      jar,
+      withCredentials: true,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+    }));
+
+    // 4) fetch CSRF token (will set XSRF-TOKEN cookie in jar)
+    const csrfRes = await client.get('http://localhost:4550/csrf');
+    const csrfToken = csrfRes.data.csrfToken;
+
+    // 5) call DELETE /account/{userId}
+    await client.delete(
+      `http://localhost:4550/account/${accountId}`,
+      { headers: { 'X-XSRF-TOKEN': csrfToken } }
+    );
+
+    console.log(`Account deleted: ${accountId}`);
+    return res.redirect('/manage-accounts?deleted=true');
+
+  } catch (err: any) {
+    console.error('Error deleting account:', err);
+    // Optionally re-render with an error message instead of redirect
+    return res.status(500).render('manage-accounts', {
+      deleted: false,
+      error: 'Failed to delete account. Please try again.',
+      // you might also want to pass pages/currentPage here
+    });
+  }
 });
 
 app.post('/update-banner', async (req, res) => {
@@ -771,12 +814,83 @@ app.get('/account/update', ensureAuthenticated, (req, res) => {
 });
 
 // Add a route for /manage-accounts
-app.get('/manage-accounts', ensureAuthenticated, (req, res) => {
-  const { deleted } = req.query;
+app.get('/manage-accounts', ensureAuthenticated, async (req, res) => {
+  // 1) pull your Spring session cookie
+  const storedSessionCookie =
+    (req.user as any)?.springSessionCookie ||
+    (req.session as any)?.springSessionCookie ||
+    '';
 
-  res.render('manage-accounts', {
-    deleted: deleted === 'true',
-  });
+  if (!storedSessionCookie) {
+    return res.redirect('/login');
+  }
+
+  try {
+    // 2) fetch all accounts from Spring Boot
+    const jar = new CookieJar();
+    jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
+    const client = wrapper(axios.create({ jar, withCredentials: true }));
+    const backendRes = await client.get('http://localhost:4550/account/all');
+    const accounts: any[] = backendRes.data;
+
+    // 3) compute pagination
+    const pageSize = 6;
+    const totalPages = Math.ceil(accounts.length / pageSize);
+    const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    const currentPage = parseInt(req.query.page as string, 10) || 1;
+
+    // 4) render, passing pages & currentPage
+    res.render('manage-accounts', {
+      deleted:         req.query.deleted === 'true',
+      pages,
+      currentPage,
+    });
+
+  } catch (err) {
+    console.error('Error fetching managed accounts:', err);
+    res.render('manage-accounts', {
+      deleted:     req.query.deleted === 'true',
+      pages:       [1],
+      currentPage: 1,
+      error:       'Could not load accounts'
+    });
+  }
+});
+
+app.get('/account/all', ensureAuthenticated, async (req, res) => {
+  // pull the session cookie you saved at login
+  const storedSessionCookie =
+    (req.user as any)?.springSessionCookie ||
+    (req.session as any)?.springSessionCookie ||
+    '';
+
+  if (!storedSessionCookie) {
+    console.error('No Spring session cookie found on request');
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  try {
+    // seed a CookieJar with the login cookie
+    const jar = new CookieJar();
+    jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
+
+    // wrap axios so it uses that jar
+    const client = wrapper(
+      axios.create({
+        jar,
+        withCredentials: true,
+      })
+    );
+
+    // fetch the list from Spring Boot
+    const backendRes = await client.get('http://localhost:4550/account/all');
+    // forward it directly
+    return res.json(backendRes.data);
+
+  } catch (err: any) {
+    console.error('Error fetching account list:', err);
+    return res.status(500).json({ error: 'Failed to load accounts' });
+  }
 });
 
 app.get('/update-banner', ensureAuthenticated, async (req, res) => {

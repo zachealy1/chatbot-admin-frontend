@@ -1,146 +1,116 @@
 interface ManagedAccount {
   accountId: number;
-  userName: string;
-  email: string;
-  role: string;
-  createdDate: string;
+  userName:   string;
+  email:      string;
+  role:       string;
+  createdDate:string;
 }
 
-// Example data for each page
-const managedAccounts: { [key: number]: ManagedAccount[] } = {
-  1: [
-    { accountId: 1001, userName: 'johnAdmin', email: 'john.admin@example.com', role: 'Admin', createdDate: '2024-12-01' },
-    { accountId: 1002, userName: 'janeUser', email: 'jane.user@example.com', role: 'User', createdDate: '2024-11-15' },
-    { accountId: 1003, userName: 'aliceUser', email: 'alice.user@example.com', role: 'User', createdDate: '2024-11-01' },
-  ],
-  2: [
-    { accountId: 1004, userName: 'bobStaff', email: 'bob.staff@example.com', role: 'Staff', createdDate: '2024-10-20' },
-    { accountId: 1005, userName: 'carolManager', email: 'carol.manager@example.com', role: 'Manager', createdDate: '2024-10-10' },
-    { accountId: 1006, userName: 'daveUser', email: 'dave.user@example.com', role: 'User', createdDate: '2024-09-30' },
-  ],
-  3: [
-    { accountId: 1007, userName: 'eveUser', email: 'eve.user@example.com', role: 'User', createdDate: '2024-09-15' },
-    { accountId: 1008, userName: 'frankStaff', email: 'frank.staff@example.com', role: 'Staff', createdDate: '2024-09-01' },
-    { accountId: 1009, userName: 'graceManager', email: 'grace.manager@example.com', role: 'Manager', createdDate: '2024-08-25' },
-  ],
-};
+document.addEventListener('DOMContentLoaded', () => {
+  const tbody           = document.querySelector('.govuk-table__body--manage-accounts') as HTMLElement;
+  const pageLinks       = Array.from(document.querySelectorAll('.govuk-pagination__list .govuk-pagination__link'));
+  const prevButton      = document.querySelector('.govuk-pagination__prev .govuk-pagination__link') as HTMLElement | null;
+  const nextButton      = document.querySelector('.govuk-pagination__next .govuk-pagination__link') as HTMLElement | null;
 
-/**
- * Renders the Managed Accounts table for the specified page
- */
-function renderManagedAccountsTable(page: number): void {
-  const tbody = document.querySelector('.govuk-table__body--manage-accounts') as HTMLElement;
-  if (!tbody) {
-    console.error('Could not find tbody element for manage-accounts table.');
+  if (!tbody || !pageLinks.length) {
+    console.error('Cannot find table body or pagination links');
     return;
   }
 
-  // Clear existing rows
-  tbody.innerHTML = '';
-
-  if (!managedAccounts[page]) {
-    console.error(`No data found for page ${page}`);
-    return;
-  }
-
-  // Populate rows
-  managedAccounts[page].forEach((account: ManagedAccount) => {
-    const tr = document.createElement('tr');
-    tr.className = 'govuk-table__row';
-    tr.innerHTML = `
-      <td class='govuk-table__cell'>${account.accountId}</td>
-      <td class='govuk-table__cell'>${account.userName}</td>
-      <td class='govuk-table__cell'>${account.email}</td>
-      <td class='govuk-table__cell'>${account.role}</td>
-      <td class='govuk-table__cell'>${account.createdDate}</td>
-      <td class='govuk-table__cell'>
-        <form method="post" action="/accounts/${account.accountId}/delete" class="govuk-!-display-inline-block">
-          <button type="submit" class="govuk-button govuk-button--warning">
-            Delete
-          </button>
-        </form>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-/**
- * Updates the current pagination link highlight
- */
-function updateManageAccountsCurrentPage(currentPage: number): void {
-  // Remove 'govuk-pagination__item--current' from all items
-  const paginationItems = document.querySelectorAll('.govuk-pagination__item');
-  paginationItems.forEach((item) => {
-    item.classList.remove('govuk-pagination__item--current');
-  });
-
-  // Find the link whose text matches the currentPage number
-  const activeLink = Array.from(document.querySelectorAll('.govuk-pagination__link')).find(
-    (link) => link.textContent?.trim() === currentPage.toString()
-  );
-
-  // Add 'govuk-pagination__item--current' to the link's parent <li>
-  if (activeLink?.parentElement) {
-    activeLink.parentElement.classList.add('govuk-pagination__item--current');
-  }
-}
-
-/**
- * Sets up pagination for the Manage Accounts screen
- */
-function setupManageAccountsPagination(): void {
+  let managedAccounts: ManagedAccount[] = [];
   let currentPage = 1;
+  const totalPages = pageLinks.length;
+  let pageSize = 0;
 
-  // Select the page number links (1, 2, 3) within the <ul>
-  const pageLinks = document.querySelectorAll('.govuk-pagination__list .govuk-pagination__link');
+  function renderManagedAccountsTable(page: number): void {
+    tbody.innerHTML = '';
+    const start = (page - 1) * pageSize;
+    const slice = managedAccounts.slice(start, start + pageSize);
 
-  // Attach event listeners to each page link
-  pageLinks.forEach((link) => {
-    link.addEventListener('click', (event: Event) => {
-      event.preventDefault();
-      const target = event.target as HTMLElement;
-      if (target.textContent) {
-        const page = parseInt(target.textContent.trim(), 10);
-        if (!isNaN(page)) {
+    slice.forEach(acc => {
+      const tr = document.createElement('tr');
+      tr.className = 'govuk-table__row';
+      tr.innerHTML = `
+        <td class='govuk-table__cell'>${acc.accountId}</td>
+        <td class='govuk-table__cell'>${acc.userName}</td>
+        <td class='govuk-table__cell'>${acc.email}</td>
+        <td class='govuk-table__cell'>${acc.role}</td>
+        <td class='govuk-table__cell'>${acc.createdDate}</td>
+        <td class='govuk-table__cell'>
+          <form method="post" action="/accounts/${acc.accountId}/delete" class="govuk-!-display-inline-block">
+            <button type="submit" class="govuk-button govuk-button--warning">
+              Delete
+            </button>
+          </form>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function updateManageAccountsCurrentPage(page: number): void {
+    pageLinks.forEach(link => link.parentElement?.classList.remove('govuk-pagination__item--current'));
+    const activeLink = pageLinks.find(link => link.textContent?.trim() === page.toString());
+    activeLink?.parentElement?.classList.add('govuk-pagination__item--current');
+  }
+
+  function setupManageAccountsPagination(): void {
+    // page-number clicks
+    pageLinks.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const page = parseInt((e.target as HTMLElement).textContent || '', 10);
+        if (page && page !== currentPage) {
           currentPage = page;
-          renderManagedAccountsTable(page);
-          updateManageAccountsCurrentPage(page);
+          renderManagedAccountsTable(currentPage);
+          updateManageAccountsCurrentPage(currentPage);
         }
+      });
+    });
+    // prev/next
+    prevButton?.addEventListener('click', e => {
+      e.preventDefault();
+      if (currentPage > 1) {
+        currentPage--;
+        renderManagedAccountsTable(currentPage);
+        updateManageAccountsCurrentPage(currentPage);
       }
     });
-  });
+    nextButton?.addEventListener('click', e => {
+      e.preventDefault();
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderManagedAccountsTable(currentPage);
+        updateManageAccountsCurrentPage(currentPage);
+      }
+    });
 
-  // Select the Previous & Next buttons
-  const prevButton = document.querySelector('.govuk-pagination__prev .govuk-pagination__link') as HTMLElement | null;
-  const nextButton = document.querySelector('.govuk-pagination__next .govuk-pagination__link') as HTMLElement | null;
+    // initial paint
+    renderManagedAccountsTable(currentPage);
+    updateManageAccountsCurrentPage(currentPage);
+  }
 
-  // Previous button event
-  prevButton?.addEventListener('click', (event: Event) => {
-    event.preventDefault();
-    if (currentPage > 1) {
-      currentPage -= 1;
-      renderManagedAccountsTable(currentPage);
-      updateManageAccountsCurrentPage(currentPage);
-    }
-  });
-
-  // Next button event
-  nextButton?.addEventListener('click', (event: Event) => {
-    event.preventDefault();
-    if (currentPage < Object.keys(managedAccounts).length) {
-      currentPage += 1;
-      renderManagedAccountsTable(currentPage);
-      updateManageAccountsCurrentPage(currentPage);
-    }
-  });
-
-  // Load the first page by default
-  renderManagedAccountsTable(currentPage);
-  updateManageAccountsCurrentPage(currentPage);
-}
-
-// Initialize Manage Accounts screen once the DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  setupManageAccountsPagination();
+  // Fetch the live data and kick everything off
+  fetch('/account/all', { credentials: 'same-origin' })
+    .then(res => {
+      if (!res.ok) {throw new Error(`Failed to fetch accounts: ${res.status}`);}
+      return res.json();
+    })
+    .then((data: any[]) => {
+      // map the JSON fields into our ManagedAccount interface
+      managedAccounts = data.map(item => ({
+        accountId:   item.accountId,
+        userName:    item.username,
+        email:       item.email,
+        role:        item.role,
+        createdDate: item.createdDate
+      }));
+      // evenly distribute onto your existing page count
+      pageSize = Math.ceil(managedAccounts.length / totalPages) || managedAccounts.length;
+      setupManageAccountsPagination();
+    })
+    .catch(err => {
+      console.error('Error loading managed accounts:', err);
+      // you could show an error row in the table here if you like
+    });
 });

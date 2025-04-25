@@ -616,9 +616,53 @@ app.post('/accounts/:accountId/delete', (req, res) => {
   res.redirect('/manage-accounts?deleted=true');
 });
 
-app.post('/update-banner', (req, res) => {
-  console.log('Banner updated successfully');
-  res.redirect('/update-banner?updated=true');
+app.post('/update-banner', async (req, res) => {
+  const { bannerTitle, bannerBody } = req.body;
+
+  // 1) Pull your stored Spring Boot session cookie out of the Express session
+  const storedSessionCookie =
+    (req.user as any)?.springSessionCookie ||
+    (req.session as any)?.springSessionCookie ||
+    '';
+
+  if (!storedSessionCookie) {
+    console.error('No Spring session cookie in Express session');
+    return res.redirect('/login');
+  }
+
+  try {
+    // 2) Create jar and *set* that cookie for your backend’s host
+    const jar = new CookieJar();
+    jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
+
+    const client = wrapper(axios.create({
+      jar,
+      withCredentials: true,
+      xsrfCookieName: 'XSRF-TOKEN',
+      xsrfHeaderName: 'X-XSRF-TOKEN',
+    }));
+
+    // 3) Now GET /csrf (will use your session cookie) and PUT
+    const csrfResponse = await client.get('http://localhost:4550/csrf');
+    const csrfToken = csrfResponse.data.csrfToken;
+
+    await client.put(
+      'http://localhost:4550/support-banner/1',
+      { title: bannerTitle, content: bannerBody },
+      { headers: { 'X-XSRF-TOKEN': csrfToken } }
+    );
+
+    console.log('Banner updated successfully');
+    return res.redirect('/update-banner?updated=true');
+
+  } catch (err: any) {
+    console.error('Error updating banner:', err);
+    return res.render('update-banner', {
+      error: 'Could not save banner—please try again.',
+      bannerTitle,
+      bannerBody,
+    });
+  }
 });
 
 app.get('/logout', (req, res) => {

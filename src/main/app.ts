@@ -268,24 +268,67 @@ app.get('/login', function(req, res) {
   });
 });
 
-app.post('/login', (req, res, next) => {
-  passport.authenticate('local', (err: never, user: Express.User) => {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return res.render('login', {
-        error: 'Invalid username or password.',
-        username: req.body.username,
-      });
-    }
-    req.logIn(user, loginErr => {
-      if (loginErr) {
-        return next(loginErr);
+app.post('/login', async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+
+    // Retrieve the CSRF token from the Spring Boot backend.
+    const csrfResponse = await axios.get('http://localhost:4550/csrf', { withCredentials: true });
+    const csrfToken = csrfResponse.data.csrfToken;
+    console.log('Retrieved CSRF token:', csrfToken);
+
+    // Capture the cookie from the /csrf response.
+    const csrfCookieHeader = csrfResponse.headers['set-cookie'];
+    const csrfCookie = Array.isArray(csrfCookieHeader)
+      ? csrfCookieHeader.join('; ')
+      : csrfCookieHeader;
+    console.log('Retrieved CSRF cookie:', csrfCookie);
+
+    // Send the login request including the CSRF token and cookie.
+    const loginResponse = await axios.post(
+      'http://localhost:4550/login/admin',
+      { username, password },
+      {
+        withCredentials: true,
+        headers: {
+          'X-XSRF-TOKEN': csrfToken,
+          Cookie: csrfCookie,
+        }
       }
-      return res.redirect('/admin');
+    );
+
+    console.log('Login response headers:', loginResponse.headers);
+    const setCookieHeader = loginResponse.headers['set-cookie'];
+    const loginCookie = Array.isArray(setCookieHeader)
+      ? setCookieHeader.join('; ')
+      : setCookieHeader;
+    console.log('Login Set-Cookie header:', loginCookie);
+
+    // Save both the Spring Boot session cookie and the CSRF token in the Express session.
+    (req.session as any).springSessionCookie = loginCookie;
+    (req.session as any).csrfToken = csrfToken;
+    console.log('Stored springSessionCookie in session:', loginCookie);
+    console.log('Stored csrfToken in session:', csrfToken);
+
+    // Explicitly save the session.
+    req.session.save((err: any) => {
+      if (err) {
+        console.error('Error saving session:', err);
+      } else {
+        console.log('Session saved successfully with springSessionCookie and csrfToken.');
+      }
+      req.login({ username, springSessionCookie: loginCookie, csrfToken }, err => {
+        if (err) {
+          return next(err);
+        }
+        return res.redirect('/admin');
+      });
     });
-  })(req, res, next);
+  } catch (error: any) {
+    console.error('Full login error:', error.response || error.message);
+    const errorMessage = error.response?.data || 'Invalid username or password.';
+    return res.render('login', { error: errorMessage, username: req.body.username });
+  }
 });
 
 app.post('/forgot-password/verify-otp', (req, res) => {

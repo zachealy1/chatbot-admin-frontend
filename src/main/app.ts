@@ -613,7 +613,6 @@ app.get('/logout', (req, res) => {
     if (err) {
       return res.status(500).send('Failed to logout');
     }
-
     req.session.destroy(() => {
       res.redirect('/login');
     });
@@ -656,7 +655,7 @@ app.get('/account-requests', ensureAuthenticated, (req, res) => {
   });
 });
 
-app.get('/account', (req, res) => {
+app.get('/account', ensureAuthenticated, (req, res) => {
   const { updated } = req.query;
 
   // Render the 'account' template and pass the 'updated' flag

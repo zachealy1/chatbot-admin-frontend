@@ -42,6 +42,7 @@
     "@types/serve-favicon": "^2.5.4",
     "applicationinsights": "^3.2.1",
     "axios": "^1.4.0",
+    "axios-cookiejar-support": "^5.0.5",
     "body-parser": "^1.20.2",
     "config": "latest",
     "cookie-parser": "^1.4.6",
@@ -63,6 +64,7 @@
     "stylelint": "^16.0.0",
     "stylelint-config-standard": "^36.0.0",
     "stylelint-config-standard-scss": "^13.0.0",
+    "tough-cookie": "^5.1.2",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.6"

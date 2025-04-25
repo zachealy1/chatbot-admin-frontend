@@ -59,6 +59,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:7.18.0"],\
             ["applicationinsights", "npm:3.2.1"],\
             ["axios", "npm:1.7.3"],\
+            ["axios-cookiejar-support", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:5.0.5"],\
             ["axios-debug-log", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:1.0.0"],\
             ["babel-loader", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:9.1.3"],\
             ["body-parser", "npm:1.20.2"],\
@@ -110,6 +111,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["stylelint-config-standard", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:36.0.0"],\
             ["stylelint-config-standard-scss", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:13.1.0"],\
             ["supertest", "npm:7.0.0"],\
+            ["tough-cookie", "npm:5.1.2"],\
             ["ts-jest", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:29.1.4"],\
             ["ts-loader", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:9.5.1"],\
             ["ts-node", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:10.9.2"],\
@@ -7073,6 +7075,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["debug", "virtual:b26422bd59fa17e008d6bc0175738ae8cd421c0bdf97531bc9d7ba8df7eb875cf3586702fdab2ad784dd2bd788b2ef7d413cd512768add7bfe10a3e1b04e9659#npm:4.3.5"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:7.1.3", {\
+          "packageLocation": "./.yarn/cache/agent-base-npm-7.1.3-b2c16e72fb-87bb7ee54f.zip/node_modules/agent-base/",\
+          "packageDependencies": [\
+            ["agent-base", "npm:7.1.3"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["agentkeepalive", [\
@@ -7627,6 +7636,33 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["follow-redirects", "virtual:a63743a5822c3f4f0080debf0a45615212b5bd005b763a14221b5559794a4eab59edf521118fa1c78a2444ffb22b1d205323e984eccd051abda1334fb302f130#npm:1.15.6"],\
             ["form-data", "npm:4.0.0"],\
             ["proxy-from-env", "npm:1.1.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["axios-cookiejar-support", [\
+        ["npm:5.0.5", {\
+          "packageLocation": "./.yarn/cache/axios-cookiejar-support-npm-5.0.5-fbdf9ef825-4d3acdef40.zip/node_modules/axios-cookiejar-support/",\
+          "packageDependencies": [\
+            ["axios-cookiejar-support", "npm:5.0.5"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:5.0.5", {\
+          "packageLocation": "./.yarn/__virtual__/axios-cookiejar-support-virtual-00adab7f56/0/cache/axios-cookiejar-support-npm-5.0.5-fbdf9ef825-4d3acdef40.zip/node_modules/axios-cookiejar-support/",\
+          "packageDependencies": [\
+            ["axios-cookiejar-support", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:5.0.5"],\
+            ["@types/axios", null],\
+            ["@types/tough-cookie", null],\
+            ["axios", "npm:1.7.3"],\
+            ["http-cookie-agent", "virtual:00adab7f56f6ded3f953c92beb0fe604087f022b8437a96409168ea881ef291a3935eebe9986759ebcf20a6bedde498c51cffcf6891336ad4e8b004ed272345f#npm:6.0.8"],\
+            ["tough-cookie", "npm:5.1.2"]\
+          ],\
+          "packagePeers": [\
+            "@types/axios",\
+            "@types/tough-cookie",\
+            "axios",\
+            "tough-cookie"\
           ],\
           "linkType": "HARD"\
         }]\
@@ -12534,6 +12570,33 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/http-cache-semantics-npm-4.1.1-1120131375-83ac0bc60b.zip/node_modules/http-cache-semantics/",\
           "packageDependencies": [\
             ["http-cache-semantics", "npm:4.1.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["http-cookie-agent", [\
+        ["npm:6.0.8", {\
+          "packageLocation": "./.yarn/cache/http-cookie-agent-npm-6.0.8-34bc9d3ed4-aa0c3133f5.zip/node_modules/http-cookie-agent/",\
+          "packageDependencies": [\
+            ["http-cookie-agent", "npm:6.0.8"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:00adab7f56f6ded3f953c92beb0fe604087f022b8437a96409168ea881ef291a3935eebe9986759ebcf20a6bedde498c51cffcf6891336ad4e8b004ed272345f#npm:6.0.8", {\
+          "packageLocation": "./.yarn/__virtual__/http-cookie-agent-virtual-71df2ff2aa/0/cache/http-cookie-agent-npm-6.0.8-34bc9d3ed4-aa0c3133f5.zip/node_modules/http-cookie-agent/",\
+          "packageDependencies": [\
+            ["http-cookie-agent", "virtual:00adab7f56f6ded3f953c92beb0fe604087f022b8437a96409168ea881ef291a3935eebe9986759ebcf20a6bedde498c51cffcf6891336ad4e8b004ed272345f#npm:6.0.8"],\
+            ["@types/tough-cookie", null],\
+            ["@types/undici", null],\
+            ["agent-base", "npm:7.1.3"],\
+            ["tough-cookie", "npm:5.1.2"],\
+            ["undici", null]\
+          ],\
+          "packagePeers": [\
+            "@types/tough-cookie",\
+            "@types/undici",\
+            "tough-cookie",\
+            "undici"\
           ],\
           "linkType": "HARD"\
         }]\
@@ -17802,6 +17865,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@typescript-eslint/parser", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:7.18.0"],\
             ["applicationinsights", "npm:3.2.1"],\
             ["axios", "npm:1.7.3"],\
+            ["axios-cookiejar-support", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:5.0.5"],\
             ["axios-debug-log", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:1.0.0"],\
             ["babel-loader", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:9.1.3"],\
             ["body-parser", "npm:1.20.2"],\
@@ -17853,6 +17917,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["stylelint-config-standard", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:36.0.0"],\
             ["stylelint-config-standard-scss", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:13.1.0"],\
             ["supertest", "npm:7.0.0"],\
+            ["tough-cookie", "npm:5.1.2"],\
             ["ts-jest", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:29.1.4"],\
             ["ts-loader", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:9.5.1"],\
             ["ts-node", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:10.9.2"],\
@@ -19325,6 +19390,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["tldts", [\
+        ["npm:6.1.86", {\
+          "packageLocation": "./.yarn/cache/tldts-npm-6.1.86-45627de9ca-e5c57664f7.zip/node_modules/tldts/",\
+          "packageDependencies": [\
+            ["tldts", "npm:6.1.86"],\
+            ["tldts-core", "npm:6.1.86"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["tldts-core", [\
+        ["npm:6.1.86", {\
+          "packageLocation": "./.yarn/cache/tldts-core-npm-6.1.86-540def5eb4-0a715457e0.zip/node_modules/tldts-core/",\
+          "packageDependencies": [\
+            ["tldts-core", "npm:6.1.86"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["tmp", [\
         ["npm:0.0.33", {\
           "packageLocation": "./.yarn/cache/tmp-npm-0.0.33-bcbf65df2a-902d7aceb7.zip/node_modules/tmp/",\
@@ -19396,6 +19480,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["tough-cookie", "npm:2.5.0"],\
             ["psl", "npm:1.9.0"],\
             ["punycode", "npm:2.3.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:5.1.2", {\
+          "packageLocation": "./.yarn/cache/tough-cookie-npm-5.1.2-bb11a20ec3-31c626a77a.zip/node_modules/tough-cookie/",\
+          "packageDependencies": [\
+            ["tough-cookie", "npm:5.1.2"],\
+            ["tldts", "npm:6.1.86"]\
           ],\
           "linkType": "HARD"\
         }]\

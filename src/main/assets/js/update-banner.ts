@@ -1,55 +1,42 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Define types for elements
-  const previewButton = document.getElementById('previewButton') as HTMLButtonElement;
-  const discardButton = document.getElementById('discardButton') as HTMLButtonElement;
-  const bannerTitleInput = document.getElementById('bannerTitle') as HTMLInputElement;
-  const bannerBodyInput = document.getElementById('bannerBody') as HTMLTextAreaElement;
-  const bannerPreview = document.getElementById('banner-preview') as HTMLElement;
+  // grab your elements
+  const previewButton    = document.getElementById('previewButton')    as HTMLButtonElement;
+  const discardButton    = document.getElementById('discardButton')    as HTMLButtonElement;
+  const bannerTitleInput = document.getElementById('bannerTitle')      as HTMLInputElement;
+  const bannerBodyInput  = document.getElementById('bannerBody')       as HTMLTextAreaElement;
+  const bannerPreview    = document.getElementById('banner-preview')   as HTMLElement;
 
-  // Default values
-  const defaultTitle = 'Contact Support Team';
-  const defaultBody =
-    "If you need assistance, please call us at <strong>0800 123 456</strong> or email <a href='mailto:support@example.com'>support@example.com</a>.";
-
-  if (previewButton && discardButton && bannerTitleInput && bannerBodyInput && bannerPreview) {
-    // Preview button event
-    previewButton.addEventListener('click', (event: Event) => {
-      event.preventDefault();
-
-      // Get the values from the input fields
-      const newTitle: string = bannerTitleInput.value.trim();
-      const newBody: string = bannerBodyInput.value.trim();
-
-      // Update the preview panel
-      bannerPreview.innerHTML = `
-        <div class="govuk-panel govuk-panel--confirmation">
-          <h1 class="govuk-panel__title">${newTitle || defaultTitle}</h1>
-          <div class="govuk-panel__body">
-            ${newBody || defaultBody}
-          </div>
-        </div>
-      `;
-    });
-
-    // Discard button event
-    discardButton.addEventListener('click', (event: Event) => {
-      event.preventDefault();
-
-      // Reset form fields to default values
-      bannerTitleInput.value = defaultTitle;
-      bannerBodyInput.value = defaultBody;
-
-      // Reset the preview panel to default values
-      bannerPreview.innerHTML = `
-        <div class="govuk-panel govuk-panel--confirmation">
-          <h1 class="govuk-panel__title">${defaultTitle}</h1>
-          <div class="govuk-panel__body">
-            ${defaultBody}
-          </div>
-        </div>
-      `;
-    });
-  } else {
+  if (!previewButton || !discardButton || !bannerTitleInput || !bannerBodyInput || !bannerPreview) {
     console.error('Required elements are missing from the DOM.');
+    return;
   }
+
+  // **Capture the _initial_ values and preview HTML** when the page first loads
+  const initialTitle       = bannerTitleInput.value;
+  const initialBody        = bannerBodyInput.value;
+  const initialPreviewHTML = bannerPreview.innerHTML;
+
+  // Preview button: overwrite preview with whatever's in the inputs
+  previewButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    const newTitle = bannerTitleInput.value.trim() || initialTitle;
+    const newBody  = bannerBodyInput.value.trim()  || initialBody;
+
+    bannerPreview.innerHTML = `
+      <div class="govuk-panel govuk-panel--confirmation">
+        <h1 class="govuk-panel__title">${newTitle}</h1>
+        <div class="govuk-panel__body">
+          ${newBody}
+        </div>
+      </div>
+    `;
+  });
+
+  // Discard button: put _exactly_ the original values (and HTML) back
+  discardButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    bannerTitleInput.value = initialTitle;
+    bannerBodyInput.value  = initialBody;
+    bannerPreview.innerHTML = initialPreviewHTML;
+  });
 });

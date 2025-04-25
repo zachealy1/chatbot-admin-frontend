@@ -779,9 +779,56 @@ app.get('/manage-accounts', ensureAuthenticated, (req, res) => {
   });
 });
 
-// Add a route for /update-banner
-app.get('/update-banner', ensureAuthenticated, (req, res) => {
-  res.render('update-banner'); // Render the Nunjucks template for update-banner
+app.get('/update-banner', ensureAuthenticated, async (req, res) => {
+  // 1. Grab the stored Spring session cookie so we can auth against the backend
+  const storedSessionCookie =
+    (req.user as any)?.springSessionCookie ||
+    (req.session as any)?.springSessionCookie ||
+    '';
+
+  if (!storedSessionCookie) {
+    console.error('No Spring session cookie in Express session');
+    return res.redirect('/login');
+  }
+
+  try {
+    // 2. Create a cookie jar, seed it with the login cookie, and wrap axios
+    const jar = new CookieJar();
+    jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
+
+    const client = wrapper(
+      axios.create({
+        jar,
+        withCredentials: true,
+      })
+    );
+
+    // 3. Fetch the banner from your backend
+    const bannerResponse = await client.get<{
+      id: number;
+      title: string;
+      content: string;
+    }>('http://localhost:4550/support-banner/1');
+
+    const { title, content } = bannerResponse.data;
+
+    // 4. Render the page, passing in bannerTitle, bannerBody, and the updated flag
+    res.render('update-banner', {
+      bannerTitle: title,
+      bannerBody:  content,
+      updated:     req.query.updated === 'true',
+    });
+
+  } catch (err) {
+    console.error('Failed to load banner for edit:', err);
+    // On error, still render the page with defaults and an error message
+    res.render('update-banner', {
+      bannerTitle: 'Contact Support Team',
+      bannerBody:  "If you need assistance, please call us at <strong>0800 123 456</strong> or email <a href='mailto:support@example.com'>support@example.com</a>.",
+      updated:     false,
+      error:       'Could not load banner — please try again.',
+    });
+  }
 });
 
 glob

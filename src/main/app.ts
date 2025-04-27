@@ -1106,6 +1106,32 @@ app.get('/update-banner', ensureAuthenticated, async (req, res) => {
   }
 });
 
+app.get('/popular-chat-categories', ensureAuthenticated, async (req, res) => {
+  // Pull Spring session cookie from Express session/user
+  const storedSessionCookie =
+    (req.user as any)?.springSessionCookie ||
+    (req.session as any)?.springSessionCookie ||
+    '';
+
+  if (!storedSessionCookie) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  try {
+    const jar = new CookieJar();
+    jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
+    const client = wrapper(axios.create({ jar, withCredentials: true }));
+
+    // Fetch the stats
+    const backendRes = await client.get('http://localhost:4550/statistics/popular-chat-categories');
+    return res.json(backendRes.data);
+
+  } catch (err: any) {
+    console.error('Error fetching popular chat categories:', err);
+    return res.status(500).json({ error: 'Failed to load chat categories' });
+  }
+});
+
 glob
   .sync(__dirname + '/routes/**/*.+(ts|js)')
   .map(filename => require(filename))

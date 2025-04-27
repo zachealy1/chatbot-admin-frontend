@@ -1,47 +1,76 @@
 interface TableRow {
-  order: number;
-  name: string;
+  order:   number;
+  name:    string;
   queries: number;
-  first: string;
-  last: string;
+  first:   string;
+  last:    string;
 }
 
-// Example data for each page
-const tableData: { [key: number]: TableRow[] } = {
-  1: [
-    { order: 1, name: 'Login Issues', queries: 13422, first: '25 Jun 2024', last: '20 Jan 2025' },
-    { order: 2, name: 'Payment Queries', queries: 9821, first: '15 Jul 2024', last: '18 Jan 2025' },
-    { order: 3, name: 'Order Status', queries: 8765, first: '10 Aug 2024', last: '19 Jan 2025' },
-    { order: 4, name: 'Refund Requests', queries: 7543, first: '05 Sep 2024', last: '15 Jan 2025' },
-    { order: 5, name: 'Account Management', queries: 6521, first: '20 Oct 2024', last: '18 Jan 2025' },
-  ],
-  2: [
-    { order: 6, name: 'Technical Support', queries: 5200, first: '01 Nov 2024', last: '15 Jan 2025' },
-    { order: 7, name: 'Product Issues', queries: 4820, first: '10 Dec 2024', last: '18 Jan 2025' },
-    { order: 8, name: 'Delivery Delays', queries: 3980, first: '01 Jan 2025', last: '19 Jan 2025' },
-    { order: 9, name: 'Promotions', queries: 3201, first: '05 Jan 2025', last: '19 Jan 2025' },
-    { order: 10, name: 'General Queries', queries: 2500, first: '10 Jan 2025', last: '20 Jan 2025' },
-  ],
-  3: [
-    { order: 11, name: 'Cancellations', queries: 1200, first: '12 Jan 2025', last: '20 Jan 2025' },
-    { order: 12, name: 'Billing Errors', queries: 980, first: '15 Jan 2025', last: '20 Jan 2025' },
-    { order: 13, name: 'Feedback', queries: 750, first: '17 Jan 2025', last: '20 Jan 2025' },
-    { order: 14, name: 'Outage Issues', queries: 500, first: '18 Jan 2025', last: '20 Jan 2025' },
-    { order: 15, name: 'Service Requests', queries: 300, first: '19 Jan 2025', last: '20 Jan 2025' },
-  ],
-};
+const SIZE = 6;
+const tableData: Record<number, TableRow[]> = {};
 
-// Function to render table rows
-function renderTable(page: number): void {
+async function fetchAndInit() {
+  try {
+    const res = await fetch('/popular-chat-categories', { credentials: 'same-origin' });
+    if (!res.ok) {throw new Error(`Fetch failed: ${res.status}`);}
+    const data: any[] = await res.json();
+
+    // Map to our shape
+    const allRows: TableRow[] = data.map(item => ({
+      order:   item.order,
+      name:    item.name,
+      queries: item.queries,
+      first:   item.firstQuery.split('T')[0],
+      last:    item.lastQuery.split('T')[0],
+    }));
+
+    // Chunk into pages
+    for (let i = 0; i < allRows.length; i += SIZE) {
+      const page = Math.floor(i / SIZE) + 1;
+      tableData[page] = allRows.slice(i, i + SIZE);
+    }
+
+    buildPagination();      // ← build the <li> links
+    setupPagination();      // ← wire up events and render page 1
+  } catch (err) {
+    console.error('Error loading chat categories:', err);
+    const tbody = document.querySelector('.govuk-table__body') as HTMLElement;
+    tbody.innerHTML = `
+      <tr><td colspan="5" class="govuk-body">Could not load data</td></tr>
+    `;
+  }
+}
+
+function buildPagination() {
+  const list = document.querySelector('.govuk-pagination__list') as HTMLElement;
+  list.innerHTML = ''; // clear existing
+
+  const totalPages = Object.keys(tableData).length || 1;
+  for (let p = 1; p <= totalPages; p++) {
+    const li = document.createElement('li');
+    li.className = 'govuk-pagination__item' + (p === 1 ? ' govuk-pagination__item--current' : '');
+    li.innerHTML = `
+      <a class="govuk-link govuk-pagination__link" href="#" aria-label="Page ${p}" ${p === 1 ? 'aria-current="page"' : ''}>
+        ${p}
+      </a>
+    `;
+    list.appendChild(li);
+  }
+}
+
+function renderTable(page: number) {
   const tbody = document.querySelector('.govuk-table__body') as HTMLElement;
-  tbody.innerHTML = ''; // Clear existing rows
+  tbody.innerHTML = '';
 
-  if (!tableData[page]) {
-    console.error(`No data found for page ${page}`);
+  const rows = tableData[page] || [];
+  if (!rows.length) {
+    tbody.innerHTML = `
+      <tr><td colspan="5" class="govuk-body">No data for this page.</td></tr>
+    `;
     return;
   }
 
-  tableData[page].forEach((row: TableRow) => {
+  rows.forEach(row => {
     const tr = document.createElement('tr');
     tr.className = 'govuk-table__row';
     tr.innerHTML = `
@@ -55,78 +84,57 @@ function renderTable(page: number): void {
   });
 }
 
-// Add event listeners for pagination links
-function setupPagination(): void {
-  const paginationLinks = document.querySelectorAll('.govuk-pagination__link');
-  const prevButton = document.querySelector('.govuk-pagination__prev a') as HTMLElement;
-  const nextButton = document.querySelector('.govuk-pagination__next a') as HTMLElement;
+function setupPagination() {
+  const paginationItems = document.querySelectorAll('.govuk-pagination__item');
+  const pageLinks       = Array.from(document.querySelectorAll('.govuk-pagination__link'));
+  const prevButton      = document.querySelector('.govuk-pagination__prev .govuk-pagination__link') as HTMLElement | null;
+  const nextButton      = document.querySelector('.govuk-pagination__next .govuk-pagination__link') as HTMLElement | null;
 
   let currentPage = 1;
+  const totalPages = pageLinks.length;
 
-  // Event listeners for page numbers
-  paginationLinks.forEach((link) => {
-    link.addEventListener('click', (event: Event) => {
-      event.preventDefault();
+  const updateActive = (p: number) => {
+    paginationItems.forEach(li => li.classList.remove('govuk-pagination__item--current'));
+    const activeLi = Array.from(paginationItems)[p - 1];
+    activeLi?.classList.add('govuk-pagination__item--current');
+  };
 
-      const target = event.target as HTMLElement;
-      if (target.textContent) {
-        const page = parseInt(target.textContent.trim());
-        if (!isNaN(page)) {
-          currentPage = page;
-          renderTable(page);
-
-          // Update active page
-          updateActivePage(currentPage);
-        }
+  // Page number clicks
+  pageLinks.forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const p = parseInt((e.target as HTMLElement).textContent || '', 10);
+      if (p && p !== currentPage) {
+        currentPage = p;
+        renderTable(p);
+        updateActive(p);
       }
     });
   });
 
-  // Event listener for the Previous button
-  prevButton.addEventListener('click', (event: Event) => {
-    event.preventDefault();
+  // Prev
+  prevButton?.addEventListener('click', e => {
+    e.preventDefault();
     if (currentPage > 1) {
-      currentPage -= 1;
+      currentPage--;
       renderTable(currentPage);
-
-      // Update active page
-      updateActivePage(currentPage);
+      updateActive(currentPage);
     }
   });
 
-  // Event listener for the Next button
-  nextButton.addEventListener('click', (event: Event) => {
-    event.preventDefault();
-    if (currentPage < Object.keys(tableData).length) {
-      currentPage += 1;
+  // Next
+  nextButton?.addEventListener('click', e => {
+    e.preventDefault();
+    if (currentPage < totalPages) {
+      currentPage++;
       renderTable(currentPage);
-
-      // Update active page
-      updateActivePage(currentPage);
+      updateActive(currentPage);
     }
   });
 
-  // Load the first page by default
+  // Initial
   renderTable(1);
+  updateActive(1);
 }
 
-function updateActivePage(currentPage: number): void {
-  // Remove the 'current' class from all pagination items
-  document.querySelectorAll('.govuk-pagination__item').forEach((item) => {
-    item.classList.remove('govuk-pagination__item--current');
-  });
-
-  // Find the pagination item that matches the currentPage and add the 'current' class
-  const activeLink = Array.from(document.querySelectorAll('.govuk-pagination__link')).find(
-    (link) => link.textContent?.trim() === currentPage.toString()
-  );
-
-  if (activeLink?.parentElement) {
-    activeLink.parentElement.classList.add('govuk-pagination__item--current');
-  }
-}
-
-// Initialize pagination
-document.addEventListener('DOMContentLoaded', () => {
-  setupPagination();
-});
+document.addEventListener('DOMContentLoaded', fetchAndInit);

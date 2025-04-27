@@ -1132,6 +1132,41 @@ app.get('/popular-chat-categories', ensureAuthenticated, async (req, res) => {
   }
 });
 
+app.get('/user-activity', ensureAuthenticated, async (req, res) => {
+  // 1) Grab the Spring-session cookie that you stored on login
+  const storedSessionCookie =
+    (req.user as any)?.springSessionCookie ||
+    (req.session as any)?.springSessionCookie ||
+    '';
+
+  if (!storedSessionCookie) {
+    console.error('No Spring session cookie found');
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+
+  try {
+    // 2) Seed a CookieJar with that cookie
+    const jar = new CookieJar();
+    jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
+
+    // 3) Wrap axios to send credentials & cookies
+    const client = wrapper(axios.create({
+      jar,
+      withCredentials: true,
+    }));
+
+    // 4) Call your backend /user-activity
+    const backendRes = await client.get('http://localhost:4550/statistics/user-activity');
+
+    // 5) Forward the JSON payload directly
+    return res.json(backendRes.data);
+
+  } catch (err: any) {
+    console.error('Error fetching user activity:', err);
+    return res.status(500).json({ error: 'Failed to load user activity' });
+  }
+});
+
 glob
   .sync(__dirname + '/routes/**/*.+(ts|js)')
   .map(filename => require(filename))

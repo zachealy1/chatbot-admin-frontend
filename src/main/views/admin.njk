@@ -177,112 +177,54 @@
           </div>
         </div>
       </div>
+
       <!-- Graph area -->
       <svg viewBox="0 0 1000 600" class="line-graph-svg">
-        <!-- Y-axis -->
-        <line x1="50" y1="0" x2="50" y2="550" stroke="#ccc" stroke-width="1" />
-        <!-- X-axis -->
-        <line x1="50" y1="550" x2="1000" y2="550" stroke="#ccc" stroke-width="1" />
 
-        <!-- HORIZONTAL grid lines -->
-        <line x1="50" y1="450" x2="1000" y2="450" stroke="#e6e6e6" stroke-width="1" />
-        <line x1="50" y1="350" x2="1000" y2="350" stroke="#e6e6e6" stroke-width="1" />
-        <line x1="50" y1="250" x2="1000" y2="250" stroke="#e6e6e6" stroke-width="1" />
-        <line x1="50" y1="150" x2="1000" y2="150" stroke="#e6e6e6" stroke-width="1" />
-        <line x1="50" y1="50" x2="1000" y2="50" stroke="#e6e6e6" stroke-width="1" />
+        <!-- 1) Static grid & axes/labels -->
+        <g id="chart-grid">
+          <!-- Y-axis -->
+          <line x1="50" y1="0" x2="50" y2="550" stroke="#ccc" stroke-width="1" />
+          <!-- X-axis -->
+          <line x1="50" y1="550" x2="1000" y2="550" stroke="#ccc" stroke-width="1" />
 
-        <!-- VERTICAL grid lines -->
-        <line x1="150" y1="0" x2="150" y2="550" stroke="#e6e6e6" stroke-width="1" />
-        <line x1="250" y1="0" x2="250" y2="550" stroke="#e6e6e6" stroke-width="1" />
-        <line x1="350" y1="0" x2="350" y2="550" stroke="#e6e6e6" stroke-width="1" />
-        <line x1="450" y1="0" x2="450" y2="550" stroke="#e6e6e6" stroke-width="1" />
-        <line x1="550" y1="0" x2="550" y2="550" stroke="#e6e6e6" stroke-width="1" />
-        <line x1="650" y1="0" x2="650" y2="550" stroke="#e6e6e6" stroke-width="1" />
-        <line x1="750" y1="0" x2="750" y2="550" stroke="#e6e6e6" stroke-width="1" />
-        <line x1="850" y1="0" x2="850" y2="550" stroke="#e6e6e6" stroke-width="1" />
-        <line x1="950" y1="0" x2="950" y2="550" stroke="#e6e6e6" stroke-width="1" />
+          <!-- HORIZONTAL grid lines -->
+          <line x1="50" y1="450" x2="1000" y2="450" stroke="#e6e6e6" stroke-width="1" />
+          <line x1="50" y1="350" x2="1000" y2="350" stroke="#e6e6e6" stroke-width="1" />
+          <line x1="50" y1="250" x2="1000" y2="250" stroke="#e6e6e6" stroke-width="1" />
+          <line x1="50" y1="150" x2="1000" y2="150" stroke="#e6e6e6" stroke-width="1" />
+          <line x1="50" y1="50"  x2="1000" y2="50"  stroke="#e6e6e6" stroke-width="1" />
 
-        <!-- Y-axis labels -->
-        <text class="line-graph-axis" x="35" y="550" font-size="14" text-anchor="end" alignment-baseline="middle">0
-        </text>
-        <text class="line-graph-axis" x="35" y="450" font-size="14" text-anchor="end" alignment-baseline="middle">200
-        </text>
-        <text class="line-graph-axis" x="35" y="350" font-size="14" text-anchor="end" alignment-baseline="middle">400
-        </text>
-        <text class="line-graph-axis" x="35" y="250" font-size="14" text-anchor="end" alignment-baseline="middle">600
-        </text>
-        <text class="line-graph-axis" x="35" y="150" font-size="14" text-anchor="end" alignment-baseline="middle">800
-        </text>
-        <text class="line-graph-axis" x="35" y="50" font-size="14" text-anchor="end" alignment-baseline="middle">1000
-        </text>
+          <!-- VERTICAL grid lines -->
+          <line x1="150" y1="0" x2="150" y2="550" stroke="#e6e6e6" stroke-width="1" />
+          <line x1="250" y1="0" x2="250" y2="550" stroke="#e6e6e6" stroke-width="1" />
+          <line x1="350" y1="0" x2="350" y2="550" stroke="#e6e6e6" stroke-width="1" />
+          <line x1="450" y1="0" x2="450" y2="550" stroke="#e6e6e6" stroke-width="1" />
+          <line x1="550" y1="0" x2="550" y2="550" stroke="#e6e6e6" stroke-width="1" />
+          <line x1="650" y1="0" x2="650" y2="550" stroke="#e6e6e6" stroke-width="1" />
+          <line x1="750" y1="0" x2="750" y2="550" stroke="#e6e6e6" stroke-width="1" />
+          <line x1="850" y1="0" x2="850" y2="550" stroke="#e6e6e6" stroke-width="1" />
+          <line x1="950" y1="0" x2="950" y2="550" stroke="#e6e6e6" stroke-width="1" />
 
-        <!-- X-axis labels -->
-        <text class="line-graph-axis" x="50" y="570" text-anchor="middle" font-size="14">Jan</text>
-        <text class="line-graph-axis" x="150" y="570" text-anchor="middle" font-size="14">Feb</text>
-        <text class="line-graph-axis" x="250" y="570" text-anchor="middle" font-size="14">Mar</text>
-        <text class="line-graph-axis" x="350" y="570" text-anchor="middle" font-size="14">Apr</text>
-        <text class="line-graph-axis" x="450" y="570" text-anchor="middle" font-size="14">May</text>
-        <text class="line-graph-axis" x="550" y="570" text-anchor="middle" font-size="14">Jun</text>
-        <text class="line-graph-axis" x="650" y="570" text-anchor="middle" font-size="14">Jul</text>
-        <text class="line-graph-axis" x="750" y="570" text-anchor="middle" font-size="14">Aug</text>
-        <text class="line-graph-axis" x="850" y="570" text-anchor="middle" font-size="14">Sep</text>
-        <text class="line-graph-axis" x="950" y="570" text-anchor="middle" font-size="14">Oct</text>
+          <!-- Y-axis labels -->
+          <g id="y-axis-labels"></g>
 
-        <!-- Line and points for 20 to 30 -->
-        <polyline points="50,500 150,450 250,400 350,300 450,200 550,150 650,120 750,100 850,80 950,80" fill="none"
-                  stroke="#12436d" stroke-width="2" />
-        <circle cx="50" cy="500" r="4" fill="#12436d" />
-        <circle cx="150" cy="450" r="4" fill="#12436d" />
-        <circle cx="250" cy="400" r="4" fill="#12436d" />
-        <circle cx="350" cy="300" r="4" fill="#12436d" />
-        <circle cx="450" cy="200" r="4" fill="#12436d" />
-        <circle cx="550" cy="150" r="4" fill="#12436d" />
-        <circle cx="650" cy="120" r="4" fill="#12436d" />
-        <circle cx="750" cy="100" r="4" fill="#12436d" />
-        <circle cx="850" cy="80" r="4" fill="#12436d" />
-        <circle cx="950" cy="80" r="4" fill="#12436d" />
+          <!-- X-axis labels -->
+          <text class="line-graph-axis" x="50"  y="570" text-anchor="middle">Jan</text>
+          <text class="line-graph-axis" x="150" y="570" text-anchor="middle">Feb</text>
+          <text class="line-graph-axis" x="250" y="570" text-anchor="middle">Mar</text>
+          <text class="line-graph-axis" x="350" y="570" text-anchor="middle">Apr</text>
+          <text class="line-graph-axis" x="450" y="570" text-anchor="middle">May</text>
+          <text class="line-graph-axis" x="550" y="570" text-anchor="middle">Jun</text>
+          <text class="line-graph-axis" x="650" y="570" text-anchor="middle">Jul</text>
+          <text class="line-graph-axis" x="750" y="570" text-anchor="middle">Aug</text>
+          <text class="line-graph-axis" x="850" y="570" text-anchor="middle">Sep</text>
+          <text class="line-graph-axis" x="950" y="570" text-anchor="middle">Oct</text>
+        </g>
 
-        <!-- Line and points for 31 to 40 -->
-        <polyline points="50,450 150,400 250,350 350,250 450,150 550,120 650,100 750,80 850,60 950,60" fill="none"
-                  stroke="#28a197" stroke-width="2" />
-        <circle cx="50" cy="450" r="4" fill="#28a197" />
-        <circle cx="150" cy="400" r="4" fill="#28a197" />
-        <circle cx="250" cy="350" r="4" fill="#28a197" />
-        <circle cx="350" cy="250" r="4" fill="#28a197" />
-        <circle cx="450" cy="150" r="4" fill="#28a197" />
-        <circle cx="550" cy="120" r="4" fill="#28a197" />
-        <circle cx="650" cy="100" r="4" fill="#28a197" />
-        <circle cx="750" cy="80" r="4" fill="#28a197" />
-        <circle cx="850" cy="60" r="4" fill="#28a197" />
-        <circle cx="950" cy="60" r="4" fill="#28a197" />
-
-        <!-- Line and points for 41 to 50 -->
-        <polyline points="50,400 150,350 250,300 350,200 450,150 550,100 650,80 750,60 850,50 950,50" fill="none"
-                  stroke="#801650" stroke-width="2" />
-        <circle cx="50" cy="400" r="4" fill="#801650" />
-        <circle cx="150" cy="350" r="4" fill="#801650" />
-        <circle cx="250" cy="300" r="4" fill="#801650" />
-        <circle cx="350" cy="200" r="4" fill="#801650" />
-        <circle cx="450" cy="150" r="4" fill="#801650" />
-        <circle cx="550" cy="100" r="4" fill="#801650" />
-        <circle cx="650" cy="80" r="4" fill="#801650" />
-        <circle cx="750" cy="60" r="4" fill="#801650" />
-        <circle cx="850" cy="50" r="4" fill="#801650" />
-        <circle cx="950" cy="50" r="4" fill="#801650" />
-
-        <!-- Line and points for 51 and over -->
-        <polyline points="50,350 150,300 250,250 350,150 450,100 550,80 650,60 750,50 850,40 950,40" fill="none"
-                  stroke="#f46a25" stroke-width="2" />
-        <circle cx="50" cy="350" r="4" fill="#f46a25" />
-        <circle cx="150" cy="300" r="4" fill="#f46a25" />
-        <circle cx="250" cy="250" r="4" fill="#f46a25" />
-        <circle cx="350" cy="150" r="4" fill="#f46a25" />
-        <circle cx="450" cy="100" r="4" fill="#f46a25" />
-        <circle cx="550" cy="80" r="4" fill="#f46a25" />
-        <circle cx="650" cy="60" r="4" fill="#f46a25" />
-        <circle cx="750" cy="50" r="4" fill="#f46a25" />
-        <circle cx="850" cy="40" r="4" fill="#f46a25" />
-        <circle cx="950" cy="40" r="4" fill="#f46a25" />
+        <!-- 2) Dynamic data layers -->
+        <g id="chart-lines"></g>
+        <g id="chart-points"></g>
       </svg>
     </div>
   </div>
@@ -336,5 +278,6 @@
 
   <script src="listPage-dev.js"></script>
   <script src="logout-dev.js"></script>
+  <script src="userActivity-dev.js"></script>
 
 {% endblock %}

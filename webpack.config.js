@@ -42,6 +42,7 @@ module.exports = {
     otpValidation: path.resolve(sourcePath, 'otp-validation.ts'),
     updateBanner: path.resolve(sourcePath, 'update-banner.ts'),
     logout: path.resolve(sourcePath, 'logout.ts'),
+    userActivity: path.resolve(sourcePath, 'user-activity.ts'),
   },
   mode: devMode ? 'development' : 'production',
   devtool: devMode ? 'inline-source-map' : false,

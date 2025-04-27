@@ -1167,6 +1167,44 @@ app.get('/user-activity', ensureAuthenticated, async (req, res) => {
   }
 });
 
+app.get('/chat-category-breakdown', ensureAuthenticated, async (req, res) => {
+    // 1) pull our Spring Boot session cookie from Express session or user
+    const storedCookie =
+      (req.user as any)?.springSessionCookie ||
+      (req.session as any)?.springSessionCookie ||
+      '';
+
+    if (!storedCookie) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    try {
+      // 2) create a tough-cookie jar containing that cookie
+      const jar = new CookieJar();
+      jar.setCookieSync(storedCookie, 'http://localhost:4550');
+
+      // 3) wrap axios so it sends the cookie & XSRF token automatically
+      const client = wrapper(
+        axios.create({
+          jar,
+          withCredentials: true,
+        })
+      );
+
+      // 4) call your Spring Boot statistics endpoint
+      const backendRes = await client.get(
+        'http://localhost:4550/statistics/chat-category-breakdown'
+      );
+
+      // 5) proxy the JSON back
+      return res.json(backendRes.data);
+    } catch (err: any) {
+      console.error('Error fetching chat-category-breakdown:', err);
+      return res.status(500).json({ error: 'Failed to fetch data' });
+    }
+  }
+);
+
 glob
   .sync(__dirname + '/routes/**/*.+(ts|js)')
   .map(filename => require(filename))

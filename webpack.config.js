@@ -43,6 +43,7 @@ module.exports = {
     updateBanner: path.resolve(sourcePath, 'update-banner.ts'),
     logout: path.resolve(sourcePath, 'logout.ts'),
     userActivity: path.resolve(sourcePath, 'user-activity.ts'),
+    chatCategoryBreakdown: path.resolve(sourcePath, 'chat-category-breakdown.ts'),
   },
   mode: devMode ? 'development' : 'production',
   devtool: devMode ? 'inline-source-map' : false,

@@ -1261,6 +1261,16 @@ app.get('/i18n/buttons', (req, res) => {
   res.json({ actionAccept: accept, actionReject: reject });
 });
 
+app.get('/i18n/actions', (req, res) => {
+  const lang = req.cookies.lang === 'cy' ? 'cy' : 'en';
+  const t = {
+    actionAccept: req.__({ phrase: 'actionAccept', locale: lang }),
+    actionReject: req.__({ phrase: 'actionReject',  locale: lang }),
+    actionDelete: req.__({ phrase: 'actionDelete',  locale: lang })
+  };
+  res.json(t);
+});
+
 glob
   .sync(__dirname + '/routes/**/*.+(ts|js)')
   .map(filename => require(filename))

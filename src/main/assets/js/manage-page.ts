@@ -1,18 +1,33 @@
-interface ManagedAccount {
-  accountId: number;
-  userName:   string;
-  email:      string;
-  role:       string;
-  createdDate:string;
+interface Translations {
+  actionDelete: string;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const tbody           = document.querySelector('.govuk-table__body--manage-accounts') as HTMLElement;
-  const pageLinks       = Array.from(document.querySelectorAll('.govuk-pagination__list .govuk-pagination__link'));
-  const prevButton      = document.querySelector('.govuk-pagination__prev .govuk-pagination__link') as HTMLElement | null;
-  const nextButton      = document.querySelector('.govuk-pagination__next .govuk-pagination__link') as HTMLElement | null;
+interface ManagedAccount {
+  accountId:   number;
+  userName:    string;
+  email:       string;
+  role:        string;
+  createdDate: string;
+}
 
-  if (!tbody || !pageLinks.length) {
+document.addEventListener('DOMContentLoaded', async () => {
+  // 0) Load the "Delete" button label from the backend i18n route
+  let deleteLabel = 'Delete';
+  try {
+    const res = await fetch('/i18n/actions', { credentials: 'same-origin' });
+    if (!res.ok) {throw new Error(`I18n fetch failed: ${res.status}`);}
+    const t: Translations = await res.json();
+    deleteLabel = t.actionDelete;
+  } catch (e) {
+    console.warn('Falling back to default delete label', e);
+  }
+
+  // 1) Grab DOM & pagination elements
+  const tbody      = document.querySelector('.govuk-table__body--manage-accounts') as HTMLElement;
+  const pageLinks  = Array.from(document.querySelectorAll('.govuk-pagination__list .govuk-pagination__link'));
+  const prevButton = document.querySelector('.govuk-pagination__prev .govuk-pagination__link') as HTMLElement|null;
+  const nextButton = document.querySelector('.govuk-pagination__next .govuk-pagination__link') as HTMLElement|null;
+  if (!tbody || pageLinks.length === 0) {
     console.error('Cannot find table body or pagination links');
     return;
   }
@@ -22,6 +37,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const totalPages = pageLinks.length;
   let pageSize = 0;
 
+  // 2) Fetch all accounts and start pagination
+  fetch('/account/all', { credentials: 'same-origin' })
+    .then(res => {
+      if (!res.ok) {throw new Error(`Failed to fetch accounts: ${res.status}`);}
+      return res.json();
+    })
+    .then((data: any[]) => {
+      managedAccounts = data.map(item => ({
+        accountId:   item.accountId,
+        userName:    item.username,
+        email:       item.email,
+        role:        item.role,
+        createdDate: item.createdDate
+      }));
+      pageSize = Math.ceil(managedAccounts.length / totalPages) || managedAccounts.length;
+      setupManageAccountsPagination();
+    })
+    .catch(err => {
+      console.error('Error loading managed accounts:', err);
+    });
+
+  // Render a given page of rows (with only Delete)
   function renderManagedAccountsTable(page: number): void {
     tbody.innerHTML = '';
     const start = (page - 1) * pageSize;
@@ -31,15 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const tr = document.createElement('tr');
       tr.className = 'govuk-table__row';
       tr.innerHTML = `
-        <td class='govuk-table__cell'>${acc.accountId}</td>
-        <td class='govuk-table__cell'>${acc.userName}</td>
-        <td class='govuk-table__cell'>${acc.email}</td>
-        <td class='govuk-table__cell'>${acc.role}</td>
-        <td class='govuk-table__cell'>${acc.createdDate}</td>
-        <td class='govuk-table__cell'>
+        <td class="govuk-table__cell">${acc.accountId}</td>
+        <td class="govuk-table__cell">${acc.userName}</td>
+        <td class="govuk-table__cell">${acc.email}</td>
+        <td class="govuk-table__cell">${acc.role}</td>
+        <td class="govuk-table__cell">${acc.createdDate}</td>
+        <td class="govuk-table__cell">
           <form method="post" action="/accounts/${acc.accountId}/delete" class="govuk-!-display-inline-block">
             <button type="submit" class="govuk-button govuk-button--warning">
-              Delete
+              ${deleteLabel}
             </button>
           </form>
         </td>
@@ -48,26 +85,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Highlight active page link
   function updateManageAccountsCurrentPage(page: number): void {
     pageLinks.forEach(link => link.parentElement?.classList.remove('govuk-pagination__item--current'));
     const activeLink = pageLinks.find(link => link.textContent?.trim() === page.toString());
     activeLink?.parentElement?.classList.add('govuk-pagination__item--current');
   }
 
+  // Wire up clicks on page numbers, prev/next, then render page 1
   function setupManageAccountsPagination(): void {
-    // page-number clicks
     pageLinks.forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
-        const page = parseInt((e.target as HTMLElement).textContent || '', 10);
-        if (page && page !== currentPage) {
-          currentPage = page;
-          renderManagedAccountsTable(currentPage);
-          updateManageAccountsCurrentPage(currentPage);
+        const p = parseInt((e.target as HTMLElement).textContent||'', 10);
+        if (!isNaN(p) && p !== currentPage) {
+          currentPage = p;
+          renderManagedAccountsTable(p);
+          updateManageAccountsCurrentPage(p);
         }
       });
     });
-    // prev/next
     prevButton?.addEventListener('click', e => {
       e.preventDefault();
       if (currentPage > 1) {
@@ -85,32 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // initial paint
     renderManagedAccountsTable(currentPage);
     updateManageAccountsCurrentPage(currentPage);
   }
-
-  // Fetch the live data and kick everything off
-  fetch('/account/all', { credentials: 'same-origin' })
-    .then(res => {
-      if (!res.ok) {throw new Error(`Failed to fetch accounts: ${res.status}`);}
-      return res.json();
-    })
-    .then((data: any[]) => {
-      // map the JSON fields into our ManagedAccount interface
-      managedAccounts = data.map(item => ({
-        accountId:   item.accountId,
-        userName:    item.username,
-        email:       item.email,
-        role:        item.role,
-        createdDate: item.createdDate
-      }));
-      // evenly distribute onto your existing page count
-      pageSize = Math.ceil(managedAccounts.length / totalPages) || managedAccounts.length;
-      setupManageAccountsPagination();
-    })
-    .catch(err => {
-      console.error('Error loading managed accounts:', err);
-      // you could show an error row in the table here if you like
-    });
 });

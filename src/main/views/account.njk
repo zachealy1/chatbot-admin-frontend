@@ -19,34 +19,12 @@
   {{ govukServiceNavigation({
     serviceName: __("appName"),
     navigation: [
-      {
-        href: "/admin",
-        text: "Home"
-      },
-      {
-        href: "/account-requests",
-        text: "Requests"
-      },
-      {
-        href: "/manage-accounts",
-        text: "Manage Accounts"
-      },
-      {
-        href: "/update-banner",
-        text: "Update Banner"
-      },
-      {
-        href: "/account",
-        text: "Account",
-        active: true
-      },
-      {
-        href: "/logout",
-        text: "Logout",
-        attributes: {
-        id: "logoutLink"
-      }
-      }
+      { href: "/admin", text: __("navHome") },
+      { href: "/account-requests", text: __("navRequests") },
+      { href: "/manage-accounts", text: __("navManageAccounts") },
+      { href: "/update-banner", text: __("navUpdateBanner") },
+      { href: "/account", text: __("navAccount"), active: true },
+      { href: "/logout", text: __("navLogout"), attributes: { id: "logoutLink" } }
     ]
   }) }}
 {% endblock %}

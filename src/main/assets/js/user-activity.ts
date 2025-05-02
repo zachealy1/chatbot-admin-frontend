@@ -12,9 +12,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   const data: SessionActivity[] = await res.json();
 
-  // 2) define our buckets and months
+  // 2) define our buckets and now 12 months
   const ageGroups = ['20 to 30', '31 to 40', '41 to 50', '51 and over'];
-  const months    = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
+  const months    = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
   // 3) init counts[ageGroupIndex][monthIndex]
   const counts: number[][] = ageGroups.map(() => Array(months.length).fill(0));
@@ -52,11 +52,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     label.textContent = String(value);
     tickGroup.appendChild(label);
 
-    // horizontal grid line (optional—comment out if you already have static ones)
+    // horizontal grid line
     const grid = document.createElementNS('http://www.w3.org/2000/svg','line');
     grid.setAttribute('x1','50');
     grid.setAttribute('y1',String(y));
-    grid.setAttribute('x2','1000');
+    grid.setAttribute('x2','1200');  // extend to match 12-month width
     grid.setAttribute('y2',String(y));
     grid.setAttribute('stroke','#e6e6e6');
     grid.setAttribute('stroke-width','1');
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 5) build pointSets
   const pointSets = counts.map(arr =>
     arr.map((c, i) => {
-      const x = 50 + i * 100;
+      const x = 50 + i * 100;              // now covers 12 points: 50→1150
       const y = 550 - (c / maxCount) * 500;
       return `${x},${y}`;
     }).join(' ')

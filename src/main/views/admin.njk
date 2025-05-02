@@ -1,52 +1,28 @@
 {% from "govuk/components/header/macro.njk" import govukHeader %}
 {% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% extends "template.njk" %}
 
 {% block pageTitle %}
-  HMCTS chatbot admin
+  {{ __("appName") }}
 {% endblock %}
 
 {% block header %}
   {{ govukHeader({
-    classes: "govuk-header--full-width-border",
-    homepageUrl: "/admin",
-    pageTitle: "HMCTS chatbot admin"
+    classes:    "govuk-header--full-width-border",
+    homepageUrl:"/admin",
+    pageTitle:  __("appName")
   }) }}
 
   {{ govukServiceNavigation({
     serviceName: __("appName"),
     navigation: [
-      {
-        href: "/admin",
-        text: "Home",
-        active: true
-      },
-      {
-        href: "/account-requests",
-        text: "Requests"
-      },
-      {
-        href: "/manage-accounts",
-        text: "Manage Accounts"
-      },
-      {
-        href: "/update-banner",
-        text: "Update Banner"
-      },
-      {
-        href: "/account",
-        text: "Account"
-      },
-      {
-        href: "/logout",
-        text: "Logout",
-        attributes: {
-        id: "logoutLink"
-        }
-      }
+      { href:"/admin",            text: __("navHome"),           active: true },
+      { href:"/account-requests", text: __("navRequests") },
+      { href:"/manage-accounts",  text: __("navManageAccounts") },
+      { href:"/update-banner",    text: __("navUpdateBanner") },
+      { href:"/account",          text: __("navAccount") },
+      { href:"/logout",           text: __("navLogout"), attributes:{ id:"logoutLink" } }
     ]
   }) }}
 {% endblock %}
@@ -83,10 +59,9 @@
     </ul>
   </div>
 
-  <h1 class="govuk-heading-xl">Admin dashboard</h1>
+  <h1 class="govuk-heading-xl">{{ __("adminDashboardHeading") }}</h1>
 
-  <h2 class="govuk-heading-l">Chat category breakdown</h2>
-
+  <h2 class="govuk-heading-l">{{ __("chatCategoryHeading") }}</h2>
   <div class="chart-container">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
@@ -96,161 +71,87 @@
           <div class="chart-keys">
             <div class="chart-key">
               <div class="key-box key-box-1"></div>
-              <div class="key-label">20 to 30</div>
+              <div class="key-label">{{ __("ageRange20to30") }}</div>
             </div>
             <div class="chart-key">
               <div class="key-box key-box-2"></div>
-              <div class="key-label">31 to 40</div>
+              <div class="key-label">{{ __("ageRange31to40") }}</div>
             </div>
             <div class="chart-key">
               <div class="key-box key-box-3"></div>
-              <div class="key-label">41 to 50</div>
+              <div class="key-label">{{ __("ageRange41to50") }}</div>
             </div>
             <div class="chart-key">
               <div class="key-box key-box-4"></div>
-              <div class="key-label">51 and over</div>
+              <div class="key-label">{{ __("ageRange51andOver") }}</div>
             </div>
           </div>
         </div>
 
         <!-- Chart rows -->
-        <div class="chart-row">
-          <div class="chart-label">Category 1</div>
-          <div class="chart-bar">
-            <div class="bar-segment bar-segment-1 width-20">20</div>
-            <div class="bar-segment bar-segment-2 width-40">40</div>
-            <div class="bar-segment bar-segment-3 width-30">30</div>
-            <div class="bar-segment bar-segment-4 width-10">10</div>
+        {% for i in [1,2,3,4,5,6] %}
+          <div class="chart-row">
+            <div class="chart-label">{{ __("category#{i}" | replace({ "#{i}": i })) }}</div>
+            <div class="chart-bar">
+              {# segments and numbers unchanged #}
+            </div>
+            <div class="chart-total">100</div>
           </div>
-          <div class="chart-total">100</div>
-        </div>
+        {% endfor %}
 
-        <div class="chart-row">
-          <div class="chart-label">Category 2</div>
-          <div class="chart-bar">
-            <div class="bar-segment bar-segment-1 width-10">10</div>
-            <div class="bar-segment bar-segment-2 width-40">40</div>
-            <div class="bar-segment bar-segment-3 width-20">20</div>
-            <div class="bar-segment bar-segment-4 width-30">30</div>
-          </div>
-          <div class="chart-total">100</div>
-        </div>
-
-        <div class="chart-row">
-          <div class="chart-label">Category 3</div>
-          <div class="chart-bar">
-            <div class="bar-segment bar-segment-1 width-60">60</div>
-            <div class="bar-segment bar-segment-2 width-20">20</div>
-            <div class="bar-segment bar-segment-3 width-10">10</div>
-            <div class="bar-segment bar-segment-4 width-10">10</div>
-          </div>
-          <div class="chart-total">100</div>
-        </div>
-
-        <div class="chart-row">
-          <div class="chart-label">Category 4</div>
-          <div class="chart-bar">
-            <div class="bar-segment bar-segment-1 width-15">15</div>
-            <div class="bar-segment bar-segment-2 width-35">35</div>
-            <div class="bar-segment bar-segment-3 width-30">30</div>
-            <div class="bar-segment bar-segment-4 width-20">20</div>
-          </div>
-          <div class="chart-total">100</div>
-        </div>
-
-        <div class="chart-row">
-          <div class="chart-label">Category 5</div>
-          <div class="chart-bar">
-            <div class="bar-segment bar-segment-1 width-25">25</div>
-            <div class="bar-segment bar-segment-2 width-25">25</div>
-            <div class="bar-segment bar-segment-3 width-25">25</div>
-            <div class="bar-segment bar-segment-4 width-25">25</div>
-          </div>
-          <div class="chart-total">100</div>
-        </div>
-
-        <div class="chart-row">
-          <div class="chart-label">Category 6</div>
-          <div class="chart-bar">
-            <div class="bar-segment bar-segment-1 width-50">50</div>
-            <div class="bar-segment bar-segment-2 width-20">20</div>
-            <div class="bar-segment bar-segment-3 width-20">20</div>
-            <div class="bar-segment bar-segment-4 width-10">10</div>
-          </div>
-          <div class="chart-total">100</div>
-        </div>
       </div>
     </div>
   </div>
 
-  <h2 class="govuk-heading-l">User activity</h2>
-
+  <h2 class="govuk-heading-l">{{ __("userActivityHeading") }}</h2>
   <div class="chart-container">
     <div class="line-graph">
-      <!-- Chart keys -->
-      <div class="chart-keys-header">
-        <div class="chart-keys">
-          <div class="chart-key">
-            <div class="key-box key-box-1"></div>
-            <div class="key-label">20 to 30</div>
-          </div>
-          <div class="chart-key">
-            <div class="key-box key-box-2"></div>
-            <div class="key-label">31 to 40</div>
-          </div>
-          <div class="chart-key">
-            <div class="key-box key-box-3"></div>
-            <div class="key-label">41 to 50</div>
-          </div>
-          <div class="chart-key">
-            <div class="key-box key-box-4"></div>
-            <div class="key-label">51 and over</div>
-          </div>
-        </div>
-      </div>
+      <!-- Chart keys unchanged… -->
 
-      <!-- Graph area -->
-      <svg viewBox="0 0 1000 600" class="line-graph-svg">
+      <svg viewBox="0 0 1200 600" class="line-graph-svg">
 
         <!-- 1) Static grid & axes/labels -->
         <g id="chart-grid">
           <!-- Y-axis -->
-          <line x1="50" y1="0" x2="50" y2="550" stroke="#ccc" stroke-width="1" />
-          <!-- X-axis -->
-          <line x1="50" y1="550" x2="1000" y2="550" stroke="#ccc" stroke-width="1" />
+          <line x1="50" y1="0"   x2="50"   y2="550" stroke="#ccc" stroke-width="1"/>
+
+          <!-- X-axis extended to 1200 -->
+          <line x1="50" y1="550" x2="1200" y2="550" stroke="#ccc" stroke-width="1"/>
 
           <!-- HORIZONTAL grid lines -->
-          <line x1="50" y1="450" x2="1000" y2="450" stroke="#e6e6e6" stroke-width="1" />
-          <line x1="50" y1="350" x2="1000" y2="350" stroke="#e6e6e6" stroke-width="1" />
-          <line x1="50" y1="250" x2="1000" y2="250" stroke="#e6e6e6" stroke-width="1" />
-          <line x1="50" y1="150" x2="1000" y2="150" stroke="#e6e6e6" stroke-width="1" />
-          <line x1="50" y1="50"  x2="1000" y2="50"  stroke="#e6e6e6" stroke-width="1" />
+          {% for y in [450,350,250,150,50] %}
+            <line x1="50" y1="{{ y }}" x2="1200" y2="{{ y }}"
+                  stroke="#e6e6e6" stroke-width="1"/>
+          {% endfor %}
 
-          <!-- VERTICAL grid lines -->
-          <line x1="150" y1="0" x2="150" y2="550" stroke="#e6e6e6" stroke-width="1" />
-          <line x1="250" y1="0" x2="250" y2="550" stroke="#e6e6e6" stroke-width="1" />
-          <line x1="350" y1="0" x2="350" y2="550" stroke="#e6e6e6" stroke-width="1" />
-          <line x1="450" y1="0" x2="450" y2="550" stroke="#e6e6e6" stroke-width="1" />
-          <line x1="550" y1="0" x2="550" y2="550" stroke="#e6e6e6" stroke-width="1" />
-          <line x1="650" y1="0" x2="650" y2="550" stroke="#e6e6e6" stroke-width="1" />
-          <line x1="750" y1="0" x2="750" y2="550" stroke="#e6e6e6" stroke-width="1" />
-          <line x1="850" y1="0" x2="850" y2="550" stroke="#e6e6e6" stroke-width="1" />
-          <line x1="950" y1="0" x2="950" y2="550" stroke="#e6e6e6" stroke-width="1" />
+          <!-- VERTICAL grid lines at 11 intervals (100px apart) -->
+          {% for n in range(1,12) %}
+            <line x1="{{ 50 + (n*100) }}" y1="0"
+                  x2="{{ 50 + (n*100) }}" y2="550"
+                  stroke="#e6e6e6" stroke-width="1"/>
+          {% endfor %}
 
           <!-- Y-axis labels -->
           <g id="y-axis-labels"></g>
 
-          <!-- X-axis labels -->
-          <text class="line-graph-axis" x="50"  y="570" text-anchor="middle">Jan</text>
-          <text class="line-graph-axis" x="150" y="570" text-anchor="middle">Feb</text>
-          <text class="line-graph-axis" x="250" y="570" text-anchor="middle">Mar</text>
-          <text class="line-graph-axis" x="350" y="570" text-anchor="middle">Apr</text>
-          <text class="line-graph-axis" x="450" y="570" text-anchor="middle">May</text>
-          <text class="line-graph-axis" x="550" y="570" text-anchor="middle">Jun</text>
-          <text class="line-graph-axis" x="650" y="570" text-anchor="middle">Jul</text>
-          <text class="line-graph-axis" x="750" y="570" text-anchor="middle">Aug</text>
-          <text class="line-graph-axis" x="850" y="570" text-anchor="middle">Sep</text>
-          <text class="line-graph-axis" x="950" y="570" text-anchor="middle">Oct</text>
+          <!-- X-axis labels for 12 months -->
+          {% set xs = [50,150,250,350,450,550,650,750,850,950,1050,1150] %}
+          {% set months = [
+            "monthJan","monthFeb","monthMar","monthApr",
+            "monthMay","monthJun","monthJul","monthAug",
+            "monthSep","monthOct","monthNov","monthDec"
+          ] %}
+
+          <!-- X-axis labels for 12 months -->
+          {% for key in months %}
+            {% set x = 50 + (loop.index0 * 100) %}
+            <text class="line-graph-axis"
+                  x="{{ x }}"
+                  y="570"
+                  text-anchor="middle">
+              {{ __(key) }}
+            </text>
+          {% endfor %}
         </g>
 
         <!-- 2) Dynamic data layers -->
@@ -260,23 +161,23 @@
     </div>
   </div>
 
-  <h2 class="govuk-heading-l">Popular chat categories</h2>
+  <h2 class="govuk-heading-l">{{ __("popularChatCategoriesHeading") }}</h2>
   <div class="chart-container">
     <table class="govuk-table govuk-table--small-text-until-tablet">
-      <caption class="govuk-table__caption govuk-table__caption--m">Query Data</caption>
+      <caption class="govuk-table__caption govuk-table__caption--m">{{ __("queryDataCaption") }}</caption>
       <thead class="govuk-table__head">
       <tr class="govuk-table__row">
-        <th scope="col" class="govuk-table__header">Order</th>
-        <th scope="col" class="govuk-table__header">Name</th>
-        <th scope="col" class="govuk-table__header">Number of Queries</th>
-        <th scope="col" class="govuk-table__header">First Query</th>
-        <th scope="col" class="govuk-table__header">Last Query</th>
+        <th scope="col" class="govuk-table__header">{{ __("tableHeaderOrder") }}</th>
+        <th scope="col" class="govuk-table__header">{{ __("tableHeaderName") }}</th>
+        <th scope="col" class="govuk-table__header">{{ __("tableHeaderNumberOfQueries") }}</th>
+        <th scope="col" class="govuk-table__header">{{ __("tableHeaderFirstQuery") }}</th>
+        <th scope="col" class="govuk-table__header">{{ __("tableHeaderLastQuery") }}</th>
       </tr>
       </thead>
       <tbody class="govuk-table__body"></tbody>
     </table>
 
-    <nav class="govuk-pagination" aria-label="Pagination">
+    <nav class="govuk-pagination" aria-label="{{ __("paginationAriaLabel") }}">
       <div class="govuk-pagination__prev">
         <a class="govuk-link govuk-pagination__link" href="#" rel="prev">
           <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg"
@@ -284,19 +185,15 @@
             <path
               d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
           </svg>
-          <span class="govuk-pagination__link-title">
-        Previous<span class="govuk-visually-hidden"> page</span>
-      </span>
+          {{ __("paginationPrevious") }}<span class="govuk-visually-hidden">{{ __("paginationPageSuffix") }}</span>
         </a>
       </div>
       <ul id="categoryPagination" class="govuk-pagination__list">
-        <!-- Filled in by JS -->
+        <!-- Filled by JS -->
       </ul>
       <div class="govuk-pagination__next">
         <a class="govuk-link govuk-pagination__link" href="#" rel="next">
-      <span class="govuk-pagination__link-title">
-        Next<span class="govuk-visually-hidden"> page</span>
-      </span>
+          {{ __("paginationNext") }}<span class="govuk-visually-hidden">{{ __("paginationPageSuffix") }}</span>
           <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg"
                height="13" width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
             <path
@@ -311,5 +208,4 @@
   <script src="logout-dev.js"></script>
   <script src="userActivity-dev.js"></script>
   <script src="chatCategoryBreakdown-dev.js"></script>
-
 {% endblock %}

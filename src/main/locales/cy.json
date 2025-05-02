@@ -113,5 +113,20 @@
   "bannerTitleLabel": "Teitl y faner",
   "bannerBodyLabel": "Cynnwys y faner",
   "previewButton": "Rhagolwg",
-  "discardButton": "Gwaredu"
+  "discardButton": "Gwaredu",
+  "manageAccountsHeading": "Rheoli cyfrifon",
+  "accountDeletedMessage": "Cafodd y cyfrif ei ddileu’n llwyddiannus",
+  "warningTitle": "Rhybudd",
+  "noAccountsMessage": "Does dim cyfrifon ar hyn o bryd",
+  "tableHeaderAccountId": "ID cyfrif",
+  "tableHeaderUsername": "Enw defnyddiwr",
+  "tableHeaderEmail": "E-bost",
+  "tableHeaderRole": "Rôl",
+  "tableHeaderCreatedDate": "Dyddiad creu",
+  "tableHeaderActions": "Gweithredoedd",
+  "paginationAriaLabel": "Tudalennú",
+  "paginationPrevious": "Blaenorol",
+  "paginationNext": "Nesaf",
+  "paginationPageSuffix": " tudalen",
+  "paginationPageLabel": "Tudalen"
 }

@@ -113,5 +113,20 @@
   "bannerTitleLabel": "Banner Title",
   "bannerBodyLabel": "Banner Content",
   "previewButton": "Preview",
-  "discardButton": "Discard"
+  "discardButton": "Discard",
+  "manageAccountsHeading": "Manage accounts",
+  "accountDeletedMessage": "The account has been deleted successfully",
+  "warningTitle": "Warning",
+  "noAccountsMessage": "There are no accounts at this time",
+  "tableHeaderAccountId": "Account ID",
+  "tableHeaderUsername": "Username",
+  "tableHeaderEmail": "Email",
+  "tableHeaderRole": "Role",
+  "tableHeaderCreatedDate": "Created Date",
+  "tableHeaderActions": "Actions",
+  "paginationAriaLabel": "Pagination",
+  "paginationPrevious": "Previous",
+  "paginationNext": "Next",
+  "paginationPageSuffix": " page",
+  "paginationPageLabel": "Page"
 }

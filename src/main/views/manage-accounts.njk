@@ -1,52 +1,29 @@
 {% from "govuk/components/header/macro.njk" import govukHeader %}
 {% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% extends "template.njk" %}
 
 {% block pageTitle %}
-  HMCTS chatbot admin
+  {{ __("appName") }}
 {% endblock %}
 
 {% block header %}
   {{ govukHeader({
     classes: "govuk-header--full-width-border",
     homepageUrl: "/admin",
-    pageTitle: "HMCTS chatbot admin"
+    pageTitle: __("appName")
   }) }}
 
   {{ govukServiceNavigation({
     serviceName: __("appName"),
     navigation: [
-      {
-        href: "/admin",
-        text: "Home"
-      },
-      {
-        href: "/account-requests",
-        text: "Requests"
-      },
-      {
-        href: "/manage-accounts",
-        text: "Manage Accounts",
-        active: true
-      },
-      {
-        href: "/update-banner",
-        text: "Update Banner"
-      },
-      {
-        href: "/account",
-        text: "Account"
-      },
-      {
-        href: "/logout",
-        text: "Logout",
-        attributes: {
-        id: "logoutLink"
-      }
-      }
+      { href: "/admin",            text: __("navHome") },
+      { href: "/account-requests", text: __("navRequests") },
+      { href: "/manage-accounts",  text: __("navManageAccounts"), active: true },
+      { href: "/update-banner",    text: __("navUpdateBanner") },
+      { href: "/account",          text: __("navAccount") },
+      { href: "/logout",           text: __("navLogout"), attributes: { id: "logoutLink" } }
     ]
   }) }}
 {% endblock %}
@@ -83,103 +60,89 @@
     </ul>
   </div>
 
-  <h1 class="govuk-heading-xl">Manage accounts</h1>
+  <h1 class="govuk-heading-xl">{{ __("manageAccountsHeading") }}</h1>
 
-  <!-- Deletion Summary -->
   {% if deleted %}
-    <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title"
-         data-module="govuk-notification-banner">
+    <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
       <div class="govuk-notification-banner__header">
         <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-          Success
+          {{ __("successTitle") }}
         </h2>
       </div>
       <div class="govuk-notification-banner__content">
         <h3 class="govuk-notification-banner__heading">
-          The account has been deleted successfully
+          {{ __("accountDeletedMessage") }}
         </h3>
-        <p class="govuk-body">Contact <a class="govuk-notification-banner__link" href="#">example@department.gov.uk</a>
-          if you think there’s a problem.</p>
+        <p class="govuk-body">{{ __("contactSupportHtml") | safe }}</p>
       </div>
     </div>
   {% endif %}
 
   {% if not hasAccounts %}
-  <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
-    <div class="govuk-notification-banner__header">
-      <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-        Warning
-      </h2>
+    <div class="govuk-notification-banner" role="region" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+      <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
+          {{ __("warningTitle") }}
+        </h2>
+      </div>
+      <div class="govuk-notification-banner__content">
+        <h3 class="govuk-notification-banner__heading">
+          {{ __("noAccountsMessage") }}
+        </h3>
+        <p class="govuk-body">{{ __("contactSupportHtml") | safe }}</p>
+      </div>
     </div>
-    <div class="govuk-notification-banner__content">
-      <h3 class="govuk-notification-banner__heading">
-        There are no accounts at this time
-      </h3>
-      <p class="govuk-body">Contact <a class="govuk-notification-banner__link" href="#">example@department.gov.uk</a> if you think there’s a problem.</p>
-    </div>
-  </div>
   {% else %}
-  <table class="govuk-table">
-    <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
-      <th scope="col" class="govuk-table__header">Account ID</th>
-      <th scope="col" class="govuk-table__header">Username</th>
-      <th scope="col" class="govuk-table__header">Email</th>
-      <th scope="col" class="govuk-table__header">Role</th>
-      <th scope="col" class="govuk-table__header">Created Date</th>
-      <th scope="col" class="govuk-table__header">Actions</th>
-    </tr>
-    </thead>
-    <tbody class="govuk-table__body govuk-table__body--manage-accounts">
-    <!-- Populated by TypeScript -->
-    </tbody>
-  </table>
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">{{ __("tableHeaderAccountId") }}</th>
+        <th scope="col" class="govuk-table__header">{{ __("tableHeaderUsername")  }}</th>
+        <th scope="col" class="govuk-table__header">{{ __("tableHeaderEmail")     }}</th>
+        <th scope="col" class="govuk-table__header">{{ __("tableHeaderRole")      }}</th>
+        <th scope="col" class="govuk-table__header">{{ __("tableHeaderCreatedDate") }}</th>
+        <th scope="col" class="govuk-table__header">{{ __("tableHeaderActions")   }}</th>
+      </tr>
+      </thead>
+      <tbody class="govuk-table__body govuk-table__body--manage-accounts">
+      {# populated dynamically #}
+      </tbody>
+    </table>
 
-  <nav class="govuk-pagination" aria-label="Pagination">
-    <div class="govuk-pagination__prev">
-      <a class="govuk-link govuk-pagination__link" href="?page={{ currentPage - 1 }}"
-         rel="prev" {% if currentPage <= 1 %}aria-disabled="true"{% endif %}>
-        <svg class="govuk-pagination__icon govuk-pagination__icon--prev" xmlns="http://www.w3.org/2000/svg" height="13"
-             width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-          <path
-            d="m6.5938-0.0078125-6.7266 6.7266 6.7441 6.4062 1.377-1.449-4.1856-3.9768h12.896v-2h-12.984l4.2931-4.293-1.414-1.414z"></path>
-        </svg>
-        <span class="govuk-pagination__link-title">
-        Previous<span class="govuk-visually-hidden"> page</span>
-      </span>
-      </a>
-    </div>
+    <nav class="govuk-pagination" aria-label="{{ __("paginationAriaLabel") }}">
+      <div class="govuk-pagination__prev">
+        <a class="govuk-link govuk-pagination__link"
+           href="?page={{ currentPage - 1 }}"
+           rel="prev"
+           {% if currentPage <= 1 %}aria-disabled="true"{% endif %}>
+          {{ __("paginationPrevious") }}<span class="govuk-visually-hidden">{{ __("paginationPageSuffix") }}</span>
+        </a>
+      </div>
 
-    <ul class="govuk-pagination__list">
-      {% for p in pages %}
-        <li class="govuk-pagination__item {% if p == currentPage %}govuk-pagination__item--current{% endif %}">
-          <a class="govuk-link govuk-pagination__link"
-             href="?page={{ p }}"
-             aria-label="Page {{ p }}"
-             {% if p == currentPage %}aria-current="page"{% endif %}>
-            {{ p }}
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
+      <ul class="govuk-pagination__list">
+        {% for p in pages %}
+          <li class="govuk-pagination__item {% if p == currentPage %}govuk-pagination__item--current{% endif %}">
+            <a class="govuk-link govuk-pagination__link"
+               href="?page={{ p }}"
+               aria-label="{{ __("paginationPageLabel") }} {{ p }}"
+               {% if p == currentPage %}aria-current="page"{% endif %}>
+              {{ p }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
 
-    <div class="govuk-pagination__next">
-      <a class="govuk-link govuk-pagination__link" href="?page={{ currentPage + 1 }}"
-         rel="next" {% if currentPage >= pages | length %}aria-disabled="true"{% endif %}>
-        <span class="govuk-pagination__link-title">
-        Next<span class="govuk-visually-hidden"> page</span>
-        </span>
-        <svg class="govuk-pagination__icon govuk-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" height="13"
-             width="15" aria-hidden="true" focusable="false" viewBox="0 0 15 13">
-          <path
-            d="m8.107-0.0078125-1.4136 1.414 4.2926 4.293h-12.986v2h12.896l-4.1855 3.9766 1.377 1.4492 6.7441-6.4062-6.7246-6.7266z"></path>
-        </svg>
-      </a>
-    </div>
-  </nav>
+      <div class="govuk-pagination__next">
+        <a class="govuk-link govuk-pagination__link"
+           href="?page={{ currentPage + 1 }}"
+           rel="next"
+           {% if currentPage >= pages|length %}aria-disabled="true"{% endif %}>
+          {{ __("paginationNext") }}<span class="govuk-visually-hidden">{{ __("paginationPageSuffix") }}</span>
+        </a>
+      </div>
+    </nav>
   {% endif %}
 
   <script src="managePage-dev.js"></script>
   <script src="logout-dev.js"></script>
-
 {% endblock %}

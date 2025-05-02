@@ -128,5 +128,14 @@
   "paginationPrevious": "Blaenorol",
   "paginationNext": "Nesaf",
   "paginationPageSuffix": " tudalen",
-  "paginationPageLabel": "Tudalen"
+  "paginationPageLabel": "Tudalen",
+  "requestAcceptedMessage": "Cafodd cais y cyfrif ei dderbyn",
+  "requestRejectedMessage": "Cafodd cais y cyfrif ei wrthod",
+  "noRequestsMessage": "Does dim ceisiadau cyfrifon ar hyn o bryd",
+  "tableHeaderRequestId": "ID cais",
+  "tableHeaderStatus": "Statws",
+  "tableHeaderSubmittedDate": "Dyddiad cyflwyno",
+  "accountRequestsHeading": "Ceisiadau cyfrifon",
+  "actionAccept": "Derbyn",
+  "actionReject": "Gwrthod"
 }

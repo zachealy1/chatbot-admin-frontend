@@ -1252,6 +1252,15 @@ app.get('/chat-category-breakdown', ensureAuthenticated, async (req, res) => {
   }
 );
 
+app.get('/i18n/buttons', (req, res) => {
+  // pick up lang cookie (or default to 'en')
+  const lang = req.cookies.lang === 'cy' ? 'cy' : 'en';
+  // Use i18n to translate
+  const accept = req.__({ phrase: 'actionAccept', locale: lang });
+  const reject = req.__({ phrase: 'actionReject',  locale: lang });
+  res.json({ actionAccept: accept, actionReject: reject });
+});
+
 glob
   .sync(__dirname + '/routes/**/*.+(ts|js)')
   .map(filename => require(filename))

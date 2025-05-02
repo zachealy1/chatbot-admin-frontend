@@ -170,5 +170,7 @@
   "monthSep": "Sep",
   "monthOct": "Oct",
   "monthNov": "Nov",
-  "monthDec": "Dec"
+  "monthDec": "Dec",
+  "pageNotFoundHeading": "Page not Found",
+  "errorSomethingWentWrongHeading": "Something went wrong"
 }

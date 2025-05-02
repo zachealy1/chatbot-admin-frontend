@@ -170,5 +170,7 @@
   "monthSep": "Med",
   "monthOct": "Hyd",
   "monthNov": "Tach",
-  "monthDec": "Rhag"
+  "monthDec": "Rhag",
+  "pageNotFoundHeading": "Heb ganfod y dudalen",
+  "errorSomethingWentWrongHeading": "Digwyddodd rhywbeth o'i le"
 }

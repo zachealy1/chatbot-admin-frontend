@@ -15,61 +15,90 @@
   }) }}
 
   {{ govukServiceNavigation({
-    serviceName: "HMCTS chatbot admin"
+    serviceName: __("appName")
   }) }}
 {% endblock %}
 
 {% block content %}
-  <h1 class="govuk-heading-xl">Enter one time password</h1>
+  <div class="language-select" aria-label="Language switcher">
+    <ul class="language-select__list">
+      <li class="language-select__list-item">
+        {% if lang == "cy" %}
+          <a href="?lang=en" class="govuk-link">English</a>
+        {% else %}
+          <span aria-current="true">English</span>
+        {% endif %}
+      </li>
+      <li class="language-select__list-item">
+        {% if lang == "cy" %}
+          <span aria-current="true">Cymraeg</span>
+        {% else %}
+          <a
+            href="?lang=cy"
+            hreflang="cy"
+            lang="cy"
+            rel="alternate"
+            class="govuk-link"
+            data-journey-click="link - click:lang-select:Cymraeg"
+          >
+            <span class="govuk-visually-hidden">
+              Newid yr iaith i’r Gymraeg
+            </span>
+            <span aria-hidden="true">Cymraeg</span>
+          </a>
+        {% endif %}
+      </li>
+    </ul>
+  </div>
 
-  <!-- Success Alert -->
+  <h1 class="govuk-heading-xl">{{ __("enterOtpHeading") }}</h1>
+
+  {# Success banner when OTP was resent #}
   {% if sent %}
-    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert">
       <div class="govuk-notification-banner__header">
-        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-          Success
-        </h2>
+        <h2 class="govuk-notification-banner__title">{{ __("successTitle") }}</h2>
       </div>
       <div class="govuk-notification-banner__content">
-        <h3 class="govuk-notification-banner__heading">
-          A new email has been sent successfully
-        </h3>
-        <p class="govuk-body">Contact <a class="govuk-notification-banner__link" href="#">example@department.gov.uk</a> if you think there’s a problem.</p>
+        <h3 class="govuk-notification-banner__heading">{{ __("otpSentMessage") }}</h3>
+        <p class="govuk-body">{{ __("contactSupportHtml") | safe }}</p>
       </div>
     </div>
   {% endif %}
 
-  <!-- Start of Form -->
   <form action="/forgot-password/verify-otp" method="post" novalidate>
-    <div class="govuk-form-group {% if error %}govuk-form-group--error{% endif %}" id="otp-group">
-      <label class="govuk-label" for="one-time-password">One time password</label>
-      <div id="one-time-password-hint" class="govuk-hint">
-        Enter the one-time password we emailed to you.
-      </div>
-      {% if error %}
-        <p id="one-time-password-error" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span> {{ error }}
-        </p>
+    <div class="govuk-form-group{% if fieldErrors.oneTimePassword %} govuk-form-group--error{% endif %}" id="otp-group">
+      <label class="govuk-label" for="one-time-password">{{ __("oneTimePasswordLabel") }}</label>
+      <div id="one-time-password-hint" class="govuk-hint">{{ __("oneTimePasswordHint") }}</div>
+
+      {% if fieldErrors.oneTimePassword %}
+        <span id="one-time-password-error" class="govuk-error-message">{{ fieldErrors.oneTimePassword }}</span>
       {% endif %}
+
       <input
-        class="govuk-input govuk-!-width-one-half {% if error %}govuk-input--error{% endif %}"
+        class="govuk-input govuk-!-width-one-half{% if fieldErrors.oneTimePassword %} govuk-input--error{% endif %}"
         id="one-time-password"
         name="oneTimePassword"
         type="text"
-        aria-describedby="one-time-password-hint {% if error %}one-time-password-error{% endif %}"
+        value="{{ oneTimePassword | default('') }}"
+        aria-describedby="one-time-password-hint{% if fieldErrors.oneTimePassword %} one-time-password-error{% endif %}"
       >
     </div>
-    <button type="submit" class="govuk-button" id="continue-button">Continue</button>
+
+    {{ govukButton({
+      text: __("continueButton"),
+      type: "submit",
+      attributes: { id: "continue-button" }
+    }) }}
+
     <button
       type="submit"
       class="govuk-button govuk-button--secondary"
       formaction="/forgot-password/resend-otp"
       id="resend-button"
     >
-      Resend Email
+      {{ __("resendEmailButton") }}
     </button>
   </form>
-
-  <script src="/otpValidation-dev.js" defer></script>
 {% endblock %}
 

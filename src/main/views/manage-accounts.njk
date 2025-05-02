@@ -17,7 +17,7 @@
   }) }}
 
   {{ govukServiceNavigation({
-    serviceName: "HMCTS chatbot admin",
+    serviceName: __("appName"),
     navigation: [
       {
         href: "/admin",
@@ -52,6 +52,37 @@
 {% endblock %}
 
 {% block content %}
+  <div class="language-select" aria-label="Language switcher">
+    <ul class="language-select__list">
+      <li class="language-select__list-item">
+        {% if lang == "cy" %}
+          <a href="?lang=en" class="govuk-link">English</a>
+        {% else %}
+          <span aria-current="true">English</span>
+        {% endif %}
+      </li>
+      <li class="language-select__list-item">
+        {% if lang == "cy" %}
+          <span aria-current="true">Cymraeg</span>
+        {% else %}
+          <a
+            href="?lang=cy"
+            hreflang="cy"
+            lang="cy"
+            rel="alternate"
+            class="govuk-link"
+            data-journey-click="link - click:lang-select:Cymraeg"
+          >
+            <span class="govuk-visually-hidden">
+              Newid yr iaith i’r Gymraeg
+            </span>
+            <span aria-hidden="true">Cymraeg</span>
+          </a>
+        {% endif %}
+      </li>
+    </ul>
+  </div>
+
   <h1 class="govuk-heading-xl">Manage accounts</h1>
 
   <!-- Deletion Summary -->

@@ -99,5 +99,19 @@
   "resetSessionMissing": "Methu adfer y cyfrinair—mae’r sesiwn wedi dod i ben. Dechreuwch eto, os gwelwch yn dda.",
   "resetError": "Digwyddodd gwall wrth adfer eich cyfrinair. Ceisiwch eto yn nes ymlaen.",
   "sessionExpired": "Mae’r sesiwn wedi dod i ben neu’n annilys. Mewngofnodwch eto, os gwelwch yn dda.",
-  "accountUpdateError": "Digwyddodd gwall wrth ddiweddaru eich cyfrif. Ceisiwch eto’n ddiweddarach."
+  "accountUpdateError": "Digwyddodd gwall wrth ddiweddaru eich cyfrif. Ceisiwch eto’n ddiweddarach.",
+  "navHome": "Hafan",
+  "navRequests": "Ceisiadau",
+  "navManageAccounts": "Rheoli cyfrifon",
+  "navUpdateBanner": "Diweddaru Baner",
+  "navAccount": "Cyfrif",
+  "navLogout": "Allgofnodi",
+  "updateBannerHeading": "Diweddaru baner",
+  "bannerUpdatedSuccessMessage": "Diweddarwyd y faner yn llwyddiannus",
+  "defaultBannerTitle": "Tîm Cymorth Cyswllt",
+  "defaultBannerBodyHtml": "Os oes arnoch angen cymorth, ffoniwch ni ar <strong>0800 123 456</strong> neu e-bostiwch <a href='mailto:support@example.com'>support@example.com</a>.",
+  "bannerTitleLabel": "Teitl y faner",
+  "bannerBodyLabel": "Cynnwys y faner",
+  "previewButton": "Rhagolwg",
+  "discardButton": "Gwaredu"
 }

@@ -99,5 +99,19 @@
   "resetSessionMissing": "Cannot reset password—session expired. Please start again.",
   "resetError": "An error occurred while resetting your password. Please try again later.",
   "sessionExpired": "Session expired or invalid. Please log in again.",
-  "accountUpdateError": "An error occurred while updating your account. Please try again later."
+  "accountUpdateError": "An error occurred while updating your account. Please try again later.",
+  "navHome": "Home",
+  "navRequests": "Requests",
+  "navManageAccounts": "Manage Accounts",
+  "navUpdateBanner": "Update Banner",
+  "navAccount": "Account",
+  "navLogout": "Logout",
+  "updateBannerHeading": "Update banner",
+  "bannerUpdatedSuccessMessage": "The banner was updated successfully",
+  "defaultBannerTitle": "Contact Support Team",
+  "defaultBannerBodyHtml": "If you need assistance, please call us at <strong>0800 123 456</strong> or email <a href='mailto:support@example.com'>support@example.com</a>.",
+  "bannerTitleLabel": "Banner Title",
+  "bannerBodyLabel": "Banner Content",
+  "previewButton": "Preview",
+  "discardButton": "Discard"
 }

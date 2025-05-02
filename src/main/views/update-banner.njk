@@ -8,45 +8,21 @@
 {% extends "template.njk" %}
 
 {% block pageTitle %}
-  HMCTS chatbot admin
+  {{ __("appName") }}
 {% endblock %}
 
 {% block header %}
-  {{ govukHeader({
-    classes: "govuk-header--full-width-border"
-  }) }}
+  {{ govukHeader({ classes: "govuk-header--full-width-border" }) }}
 
   {{ govukServiceNavigation({
     serviceName: __("appName"),
     navigation: [
-      {
-        href: "/admin",
-        text: "Home"
-      },
-      {
-        href: "/account-requests",
-        text: "Requests"
-      },
-      {
-        href: "/manage-accounts",
-        text: "Manage Accounts"
-      },
-      {
-        href: "/update-banner",
-        text: "Update Banner",
-        active: true
-      },
-      {
-        href: "/account",
-        text: "Account"
-      },
-      {
-        href: "/logout",
-        text: "Logout",
-        attributes: {
-        id: "logoutLink"
-      }
-      }
+      { href: "/admin", text: __("navHome") },
+      { href: "/account-requests", text: __("navRequests") },
+      { href: "/manage-accounts", text: __("navManageAccounts") },
+      { href: "/update-banner", text: __("navUpdateBanner"), active: true },
+      { href: "/account", text: __("navAccount") },
+      { href: "/logout", text: __("navLogout"), attributes: { id: "logoutLink" } }
     ]
   }) }}
 {% endblock %}
@@ -83,81 +59,64 @@
     </ul>
   </div>
 
-  <h1 class="govuk-heading-xl">Update banner</h1>
+  <h1 class="govuk-heading-xl">{{ __("updateBannerHeading") }}</h1>
 
-  <!-- Success Alert -->
   {% if updated %}
-    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" aria-labelledby="govuk-notification-banner-title" data-module="govuk-notification-banner">
+    <div class="govuk-notification-banner govuk-notification-banner--success" role="alert" data-module="govuk-notification-banner">
       <div class="govuk-notification-banner__header">
-        <h2 class="govuk-notification-banner__title" id="govuk-notification-banner-title">
-          Success
-        </h2>
+        <h2 class="govuk-notification-banner__title">{{ __("successTitle") }}</h2>
       </div>
       <div class="govuk-notification-banner__content">
-        <h3 class="govuk-notification-banner__heading">
-          The banner was updated successfully
-        </h3>
-        <p class="govuk-body">Contact <a class="govuk-notification-banner__link" href="#">example@department.gov.uk</a> if you think there’s a problem.</p>
+        <h3 class="govuk-notification-banner__heading">{{ __("bannerUpdatedSuccessMessage") }}</h3>
+        <p class="govuk-body">{{ __("contactSupportHtml") | safe }}</p>
       </div>
     </div>
   {% endif %}
 
-  <!-- Banner Preview -->
   <div id="banner-preview">
     {{ govukPanel({
-      titleText: bannerTitle or "Contact Support Team",
-      html: bannerBody or "If you need assistance, please call us at <strong>0800 123 456</strong> or email <a href='mailto:support@example.com'>support@example.com</a>."
+      titleText: bannerTitle or __("defaultBannerTitle"),
+      html: (bannerBody or __("defaultBannerBodyHtml")) | safe
     }) }}
   </div>
 
-  <!-- Banner Update Form -->
   <form id="bannerUpdateForm" action="/update-banner" method="post" class="govuk-!-margin-top-5" novalidate>
 
     <div class="govuk-form-group">
-      <label class="govuk-label" for="bannerTitle">Banner Title</label>
+      <label class="govuk-label" for="bannerTitle">{{ __("bannerTitleLabel") }}</label>
       <input
         class="govuk-input govuk-!-width-two-thirds"
         id="bannerTitle"
         name="bannerTitle"
         type="text"
-        value="{{ bannerTitle or "Contact Support Team" }}"
+        value="{{ bannerTitle or __("defaultBannerTitle") }}"
         autocomplete="off"
       >
     </div>
 
     <div class="govuk-form-group">
-      <label class="govuk-label" for="bannerBody">Banner Content</label>
+      <label class="govuk-label" for="bannerBody">{{ __("bannerBodyLabel") }}</label>
       <textarea
         class="govuk-textarea govuk-!-width-two-thirds"
         id="bannerBody"
         name="bannerBody"
         rows="5"
-      >{{ bannerBody or "If you need assistance, please call us at <strong>0800 123 456</strong> or email <a href='mailto:support@example.com'>support@example.com</a>." }}</textarea>
+      >{{ bannerBody or __("defaultBannerBodyHtml") | safe }}</textarea>
     </div>
 
+    {{ govukButton({ text: __("saveChangesButton"), type: "submit" }) }}
     {{ govukButton({
-      text: "Save Changes",
-      type: "submit"
-    }) }}
-    {{ govukButton({
-      text: "Preview",
+      text: __("previewButton"),
       classes: "govuk-button--secondary",
-      attributes: {
-        id: "previewButton",
-        type: "button"
-      }
+      attributes: { id: "previewButton", type: "button" }
     }) }}
     {{ govukButton({
-      text: "Discard",
+      text: __("discardButton"),
       classes: "govuk-button--warning",
-      attributes: {
-        id: "discardButton",
-        type: "button"
-      }
+      attributes: { id: "discardButton", type: "button" }
     }) }}
   </form>
 
   <script src="updateBanner-dev.js" defer></script>
   <script src="logout-dev.js"></script>
-
 {% endblock %}

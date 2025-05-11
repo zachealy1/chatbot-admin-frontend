@@ -143,3 +143,88 @@ describe('GET /popular-chat-categories', () => {
     expect(stubClient.get.calledOnce).to.be.true;
   });
 });
+
+describe('GET /user-activity', () => {
+  let stubClient: { get: sinon.SinonStub };
+  let createStub: sinon.SinonStub;
+  let wrapperStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    sinon.stub(console, 'error');
+    // stub auth to always pass through
+    sinon
+      .stub(authModule, 'ensureAuthenticated')
+      .callsFake((_req: Request, _res: Response, next: NextFunction) => next());
+
+    // our fake axios instance
+    stubClient = { get: sinon.stub() } as any;
+    // stub axios.create to return fake client
+    createStub = sinon.stub(axios, 'create').returns(stubClient as any);
+    // stub wrapper to return its input
+    wrapperStub = sinon
+      .stub(axiosCookie, 'wrapper')
+      .callsFake(client => client as any);
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  function mkApp(sessionCookie?: string) {
+    const app: Application = express();
+    // inject session/user
+    app.use((req, _res, next) => {
+      (req as any).session = {};
+      (req as any).user    = {};
+      if (sessionCookie) {
+        (req as any).session.springSessionCookie = sessionCookie;
+        (req as any).user.springSessionCookie    = sessionCookie;
+      }
+      next();
+    });
+    adminRoutes(app);
+    return app;
+  }
+
+  it('returns 401 when not authenticated', async () => {
+    const app = mkApp(); // no cookie set
+    const res = await request(app)
+      .get('/user-activity')
+      .expect(401)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({ error: 'Not authenticated' });
+    expect(stubClient.get.notCalled).to.be.true;
+  });
+
+  it('forwards backend data on success', async () => {
+    const data = { usersOnline: 42 };
+    stubClient.get
+      .withArgs('http://localhost:4550/statistics/user-activity')
+      .resolves({ data });
+
+    const app = mkApp('SESSION=abc');
+    const res = await request(app)
+      .get('/user-activity')
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal(data);
+    expect(createStub.calledOnce).to.be.true;
+    expect(wrapperStub.calledOnce).to.be.true;
+    expect(stubClient.get.calledOnce).to.be.true;
+  });
+
+  it('returns 500 on backend error', async () => {
+    stubClient.get.rejects(new Error('backend down'));
+
+    const app = mkApp('SESSION=xyz');
+    const res = await request(app)
+      .get('/user-activity')
+      .expect(500)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({ error: 'Failed to load user activity' });
+    expect(stubClient.get.calledOnce).to.be.true;
+  });
+});

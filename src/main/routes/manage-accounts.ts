@@ -6,7 +6,6 @@ import { Application } from 'express';
 import { CookieJar } from 'tough-cookie';
 
 export default function (app: Application): void {
-  // Add a route for /manage-accounts
   app.get('/manage-accounts', ensureAuthenticated, async (req, res) => {
     const storedSessionCookie =
       (req.user as any)?.springSessionCookie ||
@@ -53,7 +52,6 @@ export default function (app: Application): void {
       });
     }
   });
-
 
   app.get('/account/all', ensureAuthenticated, async (req, res) => {
     // pull the session cookie you saved at login

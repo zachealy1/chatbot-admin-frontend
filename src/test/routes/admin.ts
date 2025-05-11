@@ -228,3 +228,91 @@ describe('GET /user-activity', () => {
     expect(stubClient.get.calledOnce).to.be.true;
   });
 });
+
+describe('GET /chat-category-breakdown', () => {
+  let stubClient: { get: sinon.SinonStub };
+  let createStub: sinon.SinonStub;
+  let wrapperStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    // silence console.error in the route
+    sinon.stub(console, 'error');
+
+    // stub auth to allow through
+    sinon
+      .stub(authModule, 'ensureAuthenticated')
+      .callsFake((_req: Request, _res: Response, next: NextFunction) => next());
+
+    // our fake axios instance
+    stubClient = { get: sinon.stub() } as any;
+    // stub axios.create to return our fake client
+    createStub = sinon.stub(axios, 'create').returns(stubClient as any);
+    // stub wrapper to return the client unchanged
+    wrapperStub = sinon
+      .stub(axiosCookie, 'wrapper')
+      .callsFake(client => client as any);
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  function mkApp(sessionCookie?: string) {
+    const app: Application = express();
+    // inject session and user
+    app.use((req, _res, next) => {
+      (req as any).session = {};
+      (req as any).user    = {};
+      if (sessionCookie) {
+        (req as any).session.springSessionCookie = sessionCookie;
+        (req as any).user.springSessionCookie    = sessionCookie;
+      }
+      next();
+    });
+    // mount the routes under test
+    adminRoutes(app);
+    return app;
+  }
+
+  it('returns 401 when no session cookie', async () => {
+    const app = mkApp(); // no cookie
+    const res = await request(app)
+      .get('/chat-category-breakdown')
+      .expect(401)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({ error: 'Not authenticated' });
+    expect(stubClient.get.notCalled).to.be.true;
+  });
+
+  it('forwards backend data on success', async () => {
+    const data = { categories: { A: 3, B: 7 } };
+    stubClient.get
+      .withArgs('http://localhost:4550/statistics/chat-category-breakdown')
+      .resolves({ data });
+
+    const app = mkApp('SESSION=1');
+    const res = await request(app)
+      .get('/chat-category-breakdown')
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal(data);
+    expect(createStub.calledOnce).to.be.true;
+    expect(wrapperStub.calledOnce).to.be.true;
+    expect(stubClient.get.calledOnce).to.be.true;
+  });
+
+  it('returns 500 on backend error', async () => {
+    stubClient.get.rejects(new Error('backend fail'));
+
+    const app = mkApp('SESSION=2');
+    const res = await request(app)
+      .get('/chat-category-breakdown')
+      .expect(500)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({ error: 'Failed to fetch data' });
+    expect(stubClient.get.calledOnce).to.be.true;
+  });
+});

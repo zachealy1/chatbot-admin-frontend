@@ -195,3 +195,154 @@ describe('GET /account/update', () => {
   });
 });
 
+describe('POST /account/update', () => {
+  let stubClient: { get: sinon.SinonStub; post: sinon.SinonStub };
+  let wrapperStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    // silence console.error from the route
+    sinon.stub(console, 'error');
+
+    // fake axios client
+    stubClient = {
+      get: sinon.stub(),
+      post: sinon.stub(),
+    };
+    wrapperStub = sinon
+      .stub(axiosCookie, 'wrapper')
+      .callsFake(() => stubClient as any);
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  function mkApp(sessionCookie?: string) {
+    const app: Application = express();
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: false }));
+
+    // stub session and user, and ensure body fields exist
+    app.use((req, _res, next) => {
+      req.body = req.body || {};
+      req.body['date-of-birth-day']    = req.body['date-of-birth-day']    ?? '';
+      req.body['date-of-birth-month']  = req.body['date-of-birth-month']  ?? '';
+      req.body['date-of-birth-year']   = req.body['date-of-birth-year']   ?? '';
+      (req as any).session = {};
+      (req as any).user    = {};
+      if (sessionCookie) {
+        (req as any).session.springSessionCookie = sessionCookie;
+        (req as any).user.springSessionCookie    = sessionCookie;
+      }
+      next();
+    });
+
+    // override render → JSON
+    app.use((req, res, next) => {
+      res.render = (view: string, opts?: any) => res.json({ view, options: opts });
+      next();
+    });
+
+    accountRoutes(app);
+    return app;
+  }
+
+  it('returns 401 and re-renders when no session cookie is present', async () => {
+    const app = mkApp(); // no cookie
+    const res = await request(app)
+      .post('/account/update')
+      .send({
+        username: 'u',
+        email: 'u@example.com',
+        'date-of-birth-day': '1',
+        'date-of-birth-month': '1',
+        'date-of-birth-year': '1990',
+      })
+      .expect(401)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({
+      view: 'account',
+      options: {
+        errors: ['Session expired or invalid. Please log in again.'],
+        username: 'u',
+        email: 'u@example.com',
+        day: '1',
+        month: '1',
+        year: '1990',
+      },
+    });
+    expect(wrapperStub.notCalled).to.be.true;
+  });
+
+  it('redirects to /account?updated=true on successful backend update', async () => {
+    // stub CSRF fetch
+    stubClient.get
+      .withArgs('http://localhost:4550/csrf')
+      .resolves({ data: { csrfToken: 'tok123' } });
+    // stub account update POST
+    stubClient.post
+      .withArgs(
+        'http://localhost:4550/account/update',
+        {
+          email: 'u@example.com',
+          username: 'u',
+          dateOfBirth: '1990-01-01',
+          password: undefined,
+          confirmPassword: undefined,
+        },
+        sinon.match({ headers: { 'X-XSRF-TOKEN': 'tok123' } })
+      )
+      .resolves({});
+
+    const app = mkApp('SESSION=abc');
+    await request(app)
+      .post('/account/update')
+      .send({
+        username: 'u',
+        email: 'u@example.com',
+        'date-of-birth-day': '1',
+        'date-of-birth-month': '1',
+        'date-of-birth-year': '1990',
+      })
+      .expect(302)
+      .expect('Location', '/account?updated=true');
+
+    expect(wrapperStub.calledOnce).to.be.true;
+  });
+
+  it('re-renders with generic error when backend update fails', async () => {
+    // stub CSRF fetch
+    stubClient.get
+      .withArgs('http://localhost:4550/csrf')
+      .resolves({ data: { csrfToken: 'tokXYZ' } });
+    // stub account update POST to fail
+    stubClient.post.rejects(new Error('boom'));
+
+    const app = mkApp('SESSION=xyz');
+    const res = await request(app)
+      .post('/account/update')
+      .send({
+        username: 'user2',
+        email: 'user2@example.com',
+        'date-of-birth-day': '2',
+        'date-of-birth-month': '2',
+        'date-of-birth-year': '1992',
+      })
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({
+      view: 'account',
+      options: {
+        errors: ['An error occurred during account update. Please try again later.'],
+        username: 'user2',
+        email: 'user2@example.com',
+        day: '2',
+        month: '2',
+        year: '1992',
+      },
+    });
+    expect(wrapperStub.calledOnce).to.be.true;
+  });
+});

@@ -50,12 +50,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/i18n", "npm:0.13.12"],\
             ["@types/jest", "npm:29.5.12"],\
             ["@types/lodash", "npm:4.17.7"],\
+            ["@types/mocha", "npm:10.0.10"],\
             ["@types/node", "npm:20.14.15"],\
             ["@types/nunjucks", "npm:3.2.6"],\
             ["@types/passport", "npm:1.0.17"],\
             ["@types/require-directory", "npm:2.1.6"],\
             ["@types/serve-favicon", "npm:2.5.7"],\
-            ["@types/supertest", "npm:6.0.2"],\
+            ["@types/sinon", "npm:17.0.4"],\
+            ["@types/supertest", "npm:6.0.3"],\
             ["@typescript-eslint/eslint-plugin", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:7.18.0"],\
             ["@typescript-eslint/parser", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:7.18.0"],\
             ["applicationinsights", "npm:3.2.1"],\
@@ -112,7 +114,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["stylelint", "npm:16.6.1"],\
             ["stylelint-config-standard", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:36.0.0"],\
             ["stylelint-config-standard-scss", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:13.1.0"],\
-            ["supertest", "npm:7.0.0"],\
+            ["supertest", "npm:7.1.0"],\
             ["tough-cookie", "npm:5.1.2"],\
             ["ts-jest", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:29.1.4"],\
             ["ts-loader", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:9.5.1"],\
@@ -6087,6 +6089,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/mocha", [\
+        ["npm:10.0.10", {\
+          "packageLocation": "./.yarn/cache/@types-mocha-npm-10.0.10-1e025e7c6e-17a56add60.zip/node_modules/@types/mocha/",\
+          "packageDependencies": [\
+            ["@types/mocha", "npm:10.0.10"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/ms", [\
         ["npm:0.7.31", {\
           "packageLocation": "./.yarn/cache/@types-ms-npm-0.7.31-ea3b89342b-daadd354ae.zip/node_modules/@types/ms/",\
@@ -6254,6 +6265,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@types/sinon", [\
+        ["npm:17.0.4", {\
+          "packageLocation": "./.yarn/cache/@types-sinon-npm-17.0.4-120d11ea84-487f43bda8.zip/node_modules/@types/sinon/",\
+          "packageDependencies": [\
+            ["@types/sinon", "npm:17.0.4"],\
+            ["@types/sinonjs__fake-timers", "npm:8.1.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/sinonjs__fake-timers", [\
+        ["npm:8.1.5", {\
+          "packageLocation": "./.yarn/cache/@types-sinonjs__fake-timers-npm-8.1.5-c35b400174-7e3c08f6c1.zip/node_modules/@types/sinonjs__fake-timers/",\
+          "packageDependencies": [\
+            ["@types/sinonjs__fake-timers", "npm:8.1.5"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@types/stack-utils", [\
         ["npm:2.0.1", {\
           "packageLocation": "./.yarn/cache/@types-stack-utils-npm-2.0.1-867718ab70-205fdbe332.zip/node_modules/@types/stack-utils/",\
@@ -6276,10 +6306,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/supertest", [\
-        ["npm:6.0.2", {\
-          "packageLocation": "./.yarn/cache/@types-supertest-npm-6.0.2-1f239669e4-1eafa47266.zip/node_modules/@types/supertest/",\
+        ["npm:6.0.3", {\
+          "packageLocation": "./.yarn/cache/@types-supertest-npm-6.0.3-0d43ae5953-5f75e41906.zip/node_modules/@types/supertest/",\
           "packageDependencies": [\
-            ["@types/supertest", "npm:6.0.2"],\
+            ["@types/supertest", "npm:6.0.3"],\
             ["@types/methods", "npm:1.1.4"],\
             ["@types/superagent", "npm:8.1.3"]\
           ],\
@@ -17971,12 +18001,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/i18n", "npm:0.13.12"],\
             ["@types/jest", "npm:29.5.12"],\
             ["@types/lodash", "npm:4.17.7"],\
+            ["@types/mocha", "npm:10.0.10"],\
             ["@types/node", "npm:20.14.15"],\
             ["@types/nunjucks", "npm:3.2.6"],\
             ["@types/passport", "npm:1.0.17"],\
             ["@types/require-directory", "npm:2.1.6"],\
             ["@types/serve-favicon", "npm:2.5.7"],\
-            ["@types/supertest", "npm:6.0.2"],\
+            ["@types/sinon", "npm:17.0.4"],\
+            ["@types/supertest", "npm:6.0.3"],\
             ["@typescript-eslint/eslint-plugin", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:7.18.0"],\
             ["@typescript-eslint/parser", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:7.18.0"],\
             ["applicationinsights", "npm:3.2.1"],\
@@ -18033,7 +18065,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["stylelint", "npm:16.6.1"],\
             ["stylelint-config-standard", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:36.0.0"],\
             ["stylelint-config-standard-scss", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:13.1.0"],\
-            ["supertest", "npm:7.0.0"],\
+            ["supertest", "npm:7.1.0"],\
             ["tough-cookie", "npm:5.1.2"],\
             ["ts-jest", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:29.1.4"],\
             ["ts-loader", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:9.5.1"],\
@@ -18503,7 +18535,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["sinon-chai", "virtual:5c86d93bc614dcc07528a847be8e69a11d4241faf459870c8d05a1091ebe7795b3662598c52ebf26e4b4ca32b1afcdc5b785498f8d4aecbf706a70c82f8b004d#npm:3.7.0"],\
             ["@types/chai", null],\
-            ["@types/sinon", null],\
+            ["@types/sinon", "npm:17.0.4"],\
             ["chai", "npm:4.4.1"],\
             ["sinon", "npm:18.0.0"]\
           ],\
@@ -19212,10 +19244,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["supertest", [\
-        ["npm:7.0.0", {\
-          "packageLocation": "./.yarn/cache/supertest-npm-7.0.0-8060c32e4d-974743aa51.zip/node_modules/supertest/",\
+        ["npm:7.1.0", {\
+          "packageLocation": "./.yarn/cache/supertest-npm-7.1.0-76eb506602-366372311e.zip/node_modules/supertest/",\
           "packageDependencies": [\
-            ["supertest", "npm:7.0.0"],\
+            ["supertest", "npm:7.1.0"],\
             ["methods", "npm:1.1.2"],\
             ["superagent", "npm:9.0.1"]\
           ],\

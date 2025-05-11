@@ -1,5 +1,5 @@
 import * as authModule from '../../main/modules/auth';
-import pendingRoutes from '../../main/routes/requests';
+import requestsRoutes from '../../main/routes/requests';
 
 import axios from 'axios';
 import * as axiosCookie from 'axios-cookiejar-support';
@@ -51,7 +51,7 @@ describe('GET /requests/pending', () => {
       next();
     });
     // mount the route
-    pendingRoutes(app);
+    requestsRoutes(app);
     return app;
   }
 
@@ -89,5 +89,108 @@ describe('GET /requests/pending', () => {
       .expect(500)
       .expect('Content-Type', /json/)
       .expect({ error: 'Failed to load pending requests' });
+  });
+});
+
+describe('POST /requests/:requestId/accept', () => {
+  let stubClient: { get: sinon.SinonStub; post: sinon.SinonStub };
+
+  beforeEach(() => {
+    // allow authentication
+    sinon
+      .stub(authModule, 'ensureAuthenticated')
+      .callsFake((_req: Request, _res: Response, next: NextFunction) => next());
+
+    // create a fake axios client
+    stubClient = { get: sinon.stub(), post: sinon.stub() };
+
+    // default CSRF stub returns token
+    stubClient.get
+      .withArgs('http://localhost:4550/csrf')
+      .resolves({ data: { csrfToken: 'tok123' } });
+
+    // stub axios.create → fake client
+    sinon.stub(axios, 'create').returns(stubClient as any);
+
+    // stub wrapper → identity
+    sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  function mkApp(sessionCookie?: string) {
+    const app: Application = express();
+    app.use(express.urlencoded({ extended: false }));
+
+    // inject session & user & cookies
+    app.use((req, _res, next) => {
+      (req as any).session = {};
+      (req as any).user = {};
+      req.cookies = {};
+      if (sessionCookie) {
+        (req as any).session.springSessionCookie = sessionCookie;
+        (req as any).user.springSessionCookie = sessionCookie;
+      }
+      next();
+    });
+
+    // override res.render → JSON
+    app.use((req, res, next) => {
+      res.render = (view: string, opts?: any) => res.json({ view, options: opts });
+      next();
+    });
+
+    requestsRoutes(app);
+    return app;
+  }
+
+  it('returns 401 when not authenticated', async () => {
+    await request(mkApp())
+      .post('/requests/42/accept')
+      .expect(401)
+      .expect('Not authenticated');
+  });
+
+  it('redirects on successful accept', async () => {
+    // stub approve call to succeed
+    stubClient.post
+      .withArgs(
+        'http://localhost:4550/account/approve/99',
+        {},
+        sinon.match({ headers: { 'X-XSRF-TOKEN': 'tok123' } })
+      )
+      .resolves({});
+
+    await request(mkApp('SESSION=1'))
+      .post('/requests/99/accept')
+      .expect(302)
+      .expect('Location', '/account-requests?accepted=true');
+  });
+
+  it('renders error view on backend failure', async () => {
+    // stub approve call to fail
+    stubClient.post
+      .withArgs(
+        'http://localhost:4550/account/approve/123',
+        sinon.match.any,
+        sinon.match.any
+      )
+      .rejects(new Error('fail'));
+
+    const res = await request(mkApp('SESSION=2'))
+      .post('/requests/123/accept')
+      .expect(500)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({
+      view: 'account-requests',
+      options: {
+        accepted: false,
+        rejected: false,
+        error: 'Failed to accept request'
+      }
+    });
   });
 });

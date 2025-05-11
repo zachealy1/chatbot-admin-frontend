@@ -637,3 +637,141 @@ describe('POST /forgot-password/verify-otp', () => {
     });
   });
 });
+
+describe('POST /forgot-password/resend-otp', () => {
+  let stubClient: { get: sinon.SinonStub; post: sinon.SinonStub };
+  let createStub: sinon.SinonStub;
+  let wrapperStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    sinon.stub(console, 'log');
+    sinon.stub(console, 'error');
+
+    // fake axios client
+    stubClient = { get: sinon.stub(), post: sinon.stub() } as any;
+    // stub axios.create → our fake client
+    createStub = sinon.stub(axios, 'create').returns(stubClient as any);
+    // stub wrapper → identity
+    wrapperStub = sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  function mkApp(sessionEmail?: string) {
+    const app: Application = express();
+    app.use(express.urlencoded({ extended: false }));
+
+    // inject session and translator
+    app.use((req, _res, next) => {
+      (req as any).session = {};
+      if (sessionEmail !== undefined) {
+        (req as any).session.email = sessionEmail;
+      }
+      // translator stub
+      (req as any).__ = (msg: string) => msg;
+      next();
+    });
+
+    // override res.render → JSON
+    app.use((req, res, next) => {
+      res.render = (view: string, opts?: any) => res.json({ view, options: opts });
+      next();
+    });
+
+    forgotRoutes(app);
+    return app;
+  }
+
+  it('re-renders with error if session.email is missing', async () => {
+    const app = mkApp(); // no session.email
+    const res = await request(app)
+      .post('/forgot-password/resend-otp')
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({
+      view: 'verify-otp',
+      options: {
+        error: 'No valid email found. Please start the reset process again.'
+      }
+    });
+    expect(createStub.notCalled).to.be.true;
+    expect(wrapperStub.notCalled).to.be.true;
+  });
+
+  it('re-renders with error if session.email is invalid', async () => {
+    const app = mkApp('not-an-email');
+    const res = await request(app)
+      .post('/forgot-password/resend-otp')
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body.options.error).to.equal(
+      'No valid email found. Please start the reset process again.'
+    );
+    expect(createStub.notCalled).to.be.true;
+  });
+
+  it('redirects to verify-otp on successful resend', async () => {
+    // stub CSRF fetch and resend post
+    stubClient.get
+      .withArgs('http://localhost:4550/csrf')
+      .resolves({ data: { csrfToken: 'tok123' } });
+    stubClient.post
+      .withArgs(
+        'http://localhost:4550/forgot-password/resend-otp',
+        { email: 'u@e.com' },
+        sinon.match({ headers: { 'X-XSRF-TOKEN': 'tok123' } })
+      )
+      .resolves({ data: {} });
+
+    const app = mkApp('u@e.com');
+    await request(app)
+      .post('/forgot-password/resend-otp')
+      .expect(302)
+      .expect('Location', '/forgot-password/verify-otp');
+
+    expect(createStub.calledOnce).to.be.true;
+    expect(wrapperStub.calledOnce).to.be.true;
+    expect(stubClient.get.calledOnce).to.be.true;
+    expect(stubClient.post.calledOnce).to.be.true;
+  });
+
+  it('re-renders with backend string error', async () => {
+    stubClient.get.resolves({ data: { csrfToken: 'tokX' } });
+    stubClient.post.rejects({ response: { data: 'backend down' } });
+
+    const app = mkApp('x@y.z');
+    const res = await request(app)
+      .post('/forgot-password/resend-otp')
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({
+      view: 'verify-otp',
+      options: {
+        error: 'backend down'
+      }
+    });
+  });
+
+  it('re-renders with fallback error on non-string backend error', async () => {
+    stubClient.get.resolves({ data: { csrfToken: 'tokY' } });
+    stubClient.post.rejects(new Error('network fail'));
+
+    const app = mkApp('x@y.z');
+    const res = await request(app)
+      .post('/forgot-password/resend-otp')
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({
+      view: 'verify-otp',
+      options: {
+        error: 'An error occurred while resending the OTP. Please try again.'
+      }
+    });
+  });
+});

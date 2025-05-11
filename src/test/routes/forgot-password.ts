@@ -487,3 +487,153 @@ describe('POST /forgot-password/reset-password', () => {
     expect(res.body.options.fieldErrors).to.have.property('general', 'resetError');
   });
 });
+
+describe('POST /forgot-password/verify-otp', () => {
+  let stubClient: { get: sinon.SinonStub; post: sinon.SinonStub };
+  let createStub: sinon.SinonStub;
+  let wrapperStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    sinon.stub(console, 'error');
+    stubClient = { get: sinon.stub(), post: sinon.stub() } as any;
+    createStub = sinon.stub(axios, 'create').returns(stubClient as any);
+    wrapperStub = sinon
+      .stub(axiosCookie, 'wrapper')
+      .callsFake(client => client as any);
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  function mkApp(
+    session: Partial<Record<'email' | 'verifiedOtp', string>> = {},
+    cookies: Record<string, string> = {}
+  ) {
+    const app: Application = express();
+    app.use(express.json());                      // ← parse JSON bodies
+    app.use(express.urlencoded({ extended: false }));
+
+    app.use((req, _res, next) => {
+      (req as any).cookies = cookies;
+      next();
+    });
+    app.use((req, _res, next) => {
+      (req as any).__ = (msg: string) => msg;
+      next();
+    });
+    app.use((req, _res, next) => {
+      (req as any).session = { ...(session as any) };
+      next();
+    });
+    app.use((req, res, next) => {
+      // render → JSON
+      res.render = (view: string, opts?: any) => res.json({ view, options: opts });
+      next();
+    });
+    forgotRoutes(app);
+    return app;
+  }
+
+  it('re-renders when session email missing and OTP missing', async () => {
+    const app = mkApp();
+    const res = await request(app)
+      .post('/forgot-password/verify-otp')
+      .send({ oneTimePassword: '' })
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({
+      view: 'verify-otp',
+      options: {
+        lang: 'en',
+        sent: false,
+        oneTimePassword: '',             // now included
+        fieldErrors: {
+          general: 'noEmailInSession',
+          oneTimePassword: 'otpRequired'
+        }
+      }
+    });
+    expect(createStub.notCalled).to.be.true;
+    expect(wrapperStub.notCalled).to.be.true;
+  });
+
+  it('re-renders when OTP missing but email present', async () => {
+    const app = mkApp({ email: 'u@e.com' });
+    const res = await request(app)
+      .post('/forgot-password/verify-otp')
+      .send({ oneTimePassword: '' })
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body.options.fieldErrors).to.deep.equal({
+      oneTimePassword: 'otpRequired'
+    });
+  });
+
+  it('redirects on successful verify-otp (default lang=en)', async () => {
+    stubClient.get.resolves({ data: { csrfToken: 'tok123' } });
+    stubClient.post.resolves({});
+
+    const app = mkApp({ email: 'u@e.com' });
+    await request(app)
+      .post('/forgot-password/verify-otp')
+      .send({ oneTimePassword: '9999' })
+      .expect(302)
+      .expect('Location', '/forgot-password/reset-password?lang=en');
+
+    expect(createStub.calledOnce).to.be.true;
+    expect(wrapperStub.calledOnce).to.be.true;
+  });
+
+  it('redirects with cy lang when cookie set', async () => {
+    stubClient.get.resolves({ data: { csrfToken: 'tokABC' } });
+    stubClient.post.resolves({});
+
+    const app = mkApp({ email: 'x@y.z' }, { lang: 'cy' });
+    await request(app)
+      .post('/forgot-password/verify-otp')
+      .send({ oneTimePassword: '1234' })
+      .expect(302)
+      .expect('Location', '/forgot-password/reset-password?lang=cy');
+  });
+
+  it('re-renders with backend string error', async () => {
+    stubClient.get.resolves({ data: { csrfToken: 'tokX' } });
+    stubClient.post.rejects({ response: { data: 'expired' } });
+
+    const app = mkApp({ email: 'u@e.com' });
+    const res = await request(app)
+      .post('/forgot-password/verify-otp')
+      .send({ oneTimePassword: '0000' })
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({
+      view: 'verify-otp',
+      options: {
+        lang: 'en',
+        sent: false,
+        oneTimePassword: '0000',
+        fieldErrors: { general: 'expired' }
+      }
+    });
+  });
+
+  it('re-renders with fallback error when backend non-string error', async () => {
+    stubClient.get.resolves({ data: { csrfToken: 'tokY' } });
+    stubClient.post.rejects(new Error('network'));
+
+    const app = mkApp({ email: 'u@e.com' });
+    const res = await request(app)
+      .post('/forgot-password/verify-otp')
+      .send({ oneTimePassword: '1111' })
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body.options.fieldErrors).to.deep.equal({
+      general: 'otpVerifyError'
+    });
+  });
+});

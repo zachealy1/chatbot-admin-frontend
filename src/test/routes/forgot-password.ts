@@ -141,3 +141,29 @@ describe('GET /forgot-password/verify-otp', () => {
     });
   });
 });
+
+describe('GET /forgot-password/reset-password', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('renders the reset-password view', async () => {
+    const app: Application = express();
+
+    // override res.render to return JSON
+    app.use((req, res, next) => {
+      res.render = (view: string, opts?: any) => res.json({ view, options: opts });
+      next();
+    });
+
+    // mount the forgot-password routes
+    forgotRoutes(app);
+
+    const res = await request(app)
+      .get('/forgot-password/reset-password')
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({ view: 'reset-password' });
+  });
+});

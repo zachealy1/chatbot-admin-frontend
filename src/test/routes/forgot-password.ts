@@ -322,3 +322,168 @@ describe('POST /forgot-password/enter-email', () => {
     );
   });
 });
+
+describe('POST /forgot-password/reset-password', () => {
+  let stubClient: { get: sinon.SinonStub; post: sinon.SinonStub };
+  let createStub: sinon.SinonStub;
+  let wrapperStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    sinon.stub(console, 'error');
+
+    stubClient = { get: sinon.stub(), post: sinon.stub() } as any;
+    createStub = sinon.stub(axios, 'create').returns(stubClient as any);
+    wrapperStub = sinon
+      .stub(axiosCookie, 'wrapper')
+      .callsFake(client => client as any);
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  function mkApp(
+    session: Partial<Record<'email' | 'verifiedOtp', string>> = {},
+    cookies: Record<string, string> = {}
+  ) {
+    const app: Application = express();
+    // parse JSON and urlencoded bodies
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: false }));
+
+    // stub cookies
+    app.use((req, _res, next) => {
+      (req as any).cookies = cookies;
+      next();
+    });
+
+    // stub i18n translator
+    app.use((req, _res, next) => {
+      (req as any).__ = (msg: string) => msg;
+      next();
+    });
+
+    // stub session
+    app.use((req, _res, next) => {
+      (req as any).session = { ...(session as any) };
+      next();
+    });
+
+    // override render → JSON
+    app.use((req, res, next) => {
+      res.render = (view: string, opts?: any) => res.json({ view, options: opts });
+      next();
+    });
+
+    forgotRoutes(app);
+    return app;
+  }
+
+  it('re-renders with errors when fields missing and session missing', async () => {
+    const app = mkApp();
+    const res = await request(app)
+      .post('/forgot-password/reset-password')
+      .send({ password: '', confirmPassword: '' })
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body).to.deep.equal({
+      view: 'reset-password',
+      options: {
+        lang: 'en',
+        fieldErrors: {
+          password: 'passwordRequired',
+          confirmPassword: 'confirmPasswordRequired',
+          general: 'resetSessionMissing',
+        },
+        password: '',
+        confirmPassword: ''
+      }
+    });
+
+    expect(createStub.notCalled).to.be.true;
+    expect(wrapperStub.notCalled).to.be.true;
+  });
+
+  it('re-renders with strength errors when both password and confirm are weak', async () => {
+    const app = mkApp({ email: 'a@b.com', verifiedOtp: '1234' });
+    const res = await request(app)
+      .post('/forgot-password/reset-password')
+      .send({ password: 'weak', confirmPassword: 'weak' })
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body.options.fieldErrors).to.have.property('password', 'passwordCriteria');
+    expect(res.body.options.fieldErrors).to.not.have.property('confirmPassword');
+  });
+
+  it('re-renders with mismatch error when passwords do not match', async () => {
+    const app = mkApp({ email: 'a@b.com', verifiedOtp: '1234' });
+    const res = await request(app)
+      .post('/forgot-password/reset-password')
+      .send({ password: 'StrongP@ss1', confirmPassword: 'Mismatch1!' })
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body.options.fieldErrors).to.have.property('confirmPassword', 'passwordsMismatch');
+  });
+
+  it('redirects on successful reset', async () => {
+    stubClient.get
+      .withArgs('/csrf')
+      .resolves({ data: { csrfToken: 't0k' } });
+    stubClient.post
+      .withArgs(
+        '/forgot-password/reset-password',
+        sinon.match({
+          email: 'u@e.com',
+          otp: '9999',
+          password: 'StrongP@ss1',
+          confirmPassword: 'StrongP@ss1'
+        }),
+        sinon.match({ headers: { 'X-XSRF-TOKEN': 't0k' } })
+      )
+      .resolves({});
+
+    const app = mkApp(
+      { email: 'u@e.com', verifiedOtp: '9999' },
+      { lang: 'cy' }
+    );
+    await request(app)
+      .post('/forgot-password/reset-password')
+      .send({ password: 'StrongP@ss1', confirmPassword: 'StrongP@ss1' })
+      .expect(302)
+      .expect('Location', '/login?passwordReset=true&lang=cy');
+
+    expect(createStub.calledOnce).to.be.true;
+    expect(wrapperStub.calledOnce).to.be.true;
+  });
+
+  it('re-renders with backend string error', async () => {
+    stubClient.get.resolves({ data: { csrfToken: 'tokX' } });
+    stubClient.post.rejects({ response: { data: 'backend oops' } });
+
+    const app = mkApp({ email: 'x@y.z', verifiedOtp: '0000' });
+    const res = await request(app)
+      .post('/forgot-password/reset-password')
+      .send({ password: 'StrongP@ss1', confirmPassword: 'StrongP@ss1' })
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body.options.fieldErrors).to.have.property('general', 'backend oops');
+  });
+
+  it('re-renders with fallback error when backend error is non-string', async () => {
+    stubClient.get.resolves({ data: { csrfToken: 'tokY' } });
+    stubClient.post.rejects(new Error('network fail'));
+
+    const app = mkApp({ email: 'x@y.z', verifiedOtp: '0000' });
+    const res = await request(app)
+      .post('/forgot-password/reset-password')
+      .send({ password: 'StrongP@ss1', confirmPassword: 'StrongP@ss1' })
+      .expect(200)
+      .expect('Content-Type', /json/);
+
+    expect(res.body.options.fieldErrors).to.have.property('general', 'resetError');
+  });
+});

@@ -5,6 +5,10 @@ import { wrapper } from 'axios-cookiejar-support';
 import { Application } from 'express';
 import { CookieJar } from 'tough-cookie';
 
+const { Logger } = require('@hmcts/nodejs-logging');
+
+const logger = Logger.getLogger('app');
+
 export default function (app: Application): void {
 
   app.get('/update-banner', ensureAuthenticated, async (req, res) => {
@@ -15,7 +19,7 @@ export default function (app: Application): void {
       '';
 
     if (!storedSessionCookie) {
-      console.error('No Spring session cookie in Express session');
+      logger.error('No Spring session cookie in Express session');
       return res.redirect('/login');
     }
 
@@ -48,7 +52,7 @@ export default function (app: Application): void {
       });
 
     } catch (err) {
-      console.error('Failed to load banner for edit:', err);
+      logger.error('Failed to load banner for edit:', err);
       // On error, still render the page with defaults and an error message
       res.render('update-banner', {
         bannerTitle: 'Contact Support Team',
@@ -69,7 +73,7 @@ export default function (app: Application): void {
       '';
 
     if (!storedSessionCookie) {
-      console.error('No Spring session cookie in Express session');
+      logger.error('No Spring session cookie in Express session');
       return res.redirect('/login');
     }
 
@@ -95,11 +99,11 @@ export default function (app: Application): void {
         { headers: { 'X-XSRF-TOKEN': csrfToken } }
       );
 
-      console.log('Banner updated successfully');
+      logger.log('Banner updated successfully');
       return res.redirect('/update-banner?updated=true');
 
     } catch (err: any) {
-      console.error('Error updating banner:', err);
+      logger.error('Error updating banner:', err);
       return res.render('update-banner', {
         error: 'Could not save banner—please try again.',
         bannerTitle,

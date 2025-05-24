@@ -5,6 +5,10 @@ import { wrapper } from 'axios-cookiejar-support';
 import { Application } from 'express';
 import { CookieJar } from 'tough-cookie';
 
+const { Logger } = require('@hmcts/nodejs-logging');
+
+const logger = Logger.getLogger('app');
+
 export default function (app: Application): void {
 
   app.get('/account',  ensureAuthenticated, async (req, res) => {
@@ -52,7 +56,7 @@ export default function (app: Application): void {
       res.set('Cache-Control', 'no-store');
       res.render('account', context);
     } catch (error) {
-      console.error('Error retrieving account details:', error);
+      logger.error('Error retrieving account details:', error);
       res.render('account', {
         errors: ['Error retrieving account details.'],
         updated: req.query.updated === 'true'
@@ -112,7 +116,7 @@ export default function (app: Application): void {
       // Request the CSRF token from the backend.
       const csrfResponse = await client.get('http://localhost:4550/csrf');
       const csrfToken = csrfResponse.data.csrfToken;
-      console.log('Retrieved CSRF token for update:', csrfToken);
+      logger.log('Retrieved CSRF token for update:', csrfToken);
 
       // Send the account update POST request with the CSRF token.
       await client.post('http://localhost:4550/account/update', payload, {
@@ -123,7 +127,7 @@ export default function (app: Application): void {
 
       return res.redirect('/account?updated=true');
     } catch (error) {
-      console.error('Error updating account in backend:', error);
+      logger.error('Error updating account in backend:', error);
       return res.render('account', {
         errors: ['An error occurred during account update. Please try again later.'],
         username,

@@ -5,6 +5,10 @@ import { wrapper } from 'axios-cookiejar-support';
 import { Application } from 'express';
 import { CookieJar } from 'tough-cookie';
 
+const { Logger } = require('@hmcts/nodejs-logging');
+
+const logger = Logger.getLogger('app');
+
 export default function (app: Application): void {
   app.get('/manage-accounts', ensureAuthenticated, async (req, res) => {
     const storedSessionCookie =
@@ -42,7 +46,7 @@ export default function (app: Application): void {
       });
 
     } catch (err) {
-      console.error('Error fetching managed accounts:', err);
+      logger.error('Error fetching managed accounts:', err);
       res.render('manage-accounts', {
         deleted:      req.query.deleted === 'true',
         pages:        [1],
@@ -61,7 +65,7 @@ export default function (app: Application): void {
       '';
 
     if (!storedSessionCookie) {
-      console.error('No Spring session cookie found on request');
+      logger.error('No Spring session cookie found on request');
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
@@ -84,7 +88,7 @@ export default function (app: Application): void {
       return res.json(backendRes.data);
 
     } catch (err: any) {
-      console.error('Error fetching account list:', err);
+      logger.error('Error fetching account list:', err);
       return res.status(500).json({ error: 'Failed to load accounts' });
     }
   });

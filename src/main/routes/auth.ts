@@ -3,6 +3,10 @@ import { wrapper } from 'axios-cookiejar-support';
 import { Application } from 'express';
 import { CookieJar } from 'tough-cookie';
 
+const { Logger } = require('@hmcts/nodejs-logging');
+
+const logger = Logger.getLogger('app');
+
 export default function (app: Application): void {
 
   app.get('/login', function(req, res) {
@@ -66,7 +70,7 @@ export default function (app: Application): void {
       // 7) Save and complete passport login
       req.session.save(err => {
         if (err) {
-          console.error('Error saving session:', err);
+          logger.error('Error saving session:', err);
           return res.render('login', {
             error: req.__('loginSessionError'),
             username
@@ -75,7 +79,7 @@ export default function (app: Application): void {
         // eslint-disable-next-line @typescript-eslint/no-shadow
         req.login({ username, springSessionCookie: loginCookie, csrfToken }, err => {
           if (err) {
-            console.error('Passport login error:', err);
+            logger.error('Passport login error:', err);
             return next(err);
           }
           return res.redirect('/admin');
@@ -83,7 +87,7 @@ export default function (app: Application): void {
       });
 
     } catch (err: any) {
-      console.error('Full login error:', err.response || err.message);
+      logger.error('Full login error:', err.response || err.message);
 
       // If Spring returned a text message, use it; otherwise fall back to our i18n key
       const backendMsg = typeof err.response?.data === 'string'

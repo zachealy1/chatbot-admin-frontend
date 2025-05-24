@@ -3,6 +3,10 @@ import { wrapper } from 'axios-cookiejar-support';
 import { Application } from 'express';
 import { CookieJar } from 'tough-cookie';
 
+const { Logger } = require('@hmcts/nodejs-logging');
+
+const logger = Logger.getLogger('app');
+
 export default function (app: Application): void {
 
   app.get('/forgot-password', (req, res) => {
@@ -75,7 +79,7 @@ export default function (app: Application): void {
       return res.redirect('/forgot-password/verify-otp?lang=' + lang);
 
     } catch (err) {
-      console.error('[ForgotPassword] Error:', err.response || err.message);
+      logger.error('[ForgotPassword] Error:', err.response || err.message);
 
       // fallback general error
       fieldErrors.general = typeof err.response?.data === 'string'
@@ -154,7 +158,7 @@ export default function (app: Application): void {
       return res.redirect(`/login?passwordReset=true&lang=${lang}`);
 
     } catch (err: any) {
-      console.error('[ForgotPassword] Reset error:', err.response || err.message);
+      logger.error('[ForgotPassword] Reset error:', err.response || err.message);
 
       // backend error msg or fallback
       fieldErrors.general =
@@ -225,7 +229,7 @@ export default function (app: Application): void {
       return res.redirect('/forgot-password/reset-password?lang=' + lang);
 
     } catch (err: any) {
-      console.error('[ForgotPassword] OTP verify error:', err.response || err.message);
+      logger.error('[ForgotPassword] OTP verify error:', err.response || err.message);
 
       // backend error (expired/invalid OTP)
       fieldErrors.general =
@@ -243,14 +247,14 @@ export default function (app: Application): void {
   });
 
   app.post('/forgot-password/resend-otp', async (req, res) => {
-    console.log('[ForgotPassword] Resend OTP requested.');
+    logger.log('[ForgotPassword] Resend OTP requested.');
 
     const email = (req.session as any).email;
-    console.log('[ForgotPassword] Email from session:', email);
+    logger.log('[ForgotPassword] Email from session:', email);
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
-      console.log('[ForgotPassword] Invalid or missing email in session.');
+      logger.log('[ForgotPassword] Invalid or missing email in session.');
       return res.render('verify-otp', {
         error: 'No valid email found. Please start the reset process again.',
       });
@@ -268,10 +272,10 @@ export default function (app: Application): void {
         })
       );
 
-      console.log('[ForgotPassword] Requesting CSRF token from /csrf...');
+      logger.log('[ForgotPassword] Requesting CSRF token from /csrf...');
       const csrfResponse = await client.get('http://localhost:4550/csrf');
       const csrfToken = csrfResponse.data.csrfToken;
-      console.log('[ForgotPassword] Retrieved CSRF token for resend-otp:', csrfToken);
+      logger.log('[ForgotPassword] Retrieved CSRF token for resend-otp:', csrfToken);
 
       const response = await client.post(
         'http://localhost:4550/forgot-password/resend-otp',
@@ -282,18 +286,18 @@ export default function (app: Application): void {
           },
         }
       );
-      console.log('[ForgotPassword] Resend-OTP call succeeded:', response.data);
+      logger.log('[ForgotPassword] Resend-OTP call succeeded:', response.data);
 
       return res.redirect('/forgot-password/verify-otp');
 
     } catch (error) {
-      console.error('[ForgotPassword] Error calling backend /forgot-password/resend-otp:', error);
+      logger.error('[ForgotPassword] Error calling backend /forgot-password/resend-otp:', error);
 
       let errorMsg = 'An error occurred while resending the OTP. Please try again.';
       if (error.response && error.response.data) {
         errorMsg = error.response.data;
       }
-      console.log('[ForgotPassword] Rendering verify-otp with error:', errorMsg);
+      logger.log('[ForgotPassword] Rendering verify-otp with error:', errorMsg);
 
       return res.render('verify-otp', {
         error: errorMsg,

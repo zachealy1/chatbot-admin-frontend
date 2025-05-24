@@ -5,6 +5,10 @@ import { wrapper } from 'axios-cookiejar-support';
 import { Application } from 'express';
 import { CookieJar } from 'tough-cookie';
 
+const { Logger } = require('@hmcts/nodejs-logging');
+
+const logger = Logger.getLogger('app');
+
 export default function (app: Application): void {
   app.get('/requests/pending', ensureAuthenticated, async (req, res) => {
     // 1) pull your stored Spring session cookie
@@ -14,7 +18,7 @@ export default function (app: Application): void {
       '';
 
     if (!storedSessionCookie) {
-      console.error('No Spring session cookie found on request');
+      logger.error('No Spring session cookie found on request');
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
@@ -35,7 +39,7 @@ export default function (app: Application): void {
       return res.json(backendRes.data);
 
     } catch (err: any) {
-      console.error('Error fetching pending requests:', err);
+      logger.error('Error fetching pending requests:', err);
       return res.status(500).json({ error: 'Failed to load pending requests' });
     }
   });
@@ -51,7 +55,7 @@ export default function (app: Application): void {
       '';
 
     if (!storedSessionCookie) {
-      console.error('No Spring session cookie found');
+      logger.error('No Spring session cookie found');
       return res.status(401).send('Not authenticated');
     }
 
@@ -79,11 +83,11 @@ export default function (app: Application): void {
         { headers: { 'X-XSRF-TOKEN': csrfToken } }
       );
 
-      console.log(`Request accepted: ${requestId}`);
+      logger.log(`Request accepted: ${requestId}`);
       return res.redirect('/account-requests?accepted=true');
 
     } catch (err: any) {
-      console.error('Error approving request:', err);
+      logger.error('Error approving request:', err);
       return res.status(500).render('account-requests', {
         accepted: false,
         rejected: false,
@@ -102,7 +106,7 @@ export default function (app: Application): void {
       '';
 
     if (!storedSessionCookie) {
-      console.error('No Spring session cookie found');
+      logger.error('No Spring session cookie found');
       return res.status(401).send('Not authenticated');
     }
 
@@ -126,11 +130,11 @@ export default function (app: Application): void {
         { headers: { 'X-XSRF-TOKEN': csrfToken } }
       );
 
-      console.log(`Request rejected: ${requestId}`);
+      logger.log(`Request rejected: ${requestId}`);
       return res.redirect('/account-requests?rejected=true');
 
     } catch (err: any) {
-      console.error('Error rejecting request:', err);
+      logger.error('Error rejecting request:', err);
       return res.status(500).render('account-requests', {
         accepted: false,
         rejected: false,

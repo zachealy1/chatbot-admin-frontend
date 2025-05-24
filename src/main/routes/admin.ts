@@ -5,6 +5,10 @@ import { wrapper } from 'axios-cookiejar-support';
 import { Application } from 'express';
 import { CookieJar } from 'tough-cookie';
 
+const { Logger } = require('@hmcts/nodejs-logging');
+
+const logger = Logger.getLogger('app');
+
 export default function (app: Application): void {
   // Add a route for /admin
   app.get('/admin', ensureAuthenticated, (req, res) => {
@@ -32,7 +36,7 @@ export default function (app: Application): void {
       return res.json(backendRes.data);
 
     } catch (err: any) {
-      console.error('Error fetching popular chat categories:', err);
+      logger.error('Error fetching popular chat categories:', err);
       return res.status(500).json({ error: 'Failed to load chat categories' });
     }
   });
@@ -45,7 +49,7 @@ export default function (app: Application): void {
       '';
 
     if (!storedSessionCookie) {
-      console.error('No Spring session cookie found');
+      logger.error('No Spring session cookie found');
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
@@ -67,7 +71,7 @@ export default function (app: Application): void {
       return res.json(backendRes.data);
 
     } catch (err: any) {
-      console.error('Error fetching user activity:', err);
+      logger.error('Error fetching user activity:', err);
       return res.status(500).json({ error: 'Failed to load user activity' });
     }
   });
@@ -104,7 +108,7 @@ export default function (app: Application): void {
         // 5) proxy the JSON back
         return res.json(backendRes.data);
       } catch (err: any) {
-        console.error('Error fetching chat-category-breakdown:', err);
+        logger.error('Error fetching chat-category-breakdown:', err);
         return res.status(500).json({ error: 'Failed to fetch data' });
       }
     }

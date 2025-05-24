@@ -3,6 +3,10 @@ import { wrapper } from 'axios-cookiejar-support';
 import { Application } from 'express';
 import { CookieJar } from 'tough-cookie';
 
+const { Logger } = require('@hmcts/nodejs-logging');
+
+const logger = Logger.getLogger('app');
+
 export default function (app: Application): void {
 
   // Add a route for /register
@@ -94,7 +98,7 @@ export default function (app: Application): void {
       return res.redirect(`/login?created=true&lang=${lang}`);
 
     } catch (err: any) {
-      console.error('Registration error:', err.response || err.message);
+      logger.error('Registration error:', err.response || err.message);
 
       // Extract backend message or fallback
       const backendMsg = typeof err.response?.data === 'string'

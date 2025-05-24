@@ -5,6 +5,10 @@ import { wrapper } from 'axios-cookiejar-support';
 import { Application } from 'express';
 import { CookieJar } from 'tough-cookie';
 
+const { Logger } = require('@hmcts/nodejs-logging');
+
+const logger = Logger.getLogger('app');
+
 export default function (app: Application): void {
 
   // Add a route for /account-requests
@@ -45,7 +49,7 @@ export default function (app: Application): void {
       });
 
     } catch (err) {
-      console.error('Error loading account requests:', err);
+      logger.error('Error loading account requests:', err);
       res.render('account-requests', {
         accepted:    req.query.accepted === 'true',
         rejected:    req.query.rejected === 'true',
@@ -66,7 +70,7 @@ export default function (app: Application): void {
       '';
 
     if (!storedSessionCookie) {
-      console.error('No Spring session cookie found');
+      logger.error('No Spring session cookie found');
       return res.status(401).send('Not authenticated');
     }
 
@@ -93,11 +97,11 @@ export default function (app: Application): void {
         { headers: { 'X-XSRF-TOKEN': csrfToken } }
       );
 
-      console.log(`Account deleted: ${accountId}`);
+      logger.log(`Account deleted: ${accountId}`);
       return res.redirect('/manage-accounts?deleted=true');
 
     } catch (err: any) {
-      console.error('Error deleting account:', err);
+      logger.error('Error deleting account:', err);
       // Optionally re-render with an error message instead of redirect
       return res.status(500).render('manage-accounts', {
         deleted: false,

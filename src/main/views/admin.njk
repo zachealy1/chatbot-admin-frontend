@@ -106,7 +106,27 @@
   <h2 class="govuk-heading-l">{{ __("userActivityHeading") }}</h2>
   <div class="chart-container">
     <div class="line-graph">
-      <!-- Chart keys unchanged… -->
+      <!-- Chart keys -->
+      <div class="chart-keys-header">
+        <div class="chart-keys">
+          <div class="chart-key">
+            <div class="key-box key-box-1"></div>
+            <div class="key-label">{{ __("ageRange20to30") }}</div>
+          </div>
+          <div class="chart-key">
+            <div class="key-box key-box-2"></div>
+            <div class="key-label">{{ __("ageRange31to40") }}</div>
+          </div>
+          <div class="chart-key">
+            <div class="key-box key-box-3"></div>
+            <div class="key-label">{{ __("ageRange41to50") }}</div>
+          </div>
+          <div class="chart-key">
+            <div class="key-box key-box-4"></div>
+            <div class="key-label">{{ __("ageRange51andOver") }}</div>
+          </div>
+        </div>
+      </div>
 
       <svg viewBox="0 0 1200 600" class="line-graph-svg">
 

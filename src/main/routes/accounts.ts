@@ -63,7 +63,7 @@ export default function (app: Application): void {
   app.post('/accounts/:accountId/delete', ensureAuthenticated, async (req, res) => {
     const { accountId } = req.params;
 
-    // 1) pull your Spring session cookie
+    // pull your Spring session cookie
     const storedSessionCookie =
       (req.user as any)?.springSessionCookie ||
       (req.session as any)?.springSessionCookie ||
@@ -75,11 +75,11 @@ export default function (app: Application): void {
     }
 
     try {
-      // 2) seed a new CookieJar with that cookie
+      // seed a new CookieJar with that cookie
       const jar = new CookieJar();
       jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
 
-      // 3) wrap axios so it uses the jar & sends cookies
+      // wrap axios so it uses the jar & sends cookies
       const client = wrapper(axios.create({
         jar,
         withCredentials: true,
@@ -87,11 +87,11 @@ export default function (app: Application): void {
         xsrfHeaderName: 'X-XSRF-TOKEN',
       }));
 
-      // 4) fetch CSRF token (will set XSRF-TOKEN cookie in jar)
+      // fetch CSRF token (will set XSRF-TOKEN cookie in jar)
       const csrfRes = await client.get('http://localhost:4550/csrf');
       const csrfToken = csrfRes.data.csrfToken;
 
-      // 5) call DELETE /account/{userId}
+      // call DELETE /account/{userId}
       await client.delete(
         `http://localhost:4550/account/${accountId}`,
         { headers: { 'X-XSRF-TOKEN': csrfToken } }

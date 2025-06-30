@@ -66,7 +66,7 @@ export default function (app: Application): void {
   app.post('/update-banner', async (req, res) => {
     const { bannerTitle, bannerBody } = req.body;
 
-    // 1) Pull your stored Spring Boot session cookie out of the Express session
+    // Pull your stored Spring Boot session cookie out of the Express session
     const storedSessionCookie =
       (req.user as any)?.springSessionCookie ||
       (req.session as any)?.springSessionCookie ||
@@ -78,7 +78,7 @@ export default function (app: Application): void {
     }
 
     try {
-      // 2) Create jar and *set* that cookie for your backend’s host
+      // Create jar and *set* that cookie for your backend’s host
       const jar = new CookieJar();
       jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
 
@@ -89,7 +89,7 @@ export default function (app: Application): void {
         xsrfHeaderName: 'X-XSRF-TOKEN',
       }));
 
-      // 3) Now GET /csrf (will use your session cookie) and PUT
+      // Now GET /csrf (will use your session cookie) and PUT
       const csrfResponse = await client.get('http://localhost:4550/csrf');
       const csrfToken = csrfResponse.data.csrfToken;
 

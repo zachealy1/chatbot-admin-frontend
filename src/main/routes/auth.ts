@@ -31,14 +31,14 @@ export default function (app: Application): void {
 
   app.post('/login', async (req, res, next) => {
     const { username, password } = req.body;
-    // 1) Pick up the lang cookie (defaults to 'en')
+    // Pick up the lang cookie (defaults to 'en')
     const lang = req.cookies.lang === 'cy' ? 'cy' : 'en';
 
-    // 2) Create a cookie‐jar and seed it with our lang cookie
+    // Create a cookie‐jar and seed it with our lang cookie
     const jar = new CookieJar();
     jar.setCookieSync(`lang=${lang}`, 'http://localhost:4550');
 
-    // 3) Wrap axios so it uses our jar AND auto‐handles XSRF from Spring
+    // Wrap axios so it uses our jar AND auto‐handles XSRF from Spring
     const client = wrapper(axios.create({
       baseURL: 'http://localhost:4550',
       jar,
@@ -48,18 +48,18 @@ export default function (app: Application): void {
     }));
 
     try {
-      // 4) Fetch CSRF token
+      // Fetch CSRF token
       const csrfResponse = await client.get('/csrf');
       const csrfToken = csrfResponse.data.csrfToken;
 
-      // 5) Perform login
+      // Perform login
       const loginResponse = await client.post(
         '/login/admin',
         { username, password },
         { headers: { 'X-XSRF-TOKEN': csrfToken } }
       );
 
-      // 6) Persist Spring’s session cookie & CSRF token in our Express session
+      // Persist Spring’s session cookie & CSRF token in our Express session
       const setCookieHeader = loginResponse.headers['set-cookie'];
       const loginCookie = Array.isArray(setCookieHeader)
         ? setCookieHeader.join('; ')
@@ -67,7 +67,7 @@ export default function (app: Application): void {
       (req.session as any).springSessionCookie = loginCookie;
       (req.session as any).csrfToken = csrfToken;
 
-      // 7) Save and complete passport login
+      // Save and complete passport login
       req.session.save(err => {
         if (err) {
           logger.error('Error saving session:', err);

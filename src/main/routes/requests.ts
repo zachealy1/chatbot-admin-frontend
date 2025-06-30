@@ -11,7 +11,7 @@ const logger = Logger.getLogger('app');
 
 export default function (app: Application): void {
   app.get('/requests/pending', ensureAuthenticated, async (req, res) => {
-    // 1) pull your stored Spring session cookie
+    // pull your stored Spring session cookie
     const storedSessionCookie =
       (req.user as any)?.springSessionCookie ||
       (req.session as any)?.springSessionCookie ||
@@ -23,19 +23,19 @@ export default function (app: Application): void {
     }
 
     try {
-      // 2) seed a CookieJar with that cookie
+      // seed a CookieJar with that cookie
       const jar = new CookieJar();
       jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
 
-      // 3) wrap axios so it uses the jar & sends cookies
+      // wrap axios so it uses the jar & sends cookies
       const client = wrapper(axios.create({
         jar,
         withCredentials: true,
       }));
 
-      // 4) fetch pending requests from the backend
+      // fetch pending requests from the backend
       const backendRes = await client.get('http://localhost:4550/account/pending');
-      // 5) forward the JSON arrays
+      // forward the JSON arrays
       return res.json(backendRes.data);
 
     } catch (err: any) {
@@ -48,7 +48,7 @@ export default function (app: Application): void {
   app.post('/requests/:requestId/accept', ensureAuthenticated, async (req, res) => {
     const { requestId } = req.params;
 
-    // 1) pull your Spring session cookie
+    // pull your Spring session cookie
     const storedSessionCookie =
       (req.user as any)?.springSessionCookie ||
       (req.session as any)?.springSessionCookie ||
@@ -60,11 +60,11 @@ export default function (app: Application): void {
     }
 
     try {
-      // 2) seed a CookieJar with that cookie
+      // seed a CookieJar with that cookie
       const jar = new CookieJar();
       jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
 
-      // 3) wrap axios so it sends cookies and supports XSRF
+      // wrap axios so it sends cookies and supports XSRF
       const client = wrapper(axios.create({
         jar,
         withCredentials: true,
@@ -72,11 +72,11 @@ export default function (app: Application): void {
         xsrfHeaderName: 'X-XSRF-TOKEN',
       }));
 
-      // 4) fetch CSRF token
+      // fetch CSRF token
       const csrfRes = await client.get('http://localhost:4550/csrf');
       const csrfToken = csrfRes.data.csrfToken;
 
-      // 5) call backend approve endpoint
+      // call backend approve endpoint
       await client.post(
         `http://localhost:4550/account/approve/${requestId}`,
         {}, // no body

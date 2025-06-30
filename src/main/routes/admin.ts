@@ -42,7 +42,7 @@ export default function (app: Application): void {
   });
 
   app.get('/user-activity', ensureAuthenticated, async (req, res) => {
-    // 1) Grab the Spring-session cookie that you stored on login
+    // Grab the Spring-session cookie that you stored on login
     const storedSessionCookie =
       (req.user as any)?.springSessionCookie ||
       (req.session as any)?.springSessionCookie ||
@@ -54,20 +54,20 @@ export default function (app: Application): void {
     }
 
     try {
-      // 2) Seed a CookieJar with that cookie
+      // Seed a CookieJar with that cookie
       const jar = new CookieJar();
       jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
 
-      // 3) Wrap axios to send credentials & cookies
+      // Wrap axios to send credentials & cookies
       const client = wrapper(axios.create({
         jar,
         withCredentials: true,
       }));
 
-      // 4) Call your backend /user-activity
+      // Call your backend /user-activity
       const backendRes = await client.get('http://localhost:4550/statistics/user-activity');
 
-      // 5) Forward the JSON payload directly
+      // Forward the JSON payload directly
       return res.json(backendRes.data);
 
     } catch (err: any) {
@@ -77,7 +77,7 @@ export default function (app: Application): void {
   });
 
   app.get('/chat-category-breakdown', ensureAuthenticated, async (req, res) => {
-      // 1) pull our Spring Boot session cookie from Express session or user
+      // pull our Spring Boot session cookie from Express session or user
       const storedCookie =
         (req.user as any)?.springSessionCookie ||
         (req.session as any)?.springSessionCookie ||
@@ -88,11 +88,11 @@ export default function (app: Application): void {
       }
 
       try {
-        // 2) create a tough-cookie jar containing that cookie
+        // create a tough-cookie jar containing that cookie
         const jar = new CookieJar();
         jar.setCookieSync(storedCookie, 'http://localhost:4550');
 
-        // 3) wrap axios so it sends the cookie & XSRF token automatically
+        // wrap axios so it sends the cookie & XSRF token automatically
         const client = wrapper(
           axios.create({
             jar,
@@ -100,12 +100,12 @@ export default function (app: Application): void {
           })
         );
 
-        // 4) call your Spring Boot statistics endpoint
+        // call your Spring Boot statistics endpoint
         const backendRes = await client.get(
           'http://localhost:4550/statistics/chat-category-breakdown'
         );
 
-        // 5) proxy the JSON back
+        // proxy the JSON back
         return res.json(backendRes.data);
       } catch (err: any) {
         logger.error('Error fetching chat-category-breakdown:', err);

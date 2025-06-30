@@ -25,10 +25,10 @@ describe('GET /requests/pending', () => {
       .withArgs('http://localhost:4550/account/pending')
       .resolves({ data: [] });
 
-    // stub axios.create → our fake client
+    // stub axios.create -> our fake client
     sinon.stub(axios, 'create').returns(stubClient as any);
 
-    // stub wrapper → identity
+    // stub wrapper -> identity
     sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
   });
 
@@ -109,10 +109,10 @@ describe('POST /requests/:requestId/accept', () => {
       .withArgs('http://localhost:4550/csrf')
       .resolves({ data: { csrfToken: 'tok123' } });
 
-    // stub axios.create → fake client
+    // stub axios.create -> fake client
     sinon.stub(axios, 'create').returns(stubClient as any);
 
-    // stub wrapper → identity
+    // stub wrapper -> identity
     sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
   });
 
@@ -136,7 +136,7 @@ describe('POST /requests/:requestId/accept', () => {
       next();
     });
 
-    // override res.render → JSON
+    // override res.render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();
@@ -237,7 +237,7 @@ describe('POST /requests/:requestId/reject', () => {
       next();
     });
 
-    // override res.render → JSON
+    // override res.render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();

@@ -41,7 +41,7 @@ describe('GET /account-requests', () => {
       }
       next();
     });
-    // render → JSON
+    // render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();
@@ -168,7 +168,7 @@ describe('POST /accounts/:accountId/delete', () => {
       }
       next();
     });
-    // render → JSON
+    // render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();

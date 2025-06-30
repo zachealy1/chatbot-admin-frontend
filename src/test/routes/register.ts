@@ -14,10 +14,10 @@ describe('Register Routes', () => {
     // fake axios client
     stubClient = { get: sinon.stub(), post: sinon.stub() } as any;
 
-    // stub axios.create → our fake client
+    // stub axios.create -> our fake client
     sinon.stub(axios, 'create').returns(stubClient as any);
 
-    // stub wrapper → identity
+    // stub wrapper -> identity
     sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
   });
 
@@ -38,7 +38,7 @@ describe('Register Routes', () => {
       next();
     });
 
-    // override res.render → JSON
+    // override res.render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();

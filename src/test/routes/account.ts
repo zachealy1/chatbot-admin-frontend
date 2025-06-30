@@ -11,11 +11,11 @@ describe('GET /account', () => {
   let stubClient: { get: sinon.SinonStub };
 
   beforeEach(() => {
-    // 1) Stub ensureAuthenticated → next()
+    // Stub ensureAuthenticated -> next()
     sinon.stub(authModule, 'ensureAuthenticated')
       .callsFake((_req: Request, _res: Response, next: NextFunction) => next());
 
-    // 2) Stub axios-cookiejar-support.wrapper to return our fake client
+    // Stub axios-cookiejar-support.wrapper to return our fake client
     stubClient = { get: sinon.stub() };
     sinon.stub(axiosCookie, 'wrapper').returns(stubClient as any);
   });
@@ -42,7 +42,7 @@ describe('GET /account', () => {
       next();
     });
 
-    // override res.render → JSON
+    // override res.render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();
@@ -155,7 +155,7 @@ describe('GET /account/update', () => {
   function mkApp() {
     const app: Application = express();
 
-    // stub render → JSON
+    // stub render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();
@@ -237,7 +237,7 @@ describe('POST /account/update', () => {
       next();
     });
 
-    // override render → JSON
+    // override render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();

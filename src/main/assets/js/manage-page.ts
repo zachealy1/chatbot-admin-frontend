@@ -11,7 +11,7 @@ interface ManagedAccount {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // 0) Load the "Delete" button label from the backend i18n route
+  // Load the "Delete" button label from the backend i18n route
   let deleteLabel = 'Delete';
   try {
     const res = await fetch('/i18n/actions', { credentials: 'same-origin' });
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.warn('Falling back to default delete label', e);
   }
 
-  // 1) Grab DOM & pagination elements
+  // Grab DOM & pagination elements
   const tbody      = document.querySelector('.govuk-table__body--manage-accounts') as HTMLElement;
   const pageLinks  = Array.from(document.querySelectorAll('.govuk-pagination__list .govuk-pagination__link'));
   const prevButton = document.querySelector('.govuk-pagination__prev .govuk-pagination__link') as HTMLElement|null;
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const totalPages = pageLinks.length;
   let pageSize = 0;
 
-  // 2) Fetch all accounts and start pagination
+  // Fetch all accounts and start pagination
   fetch('/account/all', { credentials: 'same-origin' })
     .then(res => {
       if (!res.ok) {throw new Error(`Failed to fetch accounts: ${res.status}`);}

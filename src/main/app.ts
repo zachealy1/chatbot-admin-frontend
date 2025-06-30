@@ -54,7 +54,7 @@ i18n.configure({
 });
 app.use(i18n.init);
 
-// 3) only write the cookie when it really changes
+// only write the cookie when it really changes
 app.use((req, res, next) => {
   // pick up from ?lang or existing cookie
   const requestedLang = (req.query.lang as string) || req.cookies.lang;
@@ -71,7 +71,7 @@ app.use((req, res, next) => {
     req.setLocale(requestedLang);
     res.locals.lang = requestedLang;
   } else {
-    // nothing in query or cookie→ fallback to defaultLocale
+    // nothing in query or cookie-> fallback to defaultLocale
     req.setLocale(i18n.getLocale());
     res.locals.lang = i18n.getLocale();
   }

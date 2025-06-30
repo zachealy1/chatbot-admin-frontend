@@ -118,7 +118,7 @@ describe('POST /update-banner', () => {
       .withArgs('http://localhost:4550/csrf')
       .resolves({ data: { csrfToken: 'tokXYZ' } });
 
-    // stub axios.create → fake client
+    // stub axios.create -> fake client
     sinon.stub(axios, 'create').returns(stubClient as any);
 
     // wrapper identity
@@ -146,7 +146,7 @@ describe('POST /update-banner', () => {
       next();
     });
 
-    // override res.render → JSON
+    // override res.render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();

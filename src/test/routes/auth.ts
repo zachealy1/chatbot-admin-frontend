@@ -11,7 +11,7 @@ describe('GET /login', () => {
   function mkApp() {
     const app: Application = express();
 
-    // override res.render → JSON
+    // override res.render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();
@@ -122,7 +122,7 @@ describe('POST /login', () => {
     // fake axios client
     stubClient = { get: sinon.stub(), post: sinon.stub() };
 
-    // stub axios.create → fake client
+    // stub axios.create -> fake client
     createStub = sinon.stub(axios, 'create').returns(stubClient as any);
     // wrapper identity
     wrapperStub = sinon.stub(axiosCookie, 'wrapper').callsFake(c => c as any);
@@ -152,7 +152,7 @@ describe('POST /login', () => {
       next();
     });
 
-    // override res.render → JSON
+    // override res.render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();

@@ -18,10 +18,10 @@ describe('GET /manage-accounts', () => {
     // fake axios client
     const stubClient = { get: sinon.stub() };
 
-    // stub axios.create → our fake client
+    // stub axios.create -> our fake client
     sinon.stub(axios, 'create').returns(stubClient as any);
 
-    // stub wrapper → identity
+    // stub wrapper -> identity
     sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
 
     // now stub the backend call URL
@@ -49,7 +49,7 @@ describe('GET /manage-accounts', () => {
       next();
     });
 
-    // override res.render → JSON
+    // override res.render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();
@@ -101,10 +101,10 @@ describe('GET /account/all', () => {
       .withArgs('http://localhost:4550/account/all')
       .resolves({ data: [] });
 
-    // stub axios.create → our fake client
+    // stub axios.create -> our fake client
     sinon.stub(axios, 'create').returns(stubClient as any);
 
-    // stub wrapper → identity
+    // stub wrapper -> identity
     sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
   });
 

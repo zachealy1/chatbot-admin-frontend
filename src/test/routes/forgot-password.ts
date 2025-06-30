@@ -181,10 +181,10 @@ describe('POST /forgot-password/enter-email', () => {
     // our fake axios client
     stubClient = { get: sinon.stub(), post: sinon.stub() } as any;
 
-    // stub axios.create → fake client
+    // stub axios.create -> fake client
     createStub = sinon.stub(axios, 'create').returns(stubClient as any);
 
-    // stub axios-cookiejar-support.wrapper → identity
+    // stub axios-cookiejar-support.wrapper -> identity
     wrapperStub = sinon
       .stub(axiosCookie, 'wrapper')
       .callsFake((client) => client as any);
@@ -214,7 +214,7 @@ describe('POST /forgot-password/enter-email', () => {
       next();
     });
 
-    // override res.render → JSON
+    // override res.render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();
@@ -369,7 +369,7 @@ describe('POST /forgot-password/reset-password', () => {
       next();
     });
 
-    // override render → JSON
+    // override render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();
@@ -527,7 +527,7 @@ describe('POST /forgot-password/verify-otp', () => {
       next();
     });
     app.use((req, res, next) => {
-      // render → JSON
+      // render -> JSON
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();
     });
@@ -649,9 +649,9 @@ describe('POST /forgot-password/resend-otp', () => {
 
     // fake axios client
     stubClient = { get: sinon.stub(), post: sinon.stub() } as any;
-    // stub axios.create → our fake client
+    // stub axios.create -> our fake client
     createStub = sinon.stub(axios, 'create').returns(stubClient as any);
-    // stub wrapper → identity
+    // stub wrapper -> identity
     wrapperStub = sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
   });
 
@@ -674,7 +674,7 @@ describe('POST /forgot-password/resend-otp', () => {
       next();
     });
 
-    // override res.render → JSON
+    // override res.render -> JSON
     app.use((req, res, next) => {
       res.render = (view: string, opts?: any) => res.json({ view, options: opts });
       next();

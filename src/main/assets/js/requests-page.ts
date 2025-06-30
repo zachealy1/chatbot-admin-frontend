@@ -18,7 +18,7 @@ let acceptLabel = 'Accept';
 let rejectLabel = 'Reject';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // 0) Fetch our two translated labels
+  // Fetch our two translated labels
   try {
     const res = await fetch('/i18n/buttons', { credentials: 'same-origin' });
     if (!res.ok) {throw new Error(`I18n fetch failed: ${res.status}`);}
@@ -29,14 +29,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.warn('Could not load translations; using defaults', e);
   }
 
-  // 1) Fetch pending requests
+  // Fetch pending requests
   fetch('/requests/pending', { credentials: 'same-origin' })
     .then(res => {
       if (!res.ok) {throw new Error(`Fetch failed: ${res.status}`);}
       return res.json();
     })
     .then((data: any[]) => {
-      // map + paginate…
+      // map + paginate
       const all: AccountRequest[] = data.map(item => ({
         requestId:     item.requestId,
         userName:      item.userName,
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     .catch(err => console.error('Error loading pending requests:', err));
 });
 
-// … then renderTableRows, setupPaginationLinks, updateCurrentPage exactly as before …
+// then renderTableRows, setupPaginationLinks, updateCurrentPage exactly as before
 function renderTableRows(page: number): void {
   const tbody = document.querySelector('.govuk-table__body') as HTMLElement;
   tbody.innerHTML = '';
@@ -93,7 +93,7 @@ function renderTableRows(page: number): void {
   });
 }
 
-// …pagination helpers unchanged…
+// pagination helpers unchanged
 function setupPaginationLinks(): void {
   const paginationLinks = document.querySelectorAll('.govuk-pagination__link');
   const prevButton      = document.querySelector('.govuk-pagination__prev a') as HTMLElement;

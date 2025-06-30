@@ -1,9 +1,9 @@
 interface TableRow {
-  order:   number;
-  name:    string;
+  order: number;
+  name: string;
   queries: number;
-  first:   string;
-  last:    string;
+  first: string;
+  last: string;
 }
 
 const SIZE = 6;
@@ -12,16 +12,18 @@ const tableData: Record<number, TableRow[]> = {};
 async function fetchAndInit() {
   try {
     const res = await fetch('/popular-chat-categories', { credentials: 'same-origin' });
-    if (!res.ok) {throw new Error(`Fetch failed: ${res.status}`);}
+    if (!res.ok) {
+      throw new Error(`Fetch failed: ${res.status}`);
+    }
     const data: any[] = await res.json();
 
     // Map to our shape
     const allRows: TableRow[] = data.map(item => ({
-      order:   item.order,
-      name:    item.name,
+      order: item.order,
+      name: item.name,
       queries: item.queries,
-      first:   item.firstQuery.split('T')[0],
-      last:    item.lastQuery.split('T')[0],
+      first: item.firstQuery.split('T')[0],
+      last: item.lastQuery.split('T')[0],
     }));
 
     // Chunk into pages
@@ -30,8 +32,8 @@ async function fetchAndInit() {
       tableData[page] = allRows.slice(i, i + SIZE);
     }
 
-    buildPagination();      // ← build the <li> links
-    setupPagination();      // ← wire up events and render page 1
+    buildPagination(); // ← build the <li> links
+    setupPagination(); // ← wire up events and render page 1
   } catch (err) {
     console.error('Error loading chat categories:', err);
     const tbody = document.querySelector('.govuk-table__body') as HTMLElement;
@@ -62,13 +64,19 @@ function renderTable(page: number) {
   const tbody = document.querySelector('.govuk-table__body') as HTMLElement;
   tbody.innerHTML = '';
 
-  const rows = tableData[page] || [];
-  if (!rows.length) {
-    tbody.innerHTML = `
-      <tr><td colspan="5" class="govuk-body">No data for this page.</td></tr>
-    `;
+  const banner = document.getElementById('no-requests-banner');
+  if (!banner) {
+    console.error('Missing #no-requests-banner in DOM');
     return;
   }
+
+  const rows = tableData[page] || [];
+  if (!rows.length) {
+    banner.hidden = false;
+    return;
+  }
+
+  banner.hidden = true;
 
   rows.forEach(row => {
     const tr = document.createElement('tr');
@@ -86,9 +94,9 @@ function renderTable(page: number) {
 
 function setupPagination() {
   const paginationItems = document.querySelectorAll('.govuk-pagination__item');
-  const pageLinks       = Array.from(document.querySelectorAll('.govuk-pagination__link'));
-  const prevButton      = document.querySelector('.govuk-pagination__prev .govuk-pagination__link') as HTMLElement | null;
-  const nextButton      = document.querySelector('.govuk-pagination__next .govuk-pagination__link') as HTMLElement | null;
+  const pageLinks = Array.from(document.querySelectorAll('.govuk-pagination__link'));
+  const prevButton = document.querySelector('.govuk-pagination__prev .govuk-pagination__link') as HTMLElement | null;
+  const nextButton = document.querySelector('.govuk-pagination__next .govuk-pagination__link') as HTMLElement | null;
 
   let currentPage = 1;
   const totalPages = pageLinks.length;

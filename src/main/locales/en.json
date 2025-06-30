@@ -172,5 +172,6 @@
   "monthNov": "Nov",
   "monthDec": "Dec",
   "pageNotFoundHeading": "Page not Found",
-  "errorSomethingWentWrongHeading": "Something went wrong"
+  "errorSomethingWentWrongHeading": "Something went wrong",
+  "noDataMessage": "There is no data available for this category."
 }

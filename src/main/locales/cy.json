@@ -172,5 +172,6 @@
   "monthNov": "Tach",
   "monthDec": "Rhag",
   "pageNotFoundHeading": "Heb ganfod y dudalen",
-  "errorSomethingWentWrongHeading": "Digwyddodd rhywbeth o'i le"
+  "errorSomethingWentWrongHeading": "Digwyddodd rhywbeth o'i le",
+  "noDataMessage": "Nid oes unrhyw ddata ar gael ar gyfer y categori hwn."
 }

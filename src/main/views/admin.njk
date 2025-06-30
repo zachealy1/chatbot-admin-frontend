@@ -88,6 +88,28 @@
           </div>
         </div>
 
+        <div
+          id="no-data-banner"
+          class="govuk-notification-banner"
+          role="region"
+          aria-labelledby="govuk-notification-banner-title"
+          data-module="govuk-notification-banner"
+          hidden
+        >
+          <div class="govuk-notification-banner__header">
+            <h2 class="govuk-notification-banner__title"
+                id="govuk-notification-banner-title">
+              {{ __("warningTitle") }}
+            </h2>
+          </div>
+          <div class="govuk-notification-banner__content">
+            <h3 class="govuk-notification-banner__heading">
+              {{ __("noDataMessage") }}
+            </h3>
+            <p class="govuk-body">{{ __("contactSupportHtml") | safe }}</p>
+          </div>
+        </div>
+
         <!-- Chart rows -->
         {% for i in [1,2,3,4,5,6] %}
           <div class="chart-row">
@@ -105,7 +127,7 @@
 
   <h2 class="govuk-heading-l">{{ __("userActivityHeading") }}</h2>
   <div class="chart-container">
-    <div class="line-graph">
+    <div class="line-graph" id="activity-graph" hidden>
       <!-- Chart keys -->
       <div class="chart-keys-header">
         <div class="chart-keys">
@@ -128,27 +150,49 @@
         </div>
       </div>
 
+      <div
+        id="no-activity-banner"
+        class="govuk-notification-banner"
+        role="region"
+        aria-labelledby="govuk-notification-banner-title"
+        data-module="govuk-notification-banner"
+        hidden
+      >
+        <div class="govuk-notification-banner__header">
+          <h2 class="govuk-notification-banner__title"
+              id="govuk-notification-banner-title">
+            {{ __("warningTitle") }}
+          </h2>
+        </div>
+        <div class="govuk-notification-banner__content">
+          <h3 class="govuk-notification-banner__heading">
+            {{ __("noDataMessage") }}
+          </h3>
+          <p class="govuk-body">{{ __("contactSupportHtml") | safe }}</p>
+        </div>
+      </div>
+
       <svg viewBox="0 0 1200 600" class="line-graph-svg">
 
         <!-- Static grid & axes/labels -->
         <g id="chart-grid">
           <!-- Y-axis -->
-          <line x1="50" y1="0"   x2="50"   y2="550" stroke="#ccc" stroke-width="1"/>
+          <line x1="50" y1="0" x2="50" y2="550" stroke="#ccc" stroke-width="1" />
 
           <!-- X-axis extended to 1200 -->
-          <line x1="50" y1="550" x2="1200" y2="550" stroke="#ccc" stroke-width="1"/>
+          <line x1="50" y1="550" x2="1200" y2="550" stroke="#ccc" stroke-width="1" />
 
           <!-- HORIZONTAL grid lines -->
           {% for y in [450,350,250,150,50] %}
             <line x1="50" y1="{{ y }}" x2="1200" y2="{{ y }}"
-                  stroke="#e6e6e6" stroke-width="1"/>
+                  stroke="#e6e6e6" stroke-width="1" />
           {% endfor %}
 
           <!-- VERTICAL grid lines at 11 intervals (100px apart) -->
           {% for n in range(1,12) %}
             <line x1="{{ 50 + (n*100) }}" y1="0"
                   x2="{{ 50 + (n*100) }}" y2="550"
-                  stroke="#e6e6e6" stroke-width="1"/>
+                  stroke="#e6e6e6" stroke-width="1" />
           {% endfor %}
 
           <!-- Y-axis labels -->
@@ -193,9 +237,32 @@
         <th scope="col" class="govuk-table__header">{{ __("tableHeaderFirstQuery") }}</th>
         <th scope="col" class="govuk-table__header">{{ __("tableHeaderLastQuery") }}</th>
       </tr>
+
       </thead>
       <tbody class="govuk-table__body"></tbody>
     </table>
+
+    <div
+      id="no-requests-banner"
+      class="govuk-notification-banner"
+      role="region"
+      aria-labelledby="no-requests-banner-title"
+      data-module="govuk-notification-banner"
+      hidden
+    >
+      <div class="govuk-notification-banner__header">
+        <h2 class="govuk-notification-banner__title"
+            id="no-requests-banner-title">
+          {{ __("warningTitle") }}
+        </h2>
+      </div>
+      <div class="govuk-notification-banner__content">
+        <h3 class="govuk-notification-banner__heading">
+          {{ __("noRequestsMessage") }}
+        </h3>
+        <p class="govuk-body">{{ __("contactSupportHtml") | safe }}</p>
+      </div>
+    </div>
 
     <nav class="govuk-pagination" aria-label="{{ __("paginationAriaLabel") }}">
       <div class="govuk-pagination__prev">

@@ -13,7 +13,7 @@ let httpsServer: https.Server | null = null;
 
 app.locals.shutdown = false;
 
-const port: number = parseInt(process.env.PORT || '3100', 10);
+const port: number = parseInt(process.env.PORT || '3101', 10);
 
 if (app.locals.ENV === 'development') {
   const sslDirectory = path.join(__dirname, 'resources', 'localhost-ssl');

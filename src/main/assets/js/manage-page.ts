@@ -3,10 +3,10 @@ interface Translations {
 }
 
 interface ManagedAccount {
-  accountId:   number;
-  userName:    string;
-  email:       string;
-  role:        string;
+  accountId: number;
+  userName: string;
+  email: string;
+  role: string;
   createdDate: string;
 }
 
@@ -15,7 +15,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   let deleteLabel = 'Delete';
   try {
     const res = await fetch('/i18n/actions', { credentials: 'same-origin' });
-    if (!res.ok) {throw new Error(`I18n fetch failed: ${res.status}`);}
+    if (!res.ok) {
+      throw new Error(`I18n fetch failed: ${res.status}`);
+    }
     const t: Translations = await res.json();
     deleteLabel = t.actionDelete;
   } catch (e) {
@@ -23,10 +25,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Grab DOM & pagination elements
-  const tbody      = document.querySelector('.govuk-table__body--manage-accounts') as HTMLElement;
-  const pageLinks  = Array.from(document.querySelectorAll('.govuk-pagination__list .govuk-pagination__link'));
-  const prevButton = document.querySelector('.govuk-pagination__prev .govuk-pagination__link') as HTMLElement|null;
-  const nextButton = document.querySelector('.govuk-pagination__next .govuk-pagination__link') as HTMLElement|null;
+  const tbody = document.querySelector('.govuk-table__body--manage-accounts') as HTMLElement;
+  const pageLinks = Array.from(document.querySelectorAll('.govuk-pagination__list .govuk-pagination__link'));
+  const prevButton = document.querySelector('.govuk-pagination__prev .govuk-pagination__link') as HTMLElement | null;
+  const nextButton = document.querySelector('.govuk-pagination__next .govuk-pagination__link') as HTMLElement | null;
   if (!tbody || pageLinks.length === 0) {
     console.error('Cannot find table body or pagination links');
     return;
@@ -40,16 +42,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Fetch all accounts and start pagination
   fetch('/account/all', { credentials: 'same-origin' })
     .then(res => {
-      if (!res.ok) {throw new Error(`Failed to fetch accounts: ${res.status}`);}
+      if (!res.ok) {
+        throw new Error(`Failed to fetch accounts: ${res.status}`);
+      }
       return res.json();
     })
     .then((data: any[]) => {
       managedAccounts = data.map(item => ({
-        accountId:   item.accountId,
-        userName:    item.username,
-        email:       item.email,
-        role:        item.role,
-        createdDate: item.createdDate
+        accountId: item.accountId,
+        userName: item.username,
+        email: item.email,
+        role: item.role,
+        createdDate: item.createdDate,
       }));
       pageSize = Math.ceil(managedAccounts.length / totalPages) || managedAccounts.length;
       setupManageAccountsPagination();
@@ -97,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     pageLinks.forEach(link => {
       link.addEventListener('click', e => {
         e.preventDefault();
-        const p = parseInt((e.target as HTMLElement).textContent||'', 10);
+        const p = parseInt((e.target as HTMLElement).textContent || '', 10);
         if (!isNaN(p) && p !== currentPage) {
           currentPage = p;
           renderManagedAccountsTable(p);

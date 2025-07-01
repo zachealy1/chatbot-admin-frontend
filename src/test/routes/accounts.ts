@@ -19,9 +19,7 @@ describe('GET /account-requests', () => {
       .callsFake((_req: Request, _res: Response, next: NextFunction) => next());
 
     stubClient = { get: sinon.stub() };
-    wrapperStub = sinon
-      .stub(axiosCookie, 'wrapper')
-      .callsFake(() => stubClient as any);
+    wrapperStub = sinon.stub(axiosCookie, 'wrapper').callsFake(() => stubClient as any);
   });
 
   afterEach(() => {
@@ -33,11 +31,11 @@ describe('GET /account-requests', () => {
     app.use(express.urlencoded({ extended: false }));
     app.use((req, _res, next) => {
       (req as any).session = {};
-      (req as any).user    = {};
-      req.cookies          = {};
+      (req as any).user = {};
+      req.cookies = {};
       if (sessionCookie) {
         (req as any).session.springSessionCookie = sessionCookie;
-        (req as any).user.springSessionCookie    = sessionCookie;
+        (req as any).user.springSessionCookie = sessionCookie;
       }
       next();
     });
@@ -52,23 +50,15 @@ describe('GET /account-requests', () => {
 
   it('redirects to /login if not logged in', async () => {
     const app = mkApp();
-    await request(app)
-      .get('/account-requests')
-      .expect(302)
-      .expect('Location', '/login');
+    await request(app).get('/account-requests').expect(302).expect('Location', '/login');
     expect(wrapperStub.notCalled).to.be.true;
   });
 
   it('renders with no requests when backend returns empty array', async () => {
-    stubClient.get
-      .withArgs('http://localhost:4550/account/pending')
-      .resolves({ data: [] });
+    stubClient.get.withArgs('http://localhost:4550/account/pending').resolves({ data: [] });
 
     const app = mkApp('SESSION=1');
-    const res = await request(app)
-      .get('/account-requests')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/account-requests').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'account-requests',
@@ -85,9 +75,7 @@ describe('GET /account-requests', () => {
 
   it('paginates and respects accepted/rejected query flags', async () => {
     const items = Array.from({ length: 8 }, (_, i) => ({ id: i + 1 }));
-    stubClient.get
-      .withArgs('http://localhost:4550/account/pending')
-      .resolves({ data: items });
+    stubClient.get.withArgs('http://localhost:4550/account/pending').resolves({ data: items });
 
     const app = mkApp('SESSION=2');
     const res = await request(app)
@@ -112,10 +100,7 @@ describe('GET /account-requests', () => {
     stubClient.get.rejects(new Error('backend down'));
 
     const app = mkApp('SESSION=3');
-    const res = await request(app)
-      .get('/account-requests')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/account-requests').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'account-requests',
@@ -146,9 +131,7 @@ describe('POST /accounts/:accountId/delete', () => {
       get: sinon.stub(),
       delete: sinon.stub(),
     };
-    wrapperStub = sinon
-      .stub(axiosCookie, 'wrapper')
-      .callsFake(() => stubClient as any);
+    wrapperStub = sinon.stub(axiosCookie, 'wrapper').callsFake(() => stubClient as any);
   });
 
   afterEach(() => {
@@ -161,10 +144,10 @@ describe('POST /accounts/:accountId/delete', () => {
     app.use(express.urlencoded({ extended: false }));
     app.use((req, _res, next) => {
       (req as any).session = {};
-      (req as any).user    = {};
+      (req as any).user = {};
       if (sessionCookie) {
         (req as any).session.springSessionCookie = sessionCookie;
-        (req as any).user.springSessionCookie    = sessionCookie;
+        (req as any).user.springSessionCookie = sessionCookie;
       }
       next();
     });
@@ -179,29 +162,18 @@ describe('POST /accounts/:accountId/delete', () => {
 
   it('responds 401 when not authenticated', async () => {
     const app = mkApp(); // no cookie
-    await request(app)
-      .post('/accounts/123/delete')
-      .expect(401)
-      .expect('Not authenticated');
+    await request(app).post('/accounts/123/delete').expect(401).expect('Not authenticated');
     expect(wrapperStub.notCalled).to.be.true;
   });
 
   it('redirects on successful delete', async () => {
-    stubClient.get
-      .withArgs('http://localhost:4550/csrf')
-      .resolves({ data: { csrfToken: 'tok123' } });
+    stubClient.get.withArgs('http://localhost:4550/csrf').resolves({ data: { csrfToken: 'tok123' } });
     stubClient.delete
-      .withArgs(
-        'http://localhost:4550/account/456',
-        sinon.match({ headers: { 'X-XSRF-TOKEN': 'tok123' } })
-      )
+      .withArgs('http://localhost:4550/account/456', sinon.match({ headers: { 'X-XSRF-TOKEN': 'tok123' } }))
       .resolves({});
 
     const app = mkApp('SESSION=4');
-    await request(app)
-      .post('/accounts/456/delete')
-      .expect(302)
-      .expect('Location', '/manage-accounts?deleted=true');
+    await request(app).post('/accounts/456/delete').expect(302).expect('Location', '/manage-accounts?deleted=true');
     expect(wrapperStub.calledOnce).to.be.true;
   });
 
@@ -210,10 +182,7 @@ describe('POST /accounts/:accountId/delete', () => {
     stubClient.delete.rejects(new Error('boom'));
 
     const app = mkApp('SESSION=5');
-    const res = await request(app)
-      .post('/accounts/789/delete')
-      .expect(500)
-      .expect('Content-Type', /json/);
+    const res = await request(app).post('/accounts/789/delete').expect(500).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'manage-accounts',

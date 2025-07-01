@@ -11,8 +11,7 @@ describe('GET /i18n/buttons', () => {
     // stub cookies and translator
     app.use((req: Request, _res: Response, next) => {
       (req as any).cookies = cookies;
-      (req as any).__ = ({ phrase, locale }: { phrase: string; locale: string }) =>
-        `${locale}:${phrase}`;
+      (req as any).__ = ({ phrase, locale }: { phrase: string; locale: string }) => `${locale}:${phrase}`;
       next();
     });
 
@@ -23,10 +22,7 @@ describe('GET /i18n/buttons', () => {
 
   it('returns English translations by default', async () => {
     const app = mkApp();
-    const res = await request(app)
-      .get('/i18n/buttons')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/i18n/buttons').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       actionAccept: 'en:actionAccept',
@@ -36,10 +32,7 @@ describe('GET /i18n/buttons', () => {
 
   it('returns Welsh translations when lang=cy cookie is set', async () => {
     const app = mkApp({ lang: 'cy' });
-    const res = await request(app)
-      .get('/i18n/buttons')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/i18n/buttons').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       actionAccept: 'cy:actionAccept',
@@ -49,10 +42,7 @@ describe('GET /i18n/buttons', () => {
 
   it('ignores unrecognized lang cookie and falls back to English', async () => {
     const app = mkApp({ lang: 'fr' });
-    const res = await request(app)
-      .get('/i18n/buttons')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/i18n/buttons').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       actionAccept: 'en:actionAccept',
@@ -68,8 +58,7 @@ describe('GET /i18n/actions', () => {
     // stub cookies and translator
     app.use((req: Request, _res: Response, next) => {
       (req as any).cookies = cookies;
-      (req as any).__ = ({ phrase, locale }: { phrase: string; locale: string }) =>
-        `${locale}:${phrase}`;
+      (req as any).__ = ({ phrase, locale }: { phrase: string; locale: string }) => `${locale}:${phrase}`;
       next();
     });
 
@@ -79,10 +68,7 @@ describe('GET /i18n/actions', () => {
 
   it('returns English action set by default', async () => {
     const app = mkApp();
-    const res = await request(app)
-      .get('/i18n/actions')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/i18n/actions').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       actionAccept: 'en:actionAccept',
@@ -93,10 +79,7 @@ describe('GET /i18n/actions', () => {
 
   it('returns Welsh action set when lang=cy cookie is present', async () => {
     const app = mkApp({ lang: 'cy' });
-    const res = await request(app)
-      .get('/i18n/actions')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/i18n/actions').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       actionAccept: 'cy:actionAccept',
@@ -107,10 +90,7 @@ describe('GET /i18n/actions', () => {
 
   it('falls back to English on unrecognized lang cookie', async () => {
     const app = mkApp({ lang: 'fr' });
-    const res = await request(app)
-      .get('/i18n/actions')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/i18n/actions').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       actionAccept: 'en:actionAccept',

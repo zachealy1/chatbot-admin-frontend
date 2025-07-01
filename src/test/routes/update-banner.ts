@@ -58,10 +58,7 @@ describe('GET /update-banner', () => {
   }
 
   it('redirects to login when no session cookie', async () => {
-    await request(mkApp())
-      .get('/update-banner')
-      .expect(302)
-      .expect('Location', '/login');
+    await request(mkApp()).get('/update-banner').expect(302).expect('Location', '/login');
   });
 
   it('renders banner data when backend returns successfully', async () => {
@@ -79,29 +76,25 @@ describe('GET /update-banner', () => {
       options: {
         bannerTitle: 'Hello',
         bannerBody: '<p>World</p>',
-        updated: true
-      }
+        updated: true,
+      },
     });
   });
 
   it('defaults to fallback banner on backend error', async () => {
-    stubClient.get
-      .withArgs('http://localhost:4550/support-banner/1')
-      .rejects(new Error('fail'));
+    stubClient.get.withArgs('http://localhost:4550/support-banner/1').rejects(new Error('fail'));
 
-    const res = await request(mkApp('S=2'))
-      .get('/update-banner')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(mkApp('S=2')).get('/update-banner').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'update-banner',
       options: {
         bannerTitle: 'Contact Support Team',
-        bannerBody: "If you need assistance, please call us at <strong>0800 123 456</strong> or email <a href='mailto:support@example.com'>support@example.com</a>.",
+        bannerBody:
+          "If you need assistance, please call us at <strong>0800 123 456</strong> or email <a href='mailto:support@example.com'>support@example.com</a>.",
         updated: false,
-        error: 'Could not load banner — please try again.'
-      }
+        error: 'Could not load banner — please try again.',
+      },
     });
   });
 });
@@ -114,9 +107,7 @@ describe('POST /update-banner', () => {
     stubClient = { get: sinon.stub(), put: sinon.stub() };
 
     // stub CSRF GET
-    stubClient.get
-      .withArgs('http://localhost:4550/csrf')
-      .resolves({ data: { csrfToken: 'tokXYZ' } });
+    stubClient.get.withArgs('http://localhost:4550/csrf').resolves({ data: { csrfToken: 'tokXYZ' } });
 
     // stub axios.create -> fake client
     sinon.stub(axios, 'create').returns(stubClient as any);
@@ -194,8 +185,8 @@ describe('POST /update-banner', () => {
       options: {
         error: 'Could not save banner—please try again.',
         bannerTitle: 'Fail',
-        bannerBody: 'Now'
-      }
+        bannerBody: 'Now',
+      },
     });
   });
 });

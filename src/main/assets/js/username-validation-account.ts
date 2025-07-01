@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const errorMessage = document.createElement('span');
       errorMessage.id = 'username-error';
       errorMessage.className = 'govuk-error-message';
-      errorMessage.innerHTML = '<span class="govuk-visually-hidden">Error:</span> Username must be 3-20 characters long and can only contain letters, numbers, and underscores.';
+      errorMessage.innerHTML =
+        '<span class="govuk-visually-hidden">Error:</span> Username must be 3-20 characters long and can only contain letters, numbers, and underscores.';
 
       // Insert the error message below the heading and above the input
       const heading = usernameGroup.querySelector('.govuk-label-wrapper') as HTMLElement;

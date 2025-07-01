@@ -22,58 +22,47 @@ describe('GET /login', () => {
   }
 
   it('renders default flags when no query params', async () => {
-    const res = await request(mkApp())
-      .get('/login')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(mkApp()).get('/login').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'login',
-      options: { created: false, passwordReset: false }
+      options: { created: false, passwordReset: false },
     });
   });
 
   it('sets created true when created=true', async () => {
-    const res = await request(mkApp())
-      .get('/login?created=true')
-      .expect(200);
+    const res = await request(mkApp()).get('/login?created=true').expect(200);
 
     expect(res.body).to.deep.equal({
       view: 'login',
-      options: { created: true, passwordReset: false }
+      options: { created: true, passwordReset: false },
     });
   });
 
   it('sets passwordReset true when passwordReset=true', async () => {
-    const res = await request(mkApp())
-      .get('/login?passwordReset=true')
-      .expect(200);
+    const res = await request(mkApp()).get('/login?passwordReset=true').expect(200);
 
     expect(res.body).to.deep.equal({
       view: 'login',
-      options: { created: false, passwordReset: true }
+      options: { created: false, passwordReset: true },
     });
   });
 
   it('handles both flags together', async () => {
-    const res = await request(mkApp())
-      .get('/login?created=true&passwordReset=true')
-      .expect(200);
+    const res = await request(mkApp()).get('/login?created=true&passwordReset=true').expect(200);
 
     expect(res.body).to.deep.equal({
       view: 'login',
-      options: { created: true, passwordReset: true }
+      options: { created: true, passwordReset: true },
     });
   });
 
   it('treats other values as false', async () => {
-    const res = await request(mkApp())
-      .get('/login?created=1&passwordReset=0')
-      .expect(200);
+    const res = await request(mkApp()).get('/login?created=1&passwordReset=0').expect(200);
 
     expect(res.body).to.deep.equal({
       view: 'login',
-      options: { created: false, passwordReset: false }
+      options: { created: false, passwordReset: false },
     });
   });
 });
@@ -98,10 +87,7 @@ describe('GET /logout', () => {
   }
 
   it('redirects to /login when logout succeeds', async () => {
-    await request(mkApp(null))
-      .get('/logout')
-      .expect(302)
-      .expect('Location', '/login');
+    await request(mkApp(null)).get('/logout').expect(302).expect('Location', '/login');
   });
 
   it('returns 500 when logout callback errors', async () => {
@@ -132,10 +118,12 @@ describe('POST /login', () => {
     sinon.restore();
   });
 
-  function mkApp(options: {
-    sessionSaveError?: Error;
-    loginError?: Error;
-  } = {}) {
+  function mkApp(
+    options: {
+      sessionSaveError?: Error;
+      loginError?: Error;
+    } = {}
+  ) {
     const app: Application = express();
     app.use(express.urlencoded({ extended: false }));
     app.use(express.json());
@@ -145,8 +133,7 @@ describe('POST /login', () => {
       (req as any).session = {
         save: (cb: (err?: any) => void) => cb(options.sessionSaveError),
       };
-      (req as any).login = (_user: any, cb: (err?: any) => void) =>
-        cb(options.loginError);
+      (req as any).login = (_user: any, cb: (err?: any) => void) => cb(options.loginError);
       req.cookies = {}; // default lang=en
       req.__ = (msg: string) => msg;
       next();
@@ -164,9 +151,7 @@ describe('POST /login', () => {
   }
 
   it('redirects to /admin on successful login', async () => {
-    stubClient.get
-      .withArgs('/csrf')
-      .resolves({ data: { csrfToken: 'tok123' } });
+    stubClient.get.withArgs('/csrf').resolves({ data: { csrfToken: 'tok123' } });
     stubClient.post
       .withArgs('/login/admin', { username: 'u', password: 'p' }, sinon.match.object)
       .resolves({ headers: { 'set-cookie': ['S=1'] } });
@@ -175,16 +160,14 @@ describe('POST /login', () => {
       .send({ username: 'u', password: 'p' })
       .expect(302)
       .expect('Location', '/admin');
-// session populated
+    // session populated
     // wrapper and create both called
     expect(createStub.called).to.be.true;
     expect(wrapperStub.called).to.be.true;
   });
 
   it('re-renders login with session-save error', async () => {
-    stubClient.get
-      .withArgs('/csrf')
-      .resolves({ data: { csrfToken: 'tokA' } });
+    stubClient.get.withArgs('/csrf').resolves({ data: { csrfToken: 'tokA' } });
     stubClient.post.resolves({ headers: { 'set-cookie': ['S=2'] } });
 
     const res = await request(mkApp({ sessionSaveError: new Error('save fail') }))
@@ -197,8 +180,8 @@ describe('POST /login', () => {
       view: 'login',
       options: {
         error: 'loginSessionError',
-        username: 'u2'
-      }
+        username: 'u2',
+      },
     });
   });
 
@@ -215,8 +198,8 @@ describe('POST /login', () => {
       view: 'login',
       options: {
         error: 'bad credentials',
-        username: 'u3'
-      }
+        username: 'u3',
+      },
     });
   });
 
@@ -233,8 +216,8 @@ describe('POST /login', () => {
       view: 'login',
       options: {
         error: 'loginInvalidCredentials',
-        username: 'u4'
-      }
+        username: 'u4',
+      },
     });
   });
 });

@@ -17,7 +17,6 @@
 }
 
 @media (max-width: 640px) {
-
   .govuk-button--secondary {
     margin-top: 20px;
   }
@@ -51,7 +50,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-  font-family: "GDS Transport", Arial, sans-serif;
+  font-family: 'GDS Transport', Arial, sans-serif;
   font-size: 16px;
 }
 
@@ -108,13 +107,13 @@
   border-spacing: 0 5px;
   position: relative;
   font-size: 16px;
-  font-family: "GDS Transport", arial, sans-serif;
+  font-family: 'GDS Transport', arial, sans-serif;
 }
 
 .chart-label {
   min-width: 6rem;
   font-weight: bold;
-  font-family: "GDS Transport", arial, sans-serif;
+  font-family: 'GDS Transport', arial, sans-serif;
 }
 
 .chart-bar {
@@ -233,7 +232,7 @@
   display: flex;
   justify-content: space-between;
   width: 95%;
-  font-family: "GDS Transport", Arial, sans-serif;
+  font-family: 'GDS Transport', Arial, sans-serif;
   font-size: 14px;
 }
 
@@ -241,7 +240,7 @@
   display: flex;
   justify-content: space-between;
   width: 95%;
-  font-family: "GDS Transport", Arial, sans-serif;
+  font-family: 'GDS Transport', Arial, sans-serif;
   font-size: 14px;
 }
 
@@ -284,7 +283,10 @@
 .language-select {
   position: relative;
   top: -40px;
-  font-family: GDS Transport, Arial, sans-serif;
+  font-family:
+    GDS Transport,
+    Arial,
+    sans-serif;
   font-size: 1.1875rem;
   font-weight: 400;
   line-height: 1.1428571429;
@@ -302,7 +304,7 @@
 }
 
 .language-select__list-item:first-child::after {
-  content: "";
+  content: '';
   display: inline-block;
   border-right: 0.09375em solid #0b0c0c;
   height: 1em;

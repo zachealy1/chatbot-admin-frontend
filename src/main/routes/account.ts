@@ -10,13 +10,9 @@ const { Logger } = require('@hmcts/nodejs-logging');
 const logger = Logger.getLogger('app');
 
 export default function (app: Application): void {
-
-  app.get('/account',  ensureAuthenticated, async (req, res) => {
+  app.get('/account', ensureAuthenticated, async (req, res) => {
     try {
-      const storedCookie =
-        (req.user as any)?.springSessionCookie ||
-        (req.session as any)?.springSessionCookie ||
-        '';
+      const storedCookie = (req.user as any)?.springSessionCookie || (req.session as any)?.springSessionCookie || '';
       if (!storedCookie) {
         throw new Error('No Spring Boot session cookie found.');
       }
@@ -26,12 +22,14 @@ export default function (app: Application): void {
       jar.setCookieSync(storedCookie, 'http://localhost:4550');
 
       // Create an axios instance with cookie jar support.
-      const client = wrapper(axios.create({
-        jar,
-        withCredentials: true,
-        xsrfCookieName: 'XSRF-TOKEN',
-        xsrfHeaderName: 'X-XSRF-TOKEN',
-      }));
+      const client = wrapper(
+        axios.create({
+          jar,
+          withCredentials: true,
+          xsrfCookieName: 'XSRF-TOKEN',
+          xsrfHeaderName: 'X-XSRF-TOKEN',
+        })
+      );
 
       // Make parallel requests to your Spring Boot backend endpoints.
       const [usernameRes, emailRes, dayRes, monthRes, yearRes] = await Promise.all([
@@ -39,7 +37,7 @@ export default function (app: Application): void {
         client.get('http://localhost:4550/account/email'),
         client.get('http://localhost:4550/account/date-of-birth/day'),
         client.get('http://localhost:4550/account/date-of-birth/month'),
-        client.get('http://localhost:4550/account/date-of-birth/year')
+        client.get('http://localhost:4550/account/date-of-birth/year'),
       ]);
 
       const context = {
@@ -49,7 +47,7 @@ export default function (app: Application): void {
         month: monthRes.data,
         year: yearRes.data,
         updated: req.query.updated === 'true',
-        errors: null
+        errors: null,
       };
 
       // Disable caching so that the page reloads fresh each time.
@@ -59,12 +57,12 @@ export default function (app: Application): void {
       logger.error('Error retrieving account details:', error);
       res.render('account', {
         errors: ['Error retrieving account details.'],
-        updated: req.query.updated === 'true'
+        updated: req.query.updated === 'true',
       });
     }
   });
 
-// Add a route for /account/update
+  // Add a route for /account/update
   app.get('/account/update', ensureAuthenticated, (req, res) => {
     res.render('update'); // Render the Nunjucks template for update
   });
@@ -84,10 +82,7 @@ export default function (app: Application): void {
     const payload = { email, username, dateOfBirth, password, confirmPassword };
 
     // Retrieve the stored Spring Boot session cookie from req.user or req.session.
-    const storedCookie =
-      (req.user as any)?.springSessionCookie ||
-      (req.session as any)?.springSessionCookie ||
-      '';
+    const storedCookie = (req.user as any)?.springSessionCookie || (req.session as any)?.springSessionCookie || '';
 
     if (!storedCookie) {
       return res.status(401).render('account', {
@@ -106,12 +101,14 @@ export default function (app: Application): void {
       jar.setCookieSync(storedCookie, 'http://localhost:4550');
 
       // Create an axios client with cookie jar support.
-      const client = wrapper(axios.create({
-        jar,
-        withCredentials: true,
-        xsrfCookieName: 'XSRF-TOKEN',
-        xsrfHeaderName: 'X-XSRF-TOKEN',
-      }));
+      const client = wrapper(
+        axios.create({
+          jar,
+          withCredentials: true,
+          xsrfCookieName: 'XSRF-TOKEN',
+          xsrfHeaderName: 'X-XSRF-TOKEN',
+        })
+      );
 
       // Request the CSRF token from the backend.
       const csrfResponse = await client.get('http://localhost:4550/csrf');

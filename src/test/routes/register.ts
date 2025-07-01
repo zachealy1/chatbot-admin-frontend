@@ -25,7 +25,7 @@ describe('Register Routes', () => {
     sinon.restore();
   });
 
-  function mkApp(cookies: Record<string,string> = {}) {
+  function mkApp(cookies: Record<string, string> = {}) {
     const app: Application = express();
     app.use(express.urlencoded({ extended: false }));
     app.use(express.json());
@@ -50,21 +50,14 @@ describe('Register Routes', () => {
 
   describe('GET /register', () => {
     it('renders the register page', async () => {
-      const res = await request(mkApp())
-        .get('/register')
-        .expect(200)
-        .expect('Content-Type', /json/);
+      const res = await request(mkApp()).get('/register').expect(200).expect('Content-Type', /json/);
       expect(res.body).to.deep.equal({ view: 'register' });
     });
   });
 
   describe('POST /register', () => {
     it('re-renders with all validation errors when body empty', async () => {
-      const res = await request(mkApp())
-        .post('/register')
-        .send({})
-        .expect(200)
-        .expect('Content-Type', /json/);
+      const res = await request(mkApp()).post('/register').send({}).expect(200).expect('Content-Type', /json/);
 
       expect(res.body).to.deep.equal({
         view: 'register',
@@ -75,33 +68,23 @@ describe('Register Routes', () => {
             email: 'emailInvalid',
             dateOfBirth: 'dobInvalid',
             password: 'passwordCriteria',
-            confirmPassword: 'confirmPasswordRequired'
+            confirmPassword: 'confirmPasswordRequired',
           },
-        }
+        },
       });
     });
 
     it('uses Welsh locale when cookie set', async () => {
       const app = mkApp({ lang: 'cy' });
-      const res = await request(app)
-        .post('/register')
-        .send({})
-        .expect(200)
-        .expect('Content-Type', /json/);
+      const res = await request(app).post('/register').send({}).expect(200).expect('Content-Type', /json/);
       expect(res.body.options.lang).to.equal('cy');
     });
 
     it('redirects on successful registration (lang=en)', async () => {
       // stub CSRF and post
-      stubClient.get
-        .withArgs('/csrf')
-        .resolves({ data: { csrfToken: 'tok1' } });
+      stubClient.get.withArgs('/csrf').resolves({ data: { csrfToken: 'tok1' } });
       stubClient.post
-        .withArgs(
-          '/account/register/admin',
-          sinon.match.object,
-          sinon.match({ headers: { 'X-XSRF-TOKEN': 'tok1' } })
-        )
+        .withArgs('/account/register/admin', sinon.match.object, sinon.match({ headers: { 'X-XSRF-TOKEN': 'tok1' } }))
         .resolves({});
 
       const res = await request(mkApp())
@@ -113,7 +96,7 @@ describe('Register Routes', () => {
           'date-of-birth-month': '1',
           'date-of-birth-year': '2000',
           password: 'StrongP@ss1',
-          confirmPassword: 'StrongP@ss1'
+          confirmPassword: 'StrongP@ss1',
         })
         .expect(302)
         .expect('Location', '/login?created=true&lang=en');
@@ -135,7 +118,7 @@ describe('Register Routes', () => {
           'date-of-birth-month': '1',
           'date-of-birth-year': '2000',
           password: 'StrongP@ss1',
-          confirmPassword: 'StrongP@ss1'
+          confirmPassword: 'StrongP@ss1',
         })
         .expect(302)
         .expect('Location', '/login?created=true&lang=cy');
@@ -156,7 +139,7 @@ describe('Register Routes', () => {
           'date-of-birth-month': '1',
           'date-of-birth-year': '2000',
           password: 'StrongP@ss1',
-          confirmPassword: 'StrongP@ss1'
+          confirmPassword: 'StrongP@ss1',
         })
         .expect(200)
         .expect('Content-Type', /json/);
@@ -170,8 +153,8 @@ describe('Register Routes', () => {
           email: 'u@e.com',
           day: '1',
           month: '1',
-          year: '2000'
-        }
+          year: '2000',
+        },
       });
     });
 
@@ -188,7 +171,7 @@ describe('Register Routes', () => {
           'date-of-birth-month': '1',
           'date-of-birth-year': '2000',
           password: 'StrongP@ss1',
-          confirmPassword: 'StrongP@ss1'
+          confirmPassword: 'StrongP@ss1',
         })
         .expect(200)
         .expect('Content-Type', /json/);
@@ -202,8 +185,8 @@ describe('Register Routes', () => {
           email: 'u@e.com',
           day: '1',
           month: '1',
-          year: '2000'
-        }
+          year: '2000',
+        },
       });
     });
   });

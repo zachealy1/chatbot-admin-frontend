@@ -13,9 +13,7 @@ export default function (app: Application): void {
   app.get('/requests/pending', ensureAuthenticated, async (req, res) => {
     // pull your stored Spring session cookie
     const storedSessionCookie =
-      (req.user as any)?.springSessionCookie ||
-      (req.session as any)?.springSessionCookie ||
-      '';
+      (req.user as any)?.springSessionCookie || (req.session as any)?.springSessionCookie || '';
 
     if (!storedSessionCookie) {
       logger.error('No Spring session cookie found on request');
@@ -28,31 +26,30 @@ export default function (app: Application): void {
       jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
 
       // wrap axios so it uses the jar & sends cookies
-      const client = wrapper(axios.create({
-        jar,
-        withCredentials: true,
-      }));
+      const client = wrapper(
+        axios.create({
+          jar,
+          withCredentials: true,
+        })
+      );
 
       // fetch pending requests from the backend
       const backendRes = await client.get('http://localhost:4550/account/pending');
       // forward the JSON arrays
       return res.json(backendRes.data);
-
     } catch (err: any) {
       logger.error('Error fetching pending requests:', err);
       return res.status(500).json({ error: 'Failed to load pending requests' });
     }
   });
 
-// Accept account request
+  // Accept account request
   app.post('/requests/:requestId/accept', ensureAuthenticated, async (req, res) => {
     const { requestId } = req.params;
 
     // pull your Spring session cookie
     const storedSessionCookie =
-      (req.user as any)?.springSessionCookie ||
-      (req.session as any)?.springSessionCookie ||
-      '';
+      (req.user as any)?.springSessionCookie || (req.session as any)?.springSessionCookie || '';
 
     if (!storedSessionCookie) {
       logger.error('No Spring session cookie found');
@@ -65,12 +62,14 @@ export default function (app: Application): void {
       jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
 
       // wrap axios so it sends cookies and supports XSRF
-      const client = wrapper(axios.create({
-        jar,
-        withCredentials: true,
-        xsrfCookieName: 'XSRF-TOKEN',
-        xsrfHeaderName: 'X-XSRF-TOKEN',
-      }));
+      const client = wrapper(
+        axios.create({
+          jar,
+          withCredentials: true,
+          xsrfCookieName: 'XSRF-TOKEN',
+          xsrfHeaderName: 'X-XSRF-TOKEN',
+        })
+      );
 
       // fetch CSRF token
       const csrfRes = await client.get('http://localhost:4550/csrf');
@@ -85,25 +84,22 @@ export default function (app: Application): void {
 
       logger.log(`Request accepted: ${requestId}`);
       return res.redirect('/account-requests?accepted=true');
-
     } catch (err: any) {
       logger.error('Error approving request:', err);
       return res.status(500).render('account-requests', {
         accepted: false,
         rejected: false,
-        error: 'Failed to accept request'
+        error: 'Failed to accept request',
       });
     }
   });
 
-// Reject account request
+  // Reject account request
   app.post('/requests/:requestId/reject', ensureAuthenticated, async (req, res) => {
     const { requestId } = req.params;
 
     const storedSessionCookie =
-      (req.user as any)?.springSessionCookie ||
-      (req.session as any)?.springSessionCookie ||
-      '';
+      (req.user as any)?.springSessionCookie || (req.session as any)?.springSessionCookie || '';
 
     if (!storedSessionCookie) {
       logger.error('No Spring session cookie found');
@@ -114,12 +110,14 @@ export default function (app: Application): void {
       const jar = new CookieJar();
       jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
 
-      const client = wrapper(axios.create({
-        jar,
-        withCredentials: true,
-        xsrfCookieName: 'XSRF-TOKEN',
-        xsrfHeaderName: 'X-XSRF-TOKEN',
-      }));
+      const client = wrapper(
+        axios.create({
+          jar,
+          withCredentials: true,
+          xsrfCookieName: 'XSRF-TOKEN',
+          xsrfHeaderName: 'X-XSRF-TOKEN',
+        })
+      );
 
       const csrfRes = await client.get('http://localhost:4550/csrf');
       const csrfToken = csrfRes.data.csrfToken;
@@ -132,13 +130,12 @@ export default function (app: Application): void {
 
       logger.log(`Request rejected: ${requestId}`);
       return res.redirect('/account-requests?rejected=true');
-
     } catch (err: any) {
       logger.error('Error rejecting request:', err);
       return res.status(500).render('account-requests', {
         accepted: false,
         rejected: false,
-        error: 'Failed to reject request'
+        error: 'Failed to reject request',
       });
     }
   });

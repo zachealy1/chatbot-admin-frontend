@@ -6,7 +6,7 @@ export default function (app: Application): void {
     const lang = req.cookies.lang === 'cy' ? 'cy' : 'en';
     // Use i18n to translate
     const accept = req.__({ phrase: 'actionAccept', locale: lang });
-    const reject = req.__({ phrase: 'actionReject',  locale: lang });
+    const reject = req.__({ phrase: 'actionReject', locale: lang });
     res.json({ actionAccept: accept, actionReject: reject });
   });
 
@@ -14,8 +14,8 @@ export default function (app: Application): void {
     const lang = req.cookies.lang === 'cy' ? 'cy' : 'en';
     const t = {
       actionAccept: req.__({ phrase: 'actionAccept', locale: lang }),
-      actionReject: req.__({ phrase: 'actionReject',  locale: lang }),
-      actionDelete: req.__({ phrase: 'actionDelete',  locale: lang })
+      actionReject: req.__({ phrase: 'actionReject', locale: lang }),
+      actionDelete: req.__({ phrase: 'actionDelete', locale: lang }),
     };
     res.json(t);
   });

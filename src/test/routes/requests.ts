@@ -21,9 +21,7 @@ describe('GET /requests/pending', () => {
     stubClient = { get: sinon.stub() } as any;
 
     // default backend stub: resolves empty list
-    stubClient.get
-      .withArgs('http://localhost:4550/account/pending')
-      .resolves({ data: [] });
+    stubClient.get.withArgs('http://localhost:4550/account/pending').resolves({ data: [] });
 
     // stub axios.create -> our fake client
     sinon.stub(axios, 'create').returns(stubClient as any);
@@ -65,14 +63,9 @@ describe('GET /requests/pending', () => {
 
   it('forwards backend data on success', async () => {
     const data = [{ id: 1 }, { id: 2 }, { id: 3 }];
-    stubClient.get
-      .withArgs('http://localhost:4550/account/pending')
-      .resolves({ data });
+    stubClient.get.withArgs('http://localhost:4550/account/pending').resolves({ data });
 
-    const res = await request(mkApp('SESSION=1'))
-      .get('/requests/pending')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(mkApp('SESSION=1')).get('/requests/pending').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal(data);
   });
@@ -105,9 +98,7 @@ describe('POST /requests/:requestId/accept', () => {
     stubClient = { get: sinon.stub(), post: sinon.stub() };
 
     // default CSRF stub returns token
-    stubClient.get
-      .withArgs('http://localhost:4550/csrf')
-      .resolves({ data: { csrfToken: 'tok123' } });
+    stubClient.get.withArgs('http://localhost:4550/csrf').resolves({ data: { csrfToken: 'tok123' } });
 
     // stub axios.create -> fake client
     sinon.stub(axios, 'create').returns(stubClient as any);
@@ -147,20 +138,13 @@ describe('POST /requests/:requestId/accept', () => {
   }
 
   it('returns 401 when not authenticated', async () => {
-    await request(mkApp())
-      .post('/requests/42/accept')
-      .expect(401)
-      .expect('Not authenticated');
+    await request(mkApp()).post('/requests/42/accept').expect(401).expect('Not authenticated');
   });
 
   it('redirects on successful accept', async () => {
     // stub approve call to succeed
     stubClient.post
-      .withArgs(
-        'http://localhost:4550/account/approve/99',
-        {},
-        sinon.match({ headers: { 'X-XSRF-TOKEN': 'tok123' } })
-      )
+      .withArgs('http://localhost:4550/account/approve/99', {}, sinon.match({ headers: { 'X-XSRF-TOKEN': 'tok123' } }))
       .resolves({});
 
     await request(mkApp('SESSION=1'))
@@ -172,11 +156,7 @@ describe('POST /requests/:requestId/accept', () => {
   it('renders error view on backend failure', async () => {
     // stub approve call to fail
     stubClient.post
-      .withArgs(
-        'http://localhost:4550/account/approve/123',
-        sinon.match.any,
-        sinon.match.any
-      )
+      .withArgs('http://localhost:4550/account/approve/123', sinon.match.any, sinon.match.any)
       .rejects(new Error('fail'));
 
     const res = await request(mkApp('SESSION=2'))
@@ -189,8 +169,8 @@ describe('POST /requests/:requestId/accept', () => {
       options: {
         accepted: false,
         rejected: false,
-        error: 'Failed to accept request'
-      }
+        error: 'Failed to accept request',
+      },
     });
   });
 });
@@ -208,9 +188,7 @@ describe('POST /requests/:requestId/reject', () => {
     stubClient = { get: sinon.stub(), post: sinon.stub() };
 
     // default CSRF stub
-    stubClient.get
-      .withArgs('http://localhost:4550/csrf')
-      .resolves({ data: { csrfToken: 'tok123' } });
+    stubClient.get.withArgs('http://localhost:4550/csrf').resolves({ data: { csrfToken: 'tok123' } });
 
     sinon.stub(axios, 'create').returns(stubClient as any);
     sinon.stub(axiosCookie, 'wrapper').callsFake(c => c as any);
@@ -248,19 +226,12 @@ describe('POST /requests/:requestId/reject', () => {
   }
 
   it('returns 401 when not authenticated', async () => {
-    await request(mkApp())
-      .post('/requests/55/reject')
-      .expect(401)
-      .expect('Not authenticated');
+    await request(mkApp()).post('/requests/55/reject').expect(401).expect('Not authenticated');
   });
 
   it('redirects on successful reject', async () => {
     stubClient.post
-      .withArgs(
-        'http://localhost:4550/account/reject/77',
-        {},
-        sinon.match({ headers: { 'X-XSRF-TOKEN': 'tok123' } })
-      )
+      .withArgs('http://localhost:4550/account/reject/77', {}, sinon.match({ headers: { 'X-XSRF-TOKEN': 'tok123' } }))
       .resolves({});
 
     await request(mkApp('SESSION=abc'))
@@ -271,11 +242,7 @@ describe('POST /requests/:requestId/reject', () => {
 
   it('renders JSON error on backend failure', async () => {
     stubClient.post
-      .withArgs(
-        'http://localhost:4550/account/reject/88',
-        sinon.match.any,
-        sinon.match.any
-      )
+      .withArgs('http://localhost:4550/account/reject/88', sinon.match.any, sinon.match.any)
       .rejects(new Error('failure'));
 
     const res = await request(mkApp('SESSION=xyz'))
@@ -288,8 +255,8 @@ describe('POST /requests/:requestId/reject', () => {
       options: {
         accepted: false,
         rejected: false,
-        error: 'Failed to reject request'
-      }
+        error: 'Failed to reject request',
+      },
     });
   });
 });

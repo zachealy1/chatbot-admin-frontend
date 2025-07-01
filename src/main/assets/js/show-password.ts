@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Query all toggle buttons
   const toggleButtons = document.querySelectorAll<HTMLButtonElement>('.toggle-button');
 
-  toggleButtons.forEach((button) => {
+  toggleButtons.forEach(button => {
     button.addEventListener('click', () => {
       // Find the input associated with this button
       const passwordInput = button.previousElementSibling as HTMLInputElement;

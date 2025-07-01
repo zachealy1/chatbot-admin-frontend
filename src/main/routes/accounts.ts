@@ -10,14 +10,11 @@ const { Logger } = require('@hmcts/nodejs-logging');
 const logger = Logger.getLogger('app');
 
 export default function (app: Application): void {
-
   // Add a route for /account-requests
   app.get('/account-requests', ensureAuthenticated, async (req, res) => {
     // grab your login cookie
     const storedSessionCookie =
-      (req.user as any)?.springSessionCookie ||
-      (req.session as any)?.springSessionCookie ||
-      '';
+      (req.user as any)?.springSessionCookie || (req.session as any)?.springSessionCookie || '';
 
     if (!storedSessionCookie) {
       return res.redirect('/login');
@@ -32,30 +29,29 @@ export default function (app: Application): void {
       const allRequests: any[] = backendRes.data;
 
       // pagination params
-      const PAGE_SIZE   = 6;
-      const totalPages  = Math.ceil(allRequests.length / PAGE_SIZE) || 1;
-      const pages       = Array.from({ length: totalPages }, (_, i) => i + 1);
+      const PAGE_SIZE = 6;
+      const totalPages = Math.ceil(allRequests.length / PAGE_SIZE) || 1;
+      const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
       const currentPage = Math.min(Math.max(1, parseInt(req.query.page as string, 10) || 1), totalPages);
 
       const hasRequests = allRequests.length > 0;
 
       // render template
       res.render('account-requests', {
-        accepted:    req.query.accepted === 'true',
-        rejected:    req.query.rejected === 'true',
+        accepted: req.query.accepted === 'true',
+        rejected: req.query.rejected === 'true',
         pages,
         currentPage,
-        hasRequests
+        hasRequests,
       });
-
     } catch (err) {
       logger.error('Error loading account requests:', err);
       res.render('account-requests', {
-        accepted:    req.query.accepted === 'true',
-        rejected:    req.query.rejected === 'true',
-        pages:       [1],
+        accepted: req.query.accepted === 'true',
+        rejected: req.query.rejected === 'true',
+        pages: [1],
         currentPage: 1,
-        error:       'Could not load requests'
+        error: 'Could not load requests',
       });
     }
   });
@@ -65,9 +61,7 @@ export default function (app: Application): void {
 
     // pull your Spring session cookie
     const storedSessionCookie =
-      (req.user as any)?.springSessionCookie ||
-      (req.session as any)?.springSessionCookie ||
-      '';
+      (req.user as any)?.springSessionCookie || (req.session as any)?.springSessionCookie || '';
 
     if (!storedSessionCookie) {
       logger.error('No Spring session cookie found');
@@ -80,26 +74,24 @@ export default function (app: Application): void {
       jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
 
       // wrap axios so it uses the jar & sends cookies
-      const client = wrapper(axios.create({
-        jar,
-        withCredentials: true,
-        xsrfCookieName: 'XSRF-TOKEN',
-        xsrfHeaderName: 'X-XSRF-TOKEN',
-      }));
+      const client = wrapper(
+        axios.create({
+          jar,
+          withCredentials: true,
+          xsrfCookieName: 'XSRF-TOKEN',
+          xsrfHeaderName: 'X-XSRF-TOKEN',
+        })
+      );
 
       // fetch CSRF token (will set XSRF-TOKEN cookie in jar)
       const csrfRes = await client.get('http://localhost:4550/csrf');
       const csrfToken = csrfRes.data.csrfToken;
 
       // call DELETE /account/{userId}
-      await client.delete(
-        `http://localhost:4550/account/${accountId}`,
-        { headers: { 'X-XSRF-TOKEN': csrfToken } }
-      );
+      await client.delete(`http://localhost:4550/account/${accountId}`, { headers: { 'X-XSRF-TOKEN': csrfToken } });
 
       logger.log(`Account deleted: ${accountId}`);
       return res.redirect('/manage-accounts?deleted=true');
-
     } catch (err: any) {
       logger.error('Error deleting account:', err);
       // Optionally re-render with an error message instead of redirect

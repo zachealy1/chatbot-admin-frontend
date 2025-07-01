@@ -27,29 +27,21 @@ describe('GET /admin', () => {
     });
     adminRoutes(app);
 
-    const res = await request(app)
-      .get('/admin')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/admin').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({ view: 'admin' });
   });
 
   it('redirects to /login when not authenticated', async () => {
     // Stub authentication middleware to redirect
-    sinon
-      .stub(authModule, 'ensureAuthenticated')
-      .callsFake((_req: Request, res: Response) => {
-        res.redirect('/login');
-      });
+    sinon.stub(authModule, 'ensureAuthenticated').callsFake((_req: Request, res: Response) => {
+      res.redirect('/login');
+    });
 
     const app: Application = express();
     adminRoutes(app);
 
-    await request(app)
-      .get('/admin')
-      .expect(302)
-      .expect('Location', '/login');
+    await request(app).get('/admin').expect(302).expect('Location', '/login');
   });
 });
 
@@ -73,9 +65,7 @@ describe('GET /popular-chat-categories', () => {
     createStub = sinon.stub(axios, 'create').returns(stubClient as any);
 
     // stub wrapper to just return its argument
-    wrapperStub = sinon
-      .stub(axiosCookie, 'wrapper')
-      .callsFake((client) => client as any);
+    wrapperStub = sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
   });
 
   afterEach(() => {
@@ -88,10 +78,10 @@ describe('GET /popular-chat-categories', () => {
     // inject session and user
     app.use((req, _res, next) => {
       (req as any).session = {};
-      (req as any).user    = {};
+      (req as any).user = {};
       if (sessionCookie) {
         (req as any).session.springSessionCookie = sessionCookie;
-        (req as any).user.springSessionCookie    = sessionCookie;
+        (req as any).user.springSessionCookie = sessionCookie;
       }
       next();
     });
@@ -103,10 +93,7 @@ describe('GET /popular-chat-categories', () => {
 
   it('returns 401 when no session cookie', async () => {
     const app = mkApp(); // no cookie
-    const res = await request(app)
-      .get('/popular-chat-categories')
-      .expect(401)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/popular-chat-categories').expect(401).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({ error: 'Not authenticated' });
     expect(stubClient.get.notCalled).to.be.true;
@@ -114,15 +101,10 @@ describe('GET /popular-chat-categories', () => {
 
   it('forwards backend data on success', async () => {
     const data = [{ category: 'test', count: 5 }];
-    stubClient.get
-      .withArgs('http://localhost:4550/statistics/popular-chat-categories')
-      .resolves({ data });
+    stubClient.get.withArgs('http://localhost:4550/statistics/popular-chat-categories').resolves({ data });
 
     const app = mkApp('SESSION=1');
-    const res = await request(app)
-      .get('/popular-chat-categories')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/popular-chat-categories').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal(data);
     expect(createStub.calledOnce).to.be.true;
@@ -134,10 +116,7 @@ describe('GET /popular-chat-categories', () => {
     stubClient.get.rejects(new Error('backend fail'));
 
     const app = mkApp('SESSION=2');
-    const res = await request(app)
-      .get('/popular-chat-categories')
-      .expect(500)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/popular-chat-categories').expect(500).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({ error: 'Failed to load chat categories' });
     expect(stubClient.get.calledOnce).to.be.true;
@@ -161,9 +140,7 @@ describe('GET /user-activity', () => {
     // stub axios.create to return fake client
     createStub = sinon.stub(axios, 'create').returns(stubClient as any);
     // stub wrapper to return its input
-    wrapperStub = sinon
-      .stub(axiosCookie, 'wrapper')
-      .callsFake(client => client as any);
+    wrapperStub = sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
   });
 
   afterEach(() => {
@@ -175,10 +152,10 @@ describe('GET /user-activity', () => {
     // inject session/user
     app.use((req, _res, next) => {
       (req as any).session = {};
-      (req as any).user    = {};
+      (req as any).user = {};
       if (sessionCookie) {
         (req as any).session.springSessionCookie = sessionCookie;
-        (req as any).user.springSessionCookie    = sessionCookie;
+        (req as any).user.springSessionCookie = sessionCookie;
       }
       next();
     });
@@ -188,10 +165,7 @@ describe('GET /user-activity', () => {
 
   it('returns 401 when not authenticated', async () => {
     const app = mkApp(); // no cookie set
-    const res = await request(app)
-      .get('/user-activity')
-      .expect(401)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/user-activity').expect(401).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({ error: 'Not authenticated' });
     expect(stubClient.get.notCalled).to.be.true;
@@ -199,15 +173,10 @@ describe('GET /user-activity', () => {
 
   it('forwards backend data on success', async () => {
     const data = { usersOnline: 42 };
-    stubClient.get
-      .withArgs('http://localhost:4550/statistics/user-activity')
-      .resolves({ data });
+    stubClient.get.withArgs('http://localhost:4550/statistics/user-activity').resolves({ data });
 
     const app = mkApp('SESSION=abc');
-    const res = await request(app)
-      .get('/user-activity')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/user-activity').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal(data);
     expect(createStub.calledOnce).to.be.true;
@@ -219,10 +188,7 @@ describe('GET /user-activity', () => {
     stubClient.get.rejects(new Error('backend down'));
 
     const app = mkApp('SESSION=xyz');
-    const res = await request(app)
-      .get('/user-activity')
-      .expect(500)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/user-activity').expect(500).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({ error: 'Failed to load user activity' });
     expect(stubClient.get.calledOnce).to.be.true;
@@ -248,9 +214,7 @@ describe('GET /chat-category-breakdown', () => {
     // stub axios.create to return our fake client
     createStub = sinon.stub(axios, 'create').returns(stubClient as any);
     // stub wrapper to return the client unchanged
-    wrapperStub = sinon
-      .stub(axiosCookie, 'wrapper')
-      .callsFake(client => client as any);
+    wrapperStub = sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
   });
 
   afterEach(() => {
@@ -262,10 +226,10 @@ describe('GET /chat-category-breakdown', () => {
     // inject session and user
     app.use((req, _res, next) => {
       (req as any).session = {};
-      (req as any).user    = {};
+      (req as any).user = {};
       if (sessionCookie) {
         (req as any).session.springSessionCookie = sessionCookie;
-        (req as any).user.springSessionCookie    = sessionCookie;
+        (req as any).user.springSessionCookie = sessionCookie;
       }
       next();
     });
@@ -276,10 +240,7 @@ describe('GET /chat-category-breakdown', () => {
 
   it('returns 401 when no session cookie', async () => {
     const app = mkApp(); // no cookie
-    const res = await request(app)
-      .get('/chat-category-breakdown')
-      .expect(401)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/chat-category-breakdown').expect(401).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({ error: 'Not authenticated' });
     expect(stubClient.get.notCalled).to.be.true;
@@ -287,15 +248,10 @@ describe('GET /chat-category-breakdown', () => {
 
   it('forwards backend data on success', async () => {
     const data = { categories: { A: 3, B: 7 } };
-    stubClient.get
-      .withArgs('http://localhost:4550/statistics/chat-category-breakdown')
-      .resolves({ data });
+    stubClient.get.withArgs('http://localhost:4550/statistics/chat-category-breakdown').resolves({ data });
 
     const app = mkApp('SESSION=1');
-    const res = await request(app)
-      .get('/chat-category-breakdown')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/chat-category-breakdown').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal(data);
     expect(createStub.calledOnce).to.be.true;
@@ -307,10 +263,7 @@ describe('GET /chat-category-breakdown', () => {
     stubClient.get.rejects(new Error('backend fail'));
 
     const app = mkApp('SESSION=2');
-    const res = await request(app)
-      .get('/chat-category-breakdown')
-      .expect(500)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/chat-category-breakdown').expect(500).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({ error: 'Failed to fetch data' });
     expect(stubClient.get.calledOnce).to.be.true;

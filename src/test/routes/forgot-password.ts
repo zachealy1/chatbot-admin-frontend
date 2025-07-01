@@ -23,10 +23,7 @@ describe('GET /forgot-password', () => {
 
     forgotRoutes(app);
 
-    const res = await request(app)
-      .get('/forgot-password')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/forgot-password').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({ view: 'forgot-password' });
   });
@@ -55,10 +52,7 @@ describe('GET /forgot-password/verify-otp', () => {
 
   it('renders defaults when no lang cookie and no sent param', async () => {
     const app = mkApp();
-    const res = await request(app)
-      .get('/forgot-password/verify-otp')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/forgot-password/verify-otp').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'verify-otp',
@@ -66,8 +60,8 @@ describe('GET /forgot-password/verify-otp', () => {
         lang: 'en',
         sent: false,
         fieldErrors: {},
-        oneTimePassword: ''
-      }
+        oneTimePassword: '',
+      },
     });
   });
 
@@ -84,8 +78,8 @@ describe('GET /forgot-password/verify-otp', () => {
         lang: 'en',
         sent: true,
         fieldErrors: {},
-        oneTimePassword: ''
-      }
+        oneTimePassword: '',
+      },
     });
   });
 
@@ -102,17 +96,14 @@ describe('GET /forgot-password/verify-otp', () => {
         lang: 'en',
         sent: false,
         fieldErrors: {},
-        oneTimePassword: ''
-      }
+        oneTimePassword: '',
+      },
     });
   });
 
   it('uses lang=cy from cookie when set', async () => {
     const app = mkApp({ lang: 'cy' });
-    const res = await request(app)
-      .get('/forgot-password/verify-otp')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/forgot-password/verify-otp').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'verify-otp',
@@ -120,8 +111,8 @@ describe('GET /forgot-password/verify-otp', () => {
         lang: 'cy',
         sent: false,
         fieldErrors: {},
-        oneTimePassword: ''
-      }
+        oneTimePassword: '',
+      },
     });
   });
 
@@ -138,8 +129,8 @@ describe('GET /forgot-password/verify-otp', () => {
         lang: 'cy',
         sent: true,
         fieldErrors: {},
-        oneTimePassword: ''
-      }
+        oneTimePassword: '',
+      },
     });
   });
 });
@@ -161,10 +152,7 @@ describe('GET /forgot-password/reset-password', () => {
     // mount the forgot-password routes
     forgotRoutes(app);
 
-    const res = await request(app)
-      .get('/forgot-password/reset-password')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/forgot-password/reset-password').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({ view: 'reset-password' });
   });
@@ -185,9 +173,7 @@ describe('POST /forgot-password/enter-email', () => {
     createStub = sinon.stub(axios, 'create').returns(stubClient as any);
 
     // stub axios-cookiejar-support.wrapper -> identity
-    wrapperStub = sinon
-      .stub(axiosCookie, 'wrapper')
-      .callsFake((client) => client as any);
+    wrapperStub = sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
   });
 
   afterEach(() => {
@@ -237,8 +223,8 @@ describe('POST /forgot-password/enter-email', () => {
       options: {
         lang: 'en',
         fieldErrors: { email: 'emailInvalid' },
-        email: 'bad-email'
-      }
+        email: 'bad-email',
+      },
     });
 
     expect(createStub.notCalled).to.be.true;
@@ -259,9 +245,7 @@ describe('POST /forgot-password/enter-email', () => {
 
   it('redirects to verify-otp on successful submit', async () => {
     // stub CSRF fetch
-    stubClient.get
-      .withArgs('/csrf')
-      .resolves({ data: { csrfToken: 'tok123' } });
+    stubClient.get.withArgs('/csrf').resolves({ data: { csrfToken: 'tok123' } });
     // stub backend call
     stubClient.post
       .withArgs(
@@ -300,8 +284,8 @@ describe('POST /forgot-password/enter-email', () => {
       options: {
         lang: 'en',
         fieldErrors: { general: 'backend failure' },
-        email: 'user2@example.com'
-      }
+        email: 'user2@example.com',
+      },
     });
   });
 
@@ -316,10 +300,7 @@ describe('POST /forgot-password/enter-email', () => {
       .expect(200)
       .expect('Content-Type', /json/);
 
-    expect(res.body.options.fieldErrors).to.have.property(
-      'general',
-      'forgotPasswordError'
-    );
+    expect(res.body.options.fieldErrors).to.have.property('general', 'forgotPasswordError');
   });
 });
 
@@ -333,19 +314,14 @@ describe('POST /forgot-password/reset-password', () => {
 
     stubClient = { get: sinon.stub(), post: sinon.stub() } as any;
     createStub = sinon.stub(axios, 'create').returns(stubClient as any);
-    wrapperStub = sinon
-      .stub(axiosCookie, 'wrapper')
-      .callsFake(client => client as any);
+    wrapperStub = sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
   });
 
   afterEach(() => {
     sinon.restore();
   });
 
-  function mkApp(
-    session: Partial<Record<'email' | 'verifiedOtp', string>> = {},
-    cookies: Record<string, string> = {}
-  ) {
+  function mkApp(session: Partial<Record<'email' | 'verifiedOtp', string>> = {}, cookies: Record<string, string> = {}) {
     const app: Application = express();
     // parse JSON and urlencoded bodies
     app.use(express.json());
@@ -397,8 +373,8 @@ describe('POST /forgot-password/reset-password', () => {
           general: 'resetSessionMissing',
         },
         password: '',
-        confirmPassword: ''
-      }
+        confirmPassword: '',
+      },
     });
 
     expect(createStub.notCalled).to.be.true;
@@ -429,9 +405,7 @@ describe('POST /forgot-password/reset-password', () => {
   });
 
   it('redirects on successful reset', async () => {
-    stubClient.get
-      .withArgs('/csrf')
-      .resolves({ data: { csrfToken: 't0k' } });
+    stubClient.get.withArgs('/csrf').resolves({ data: { csrfToken: 't0k' } });
     stubClient.post
       .withArgs(
         '/forgot-password/reset-password',
@@ -439,16 +413,13 @@ describe('POST /forgot-password/reset-password', () => {
           email: 'u@e.com',
           otp: '9999',
           password: 'StrongP@ss1',
-          confirmPassword: 'StrongP@ss1'
+          confirmPassword: 'StrongP@ss1',
         }),
         sinon.match({ headers: { 'X-XSRF-TOKEN': 't0k' } })
       )
       .resolves({});
 
-    const app = mkApp(
-      { email: 'u@e.com', verifiedOtp: '9999' },
-      { lang: 'cy' }
-    );
+    const app = mkApp({ email: 'u@e.com', verifiedOtp: '9999' }, { lang: 'cy' });
     await request(app)
       .post('/forgot-password/reset-password')
       .send({ password: 'StrongP@ss1', confirmPassword: 'StrongP@ss1' })
@@ -497,21 +468,16 @@ describe('POST /forgot-password/verify-otp', () => {
     sinon.stub(console, 'error');
     stubClient = { get: sinon.stub(), post: sinon.stub() } as any;
     createStub = sinon.stub(axios, 'create').returns(stubClient as any);
-    wrapperStub = sinon
-      .stub(axiosCookie, 'wrapper')
-      .callsFake(client => client as any);
+    wrapperStub = sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
   });
 
   afterEach(() => {
     sinon.restore();
   });
 
-  function mkApp(
-    session: Partial<Record<'email' | 'verifiedOtp', string>> = {},
-    cookies: Record<string, string> = {}
-  ) {
+  function mkApp(session: Partial<Record<'email' | 'verifiedOtp', string>> = {}, cookies: Record<string, string> = {}) {
     const app: Application = express();
-    app.use(express.json());                      // ← parse JSON bodies
+    app.use(express.json()); // ← parse JSON bodies
     app.use(express.urlencoded({ extended: false }));
 
     app.use((req, _res, next) => {
@@ -548,12 +514,12 @@ describe('POST /forgot-password/verify-otp', () => {
       options: {
         lang: 'en',
         sent: false,
-        oneTimePassword: '',             // now included
+        oneTimePassword: '', // now included
         fieldErrors: {
           general: 'noEmailInSession',
-          oneTimePassword: 'otpRequired'
-        }
-      }
+          oneTimePassword: 'otpRequired',
+        },
+      },
     });
     expect(createStub.notCalled).to.be.true;
     expect(wrapperStub.notCalled).to.be.true;
@@ -568,7 +534,7 @@ describe('POST /forgot-password/verify-otp', () => {
       .expect('Content-Type', /json/);
 
     expect(res.body.options.fieldErrors).to.deep.equal({
-      oneTimePassword: 'otpRequired'
+      oneTimePassword: 'otpRequired',
     });
   });
 
@@ -616,8 +582,8 @@ describe('POST /forgot-password/verify-otp', () => {
         lang: 'en',
         sent: false,
         oneTimePassword: '0000',
-        fieldErrors: { general: 'expired' }
-      }
+        fieldErrors: { general: 'expired' },
+      },
     });
   });
 
@@ -633,7 +599,7 @@ describe('POST /forgot-password/verify-otp', () => {
       .expect('Content-Type', /json/);
 
     expect(res.body.options.fieldErrors).to.deep.equal({
-      general: 'otpVerifyError'
+      general: 'otpVerifyError',
     });
   });
 });
@@ -686,16 +652,13 @@ describe('POST /forgot-password/resend-otp', () => {
 
   it('re-renders with error if session.email is missing', async () => {
     const app = mkApp(); // no session.email
-    const res = await request(app)
-      .post('/forgot-password/resend-otp')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).post('/forgot-password/resend-otp').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'verify-otp',
       options: {
-        error: 'No valid email found. Please start the reset process again.'
-      }
+        error: 'No valid email found. Please start the reset process again.',
+      },
     });
     expect(createStub.notCalled).to.be.true;
     expect(wrapperStub.notCalled).to.be.true;
@@ -703,22 +666,15 @@ describe('POST /forgot-password/resend-otp', () => {
 
   it('re-renders with error if session.email is invalid', async () => {
     const app = mkApp('not-an-email');
-    const res = await request(app)
-      .post('/forgot-password/resend-otp')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).post('/forgot-password/resend-otp').expect(200).expect('Content-Type', /json/);
 
-    expect(res.body.options.error).to.equal(
-      'No valid email found. Please start the reset process again.'
-    );
+    expect(res.body.options.error).to.equal('No valid email found. Please start the reset process again.');
     expect(createStub.notCalled).to.be.true;
   });
 
   it('redirects to verify-otp on successful resend', async () => {
     // stub CSRF fetch and resend post
-    stubClient.get
-      .withArgs('http://localhost:4550/csrf')
-      .resolves({ data: { csrfToken: 'tok123' } });
+    stubClient.get.withArgs('http://localhost:4550/csrf').resolves({ data: { csrfToken: 'tok123' } });
     stubClient.post
       .withArgs(
         'http://localhost:4550/forgot-password/resend-otp',
@@ -744,16 +700,13 @@ describe('POST /forgot-password/resend-otp', () => {
     stubClient.post.rejects({ response: { data: 'backend down' } });
 
     const app = mkApp('x@y.z');
-    const res = await request(app)
-      .post('/forgot-password/resend-otp')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).post('/forgot-password/resend-otp').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'verify-otp',
       options: {
-        error: 'backend down'
-      }
+        error: 'backend down',
+      },
     });
   });
 
@@ -762,16 +715,13 @@ describe('POST /forgot-password/resend-otp', () => {
     stubClient.post.rejects(new Error('network fail'));
 
     const app = mkApp('x@y.z');
-    const res = await request(app)
-      .post('/forgot-password/resend-otp')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).post('/forgot-password/resend-otp').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'verify-otp',
       options: {
-        error: 'An error occurred while resending the OTP. Please try again.'
-      }
+        error: 'An error occurred while resending the OTP. Please try again.',
+      },
     });
   });
 });

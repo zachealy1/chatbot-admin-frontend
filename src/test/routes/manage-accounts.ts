@@ -25,9 +25,7 @@ describe('GET /manage-accounts', () => {
     sinon.stub(axiosCookie, 'wrapper').callsFake(client => client as any);
 
     // now stub the backend call URL
-    stubClient.get
-      .withArgs('http://localhost:4550/account/all')
-      .resolves({ data: [] });
+    stubClient.get.withArgs('http://localhost:4550/account/all').resolves({ data: [] });
   });
 
   afterEach(() => {
@@ -60,17 +58,11 @@ describe('GET /manage-accounts', () => {
   }
 
   it('redirects to /login when not authenticated', async () => {
-    await request(mkApp())
-      .get('/manage-accounts')
-      .expect(302)
-      .expect('Location', '/login');
+    await request(mkApp()).get('/manage-accounts').expect(302).expect('Location', '/login');
   });
 
   it('renders with no accounts when backend returns empty', async () => {
-    const res = await request(mkApp('SESSION=1'))
-      .get('/manage-accounts')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(mkApp('SESSION=1')).get('/manage-accounts').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'manage-accounts',
@@ -78,8 +70,8 @@ describe('GET /manage-accounts', () => {
         deleted: false,
         pages: [1],
         currentPage: 1,
-        hasAccounts: false
-      }
+        hasAccounts: false,
+      },
     });
   });
 });
@@ -97,9 +89,7 @@ describe('GET /account/all', () => {
     stubClient = { get: sinon.stub() };
 
     // default success for that URL
-    stubClient.get
-      .withArgs('http://localhost:4550/account/all')
-      .resolves({ data: [] });
+    stubClient.get.withArgs('http://localhost:4550/account/all').resolves({ data: [] });
 
     // stub axios.create -> our fake client
     sinon.stub(axios, 'create').returns(stubClient as any);
@@ -140,14 +130,9 @@ describe('GET /account/all', () => {
 
   it('forwards backend data on success', async () => {
     const data = [{ id: 1 }, { id: 2 }];
-    stubClient.get
-      .withArgs('http://localhost:4550/account/all')
-      .resolves({ data });
+    stubClient.get.withArgs('http://localhost:4550/account/all').resolves({ data });
 
-    const res = await request(mkApp('SESSION=xyz'))
-      .get('/account/all')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(mkApp('SESSION=xyz')).get('/account/all').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal(data);
   });
@@ -166,4 +151,3 @@ describe('GET /account/all', () => {
       .expect({ error: 'Failed to load accounts' });
   });
 });
-

@@ -4,11 +4,11 @@ interface Translations {
 }
 
 interface AccountRequest {
-  requestId:    number;
-  userName:     string;
-  email:        string;
-  status:       string;
-  submittedDate:string;
+  requestId: number;
+  userName: string;
+  email: string;
+  status: string;
+  submittedDate: string;
 }
 
 const PAGE_SIZE = 5;
@@ -21,7 +21,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Fetch our two translated labels
   try {
     const res = await fetch('/i18n/buttons', { credentials: 'same-origin' });
-    if (!res.ok) {throw new Error(`I18n fetch failed: ${res.status}`);}
+    if (!res.ok) {
+      throw new Error(`I18n fetch failed: ${res.status}`);
+    }
     const t: Translations = await res.json();
     acceptLabel = t.actionAccept;
     rejectLabel = t.actionReject;
@@ -32,17 +34,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Fetch pending requests
   fetch('/requests/pending', { credentials: 'same-origin' })
     .then(res => {
-      if (!res.ok) {throw new Error(`Fetch failed: ${res.status}`);}
+      if (!res.ok) {
+        throw new Error(`Fetch failed: ${res.status}`);
+      }
       return res.json();
     })
     .then((data: any[]) => {
       // map + paginate
       const all: AccountRequest[] = data.map(item => ({
-        requestId:     item.requestId,
-        userName:      item.userName,
-        email:         item.email,
-        status:        item.status,
-        submittedDate: item.submittedDate.split('T')[0]
+        requestId: item.requestId,
+        userName: item.userName,
+        email: item.email,
+        status: item.status,
+        submittedDate: item.submittedDate.split('T')[0],
       }));
 
       accountRequests = {};
@@ -96,8 +100,8 @@ function renderTableRows(page: number): void {
 // pagination helpers unchanged
 function setupPaginationLinks(): void {
   const paginationLinks = document.querySelectorAll('.govuk-pagination__link');
-  const prevButton      = document.querySelector('.govuk-pagination__prev a') as HTMLElement;
-  const nextButton      = document.querySelector('.govuk-pagination__next a') as HTMLElement;
+  const prevButton = document.querySelector('.govuk-pagination__prev a') as HTMLElement;
+  const nextButton = document.querySelector('.govuk-pagination__next a') as HTMLElement;
 
   let currentPage = 1;
   const totalPages = Object.keys(accountRequests).length;
@@ -105,7 +109,7 @@ function setupPaginationLinks(): void {
   paginationLinks.forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
-      const p = parseInt((e.target as HTMLElement).textContent||'', 10);
+      const p = parseInt((e.target as HTMLElement).textContent || '', 10);
       if (!isNaN(p) && p !== currentPage) {
         currentPage = p;
         renderTableRows(p);
@@ -137,9 +141,11 @@ function setupPaginationLinks(): void {
 }
 
 function updateCurrentPage(page: number): void {
-  document.querySelectorAll('.govuk-pagination__item')
+  document
+    .querySelectorAll('.govuk-pagination__item')
     .forEach(item => item.classList.remove('govuk-pagination__item--current'));
-  const activeLink = Array.from(document.querySelectorAll('.govuk-pagination__link'))
-    .find(link => link.textContent?.trim() === page.toString());
+  const activeLink = Array.from(document.querySelectorAll('.govuk-pagination__link')).find(
+    link => link.textContent?.trim() === page.toString()
+  );
   activeLink?.parentElement?.classList.add('govuk-pagination__item--current');
 }

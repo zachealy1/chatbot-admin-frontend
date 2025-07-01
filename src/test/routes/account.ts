@@ -12,7 +12,8 @@ describe('GET /account', () => {
 
   beforeEach(() => {
     // Stub ensureAuthenticated -> next()
-    sinon.stub(authModule, 'ensureAuthenticated')
+    sinon
+      .stub(authModule, 'ensureAuthenticated')
       .callsFake((_req: Request, _res: Response, next: NextFunction) => next());
 
     // Stub axios-cookiejar-support.wrapper to return our fake client
@@ -33,11 +34,11 @@ describe('GET /account', () => {
     // inject session/user
     app.use((req, _res, next) => {
       (req as any).session = {};
-      (req as any).user    = {};
+      (req as any).user = {};
       if (sessionCookie) {
         // if provided, set both user and session cookie
         (req as any).session.springSessionCookie = sessionCookie;
-        (req as any).user.springSessionCookie    = sessionCookie;
+        (req as any).user.springSessionCookie = sessionCookie;
       }
       next();
     });
@@ -53,18 +54,15 @@ describe('GET /account', () => {
   }
 
   it('renders error view when no session cookie is present', async () => {
-    const app = mkApp();  // no cookie
-    const res = await request(app)
-      .get('/account')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const app = mkApp(); // no cookie
+    const res = await request(app).get('/account').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'account',
       options: {
         errors: ['Error retrieving account details.'],
-        updated: false
-      }
+        updated: false,
+      },
     });
     // ensure we never attempted to call backend
     expect(stubClient.get.called).to.be.false;
@@ -72,21 +70,11 @@ describe('GET /account', () => {
 
   it('fetches data and renders account view when session cookie present (updated=false)', async () => {
     // stub each backend endpoint
-    stubClient.get
-      .withArgs('http://localhost:4550/account/username')
-      .resolves({ data: 'alice' });
-    stubClient.get
-      .withArgs('http://localhost:4550/account/email')
-      .resolves({ data: 'alice@example.com' });
-    stubClient.get
-      .withArgs('http://localhost:4550/account/date-of-birth/day')
-      .resolves({ data: '5' });
-    stubClient.get
-      .withArgs('http://localhost:4550/account/date-of-birth/month')
-      .resolves({ data: '7' });
-    stubClient.get
-      .withArgs('http://localhost:4550/account/date-of-birth/year')
-      .resolves({ data: '1985' });
+    stubClient.get.withArgs('http://localhost:4550/account/username').resolves({ data: 'alice' });
+    stubClient.get.withArgs('http://localhost:4550/account/email').resolves({ data: 'alice@example.com' });
+    stubClient.get.withArgs('http://localhost:4550/account/date-of-birth/day').resolves({ data: '5' });
+    stubClient.get.withArgs('http://localhost:4550/account/date-of-birth/month').resolves({ data: '7' });
+    stubClient.get.withArgs('http://localhost:4550/account/date-of-birth/year').resolves({ data: '1985' });
 
     const app = mkApp('SESSION=xyz');
     const res = await request(app)
@@ -104,8 +92,8 @@ describe('GET /account', () => {
         month: '7',
         year: '1985',
         updated: false,
-        errors: null
-      }
+        errors: null,
+      },
     });
     expect(stubClient.get.callCount).to.equal(5);
   });
@@ -131,8 +119,8 @@ describe('GET /account', () => {
         month: 'foo',
         year: 'foo',
         updated: true,
-        errors: null
-      }
+        errors: null,
+      },
     });
     expect(stubClient.get.callCount).to.equal(5);
   });
@@ -167,10 +155,7 @@ describe('GET /account/update', () => {
 
   it('renders the update view when authenticated', async () => {
     const app = mkApp();
-    const res = await request(app)
-      .get('/account/update')
-      .expect(200)
-      .expect('Content-Type', /json/);
+    const res = await request(app).get('/account/update').expect(200).expect('Content-Type', /json/);
 
     expect(res.body).to.deep.equal({
       view: 'update',
@@ -181,17 +166,12 @@ describe('GET /account/update', () => {
   it('redirects to /login when not authenticated', async () => {
     // Change stub to simulate unauthenticated behaviour
     ensureStub.restore();
-    sinon
-      .stub(authModule, 'ensureAuthenticated')
-      .callsFake((_req: Request, res: any) => {
-        res.redirect('/login');
-      });
+    sinon.stub(authModule, 'ensureAuthenticated').callsFake((_req: Request, res: any) => {
+      res.redirect('/login');
+    });
 
     const app = mkApp();
-    await request(app)
-      .get('/account/update')
-      .expect(302)
-      .expect('Location', '/login');
+    await request(app).get('/account/update').expect(302).expect('Location', '/login');
   });
 });
 
@@ -208,9 +188,7 @@ describe('POST /account/update', () => {
       get: sinon.stub(),
       post: sinon.stub(),
     };
-    wrapperStub = sinon
-      .stub(axiosCookie, 'wrapper')
-      .callsFake(() => stubClient as any);
+    wrapperStub = sinon.stub(axiosCookie, 'wrapper').callsFake(() => stubClient as any);
   });
 
   afterEach(() => {
@@ -225,14 +203,14 @@ describe('POST /account/update', () => {
     // stub session and user, and ensure body fields exist
     app.use((req, _res, next) => {
       req.body = req.body || {};
-      req.body['date-of-birth-day']    = req.body['date-of-birth-day']    ?? '';
-      req.body['date-of-birth-month']  = req.body['date-of-birth-month']  ?? '';
-      req.body['date-of-birth-year']   = req.body['date-of-birth-year']   ?? '';
+      req.body['date-of-birth-day'] = req.body['date-of-birth-day'] ?? '';
+      req.body['date-of-birth-month'] = req.body['date-of-birth-month'] ?? '';
+      req.body['date-of-birth-year'] = req.body['date-of-birth-year'] ?? '';
       (req as any).session = {};
-      (req as any).user    = {};
+      (req as any).user = {};
       if (sessionCookie) {
         (req as any).session.springSessionCookie = sessionCookie;
-        (req as any).user.springSessionCookie    = sessionCookie;
+        (req as any).user.springSessionCookie = sessionCookie;
       }
       next();
     });
@@ -277,9 +255,7 @@ describe('POST /account/update', () => {
 
   it('redirects to /account?updated=true on successful backend update', async () => {
     // stub CSRF fetch
-    stubClient.get
-      .withArgs('http://localhost:4550/csrf')
-      .resolves({ data: { csrfToken: 'tok123' } });
+    stubClient.get.withArgs('http://localhost:4550/csrf').resolves({ data: { csrfToken: 'tok123' } });
     // stub account update POST
     stubClient.post
       .withArgs(
@@ -313,9 +289,7 @@ describe('POST /account/update', () => {
 
   it('re-renders with generic error when backend update fails', async () => {
     // stub CSRF fetch
-    stubClient.get
-      .withArgs('http://localhost:4550/csrf')
-      .resolves({ data: { csrfToken: 'tokXYZ' } });
+    stubClient.get.withArgs('http://localhost:4550/csrf').resolves({ data: { csrfToken: 'tokXYZ' } });
     // stub account update POST to fail
     stubClient.post.rejects(new Error('boom'));
 

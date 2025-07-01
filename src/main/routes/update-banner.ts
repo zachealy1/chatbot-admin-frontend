@@ -10,13 +10,10 @@ const { Logger } = require('@hmcts/nodejs-logging');
 const logger = Logger.getLogger('app');
 
 export default function (app: Application): void {
-
   app.get('/update-banner', ensureAuthenticated, async (req, res) => {
     // 1. Grab the stored Spring session cookie so we can auth against the backend
     const storedSessionCookie =
-      (req.user as any)?.springSessionCookie ||
-      (req.session as any)?.springSessionCookie ||
-      '';
+      (req.user as any)?.springSessionCookie || (req.session as any)?.springSessionCookie || '';
 
     if (!storedSessionCookie) {
       logger.error('No Spring session cookie in Express session');
@@ -47,18 +44,18 @@ export default function (app: Application): void {
       // 4. Render the page, passing in bannerTitle, bannerBody, and the updated flag
       res.render('update-banner', {
         bannerTitle: title,
-        bannerBody:  content,
-        updated:     req.query.updated === 'true',
+        bannerBody: content,
+        updated: req.query.updated === 'true',
       });
-
     } catch (err) {
       logger.error('Failed to load banner for edit:', err);
       // On error, still render the page with defaults and an error message
       res.render('update-banner', {
         bannerTitle: 'Contact Support Team',
-        bannerBody:  "If you need assistance, please call us at <strong>0800 123 456</strong> or email <a href='mailto:support@example.com'>support@example.com</a>.",
-        updated:     false,
-        error:       'Could not load banner — please try again.',
+        bannerBody:
+          "If you need assistance, please call us at <strong>0800 123 456</strong> or email <a href='mailto:support@example.com'>support@example.com</a>.",
+        updated: false,
+        error: 'Could not load banner — please try again.',
       });
     }
   });
@@ -68,9 +65,7 @@ export default function (app: Application): void {
 
     // Pull your stored Spring Boot session cookie out of the Express session
     const storedSessionCookie =
-      (req.user as any)?.springSessionCookie ||
-      (req.session as any)?.springSessionCookie ||
-      '';
+      (req.user as any)?.springSessionCookie || (req.session as any)?.springSessionCookie || '';
 
     if (!storedSessionCookie) {
       logger.error('No Spring session cookie in Express session');
@@ -82,12 +77,14 @@ export default function (app: Application): void {
       const jar = new CookieJar();
       jar.setCookieSync(storedSessionCookie, 'http://localhost:4550');
 
-      const client = wrapper(axios.create({
-        jar,
-        withCredentials: true,
-        xsrfCookieName: 'XSRF-TOKEN',
-        xsrfHeaderName: 'X-XSRF-TOKEN',
-      }));
+      const client = wrapper(
+        axios.create({
+          jar,
+          withCredentials: true,
+          xsrfCookieName: 'XSRF-TOKEN',
+          xsrfHeaderName: 'X-XSRF-TOKEN',
+        })
+      );
 
       // Now GET /csrf (will use your session cookie) and PUT
       const csrfResponse = await client.get('http://localhost:4550/csrf');
@@ -101,7 +98,6 @@ export default function (app: Application): void {
 
       logger.log('Banner updated successfully');
       return res.redirect('/update-banner?updated=true');
-
     } catch (err: any) {
       logger.error('Error updating banner:', err);
       return res.render('update-banner', {
